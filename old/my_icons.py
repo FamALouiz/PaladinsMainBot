@@ -56,7 +56,7 @@ class ButtonsAndIcons:
         if hasattr(sys, "_MEIPASS"):
             return os.path.join(sys._MEIPASS, rel_path)
         else:
-            return os.path.join("icons", rel_path)
+            return os.path.join("../icons", rel_path)
 
 
 if __name__ == "__main__":
