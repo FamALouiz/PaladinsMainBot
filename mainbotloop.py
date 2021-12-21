@@ -1,5 +1,6 @@
 from functions import *
-import time
+from tkinter import *
+import time, requests, datetime
 
 handle, window, PId = get_fortnite_window()
 img = screenshot_resize(window, handle, "./screenshot.png")
@@ -44,7 +45,24 @@ class mainLoop:
         self.crouched = False
         self.numberGames = 0
         self.takeScreenshot = True
-
+    
+    def print_to_GUI(self, msg, type="basic"):
+        if msg == self.lastMessage:
+            return
+        else:
+            self.print_area.configure(state="normal")
+            autoscroll = False
+            ts = datetime.datetime.fromtimestamp(time.time()).strftime(
+                "%Y/%m/%d %H:%M:%S || "
+            )
+            if self.print_area.yview()[1] == 1:
+                autoscroll = True
+            self.print_area.insert(END, ts + msg + "\n", type)
+            self.lastMessage = msg
+            if autoscroll:
+                self.print_area.see(END)
+        self.print_area.configure(state="disabled")
+        
     def send_image_pushbullet(self, access_token, img_path, game_num):
         url = "https://api.pushbullet.com/v2/upload-request"
         headers = {"Access-Token": access_token, "Content-Type": "application/json"}
@@ -77,57 +95,73 @@ class mainLoop:
         res = requests.post(url, json=data, headers=headers)
         if res.status_code != 200:
             self.print_to_GUI("Error pushing to phone", "error")
-        self.print_to_GUI("Pushed screenshot to phone")
+        if res.status_code == 200:    
+            self.print_to_GUI("Pushed screenshot to phone")
 
     def startLoop(self) -> None:
         while True:
-            # determine stage here using fictional function self.stage=determineStage()
+            self.stage = check_stage(window, handle, buttons)
             if self.stage == "solo-lobby":
+                self.print_to_GUI("Looking for play button")
                 img = screenshot_resize(window, handle, "./screenshot.png")
                 clickbtn(
                     "./icons/play_button.png",
                     img,
                 )
+                self.print_to_GUI("Play button clicked (waiting for game to start)")
 
-            if self.stage == "party-lobby":
+            elif self.stage == "party-lobby":
+                self.print_to_GUI("Looking for ready button")
                 img = screenshot_resize(window, handle, "./screenshot.png")
                 clickbtn(
                     "./icons/ready_button.png",
                     img,
                 )
+                self.print_to_GUI("Ready button clicked (waiting for game to start)")
 
-            if self.stage == "pre-jump":
+            elif self.stage == "in-bus":
+                self.print_to_GUI("Waiting to jump out of the bus")
                 self.numberGames += 1
                 img = screenshot_resize(window, handle, "./screenshot.png")
                 if findbtn("./icons/bus_icon_square.png", img):
+                    if self.access_level > 0:
+                        pyautogui.press("b")
+                        self.print_to_GUI("Thanking the bus driver :)")
+            
+            elif self.stage == "in-jump":
+                if findbtn("./icons/jump_icon_square.png", img):
+                    self.print_to_GUI(f"Jumping out after {self.jumpSecs} seconds")
                     time.sleep(self.jumpSecs)
                     pyautogui.press("space")
+                    self.print_to_GUI("Jumped out")
                     if self.landInTreeBool:
-                        print("goin to the treeeees")
+                        self.print_to_GUI("Navigating towards the nearest tree")
                         pyautogui.press("space")
                         pyautogui.press("m")
                         time.sleep(2.0)
                         self.player_mover.land_at_closest_loc()
-                        print("lovely trees you got there")
+                        self.print_to_GUI("Tree reached")
                         self.waitToCrouchTS = datetime.datetime.now().timestamp()
-                        self.stage = "in-game"
-                else:
-                    # self.stage = determineStage()
-                    continue
-
-            if self.stage == "in-game":
+                
+            elif self.stage == "in-game":
                 if self.crouched == False:
                     if datetime.datetime.now().timestamp() - self.waitToCrouchTS > 80.0:
                         pyautogui.press("ctrl")
                         self.crouched = True
-                        print("When will this ennnnddd")
+                        self.print_to_GUI("Waiting to die")
 
-            if self.stage == "post-game":
+            elif self.stage == "post-game":
                 if self.pbBool and self.takeScreenshot:
                     stats = "./tempScreenshot.png"
                     pyautogui.screenshot(stats)
                     self.takeScreenshot = False
                     self.send_image_pushbullet(self.pbAccTkn, stats, self.numberGames)
 
-            if self.stage == "return-lobby":
+            elif self.stage == "claim-rewards":
+                if 
+            elif self.stage == "claim-rewards-next":  
+            elif self.stage == "in-map":
+            elif self.stage == "continue":
+            else:
+                self.stage = check_stage(window, handle, buttons)
 
