@@ -27,6 +27,7 @@ class App:
         self.root.geometry(alignstr)
         self.root.resizable(width=False, height=False)
         self.fontFamily = "Calibri"
+        self.mainbot = None
 
         self.title_label = tk.Label(self.root)
         ft = tkFont.Font(family=self.fontFamily, size=24)
@@ -335,9 +336,10 @@ class App:
         self.mainbot = mainbotloop.mainLoop(
             self.textBox, (minJumpSec, maxJumpSec), statsBool, pbBool, pbAccTkn, landOnTreesBool
         )
-        self.startButton["state"] = "disabled"
-        self.stopButton["state"] = "normal"
-        self.mainbot.startLoop()
+        if not self.mainbot.invalid:
+            self.startButton["state"] = "disabled"
+            self.stopButton["state"] = "normal"
+            self.mainbot.startLoop()
 
     def stopBot(self):
         self.stopButton["state"] = "disabled"
@@ -384,8 +386,8 @@ class App:
         if self.mainbot is not None:
             self.stopBot()
             self.mainbot = None
-        self.btnStart["state"] = "normal"
-        self.btnStop["state"] = "disabled"
+        self.startButton["state"] = "normal"
+        self.stopButton["state"] = "disabled"
 
     def pbSendTestMessage(self):
         url = "https://api.pushbullet.com/v2/pushes"

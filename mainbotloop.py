@@ -1,7 +1,8 @@
 from functions import *
 from tkinter import *
-import time, requests, datetime,random,plrmovement
+import time, requests, datetime, random, plrmovement
 from icons import *
+
 
 class mainLoop:
     """
@@ -26,7 +27,7 @@ class mainLoop:
         landInTreeBool = whether the user wants to land in tree
         tier = user access level
         """
-        self.lastMessage=None
+        self.lastMessage = None
         self.access_level = tier
         self.print_area = listBoxLogger
         self.jumpSecs = jumpSecs
@@ -34,28 +35,28 @@ class mainLoop:
         self.pbBool = pbBool
         self.pbAccTkn = pbAccTkn
         self.landInTreeBool = landInTreeBool
+        self.invalid = False
         try:
-            self.handle, self.window, self.PId = get_fortnite_window()
+            get_fortnite_window()
         except:
             self.print_to_GUI("Fortnite is not running, please launch the game")
-        self.img = screenshot_resize(self.window, self.handle, "./screenshot.png")
+            self.invalid = True
+            return
+        self.img = screenshot_resize("./screenshot.png")
         self.stage = None
         self.player_mover = plrmovement.Player("./icons/player_cursor.png")
         self.crouched = False
         self.numberGames = 0
         self.takeScreenshot = True
-        self.buttons=btnlist
-        
-    
+        self.buttons = btnlist
+
     def print_to_GUI(self, msg, type="basic"):
         if msg == self.lastMessage:
             return
         else:
             self.print_area.configure(state="normal")
             autoscroll = False
-            ts = datetime.datetime.fromtimestamp(time.time()).strftime(
-                "%Y/%m/%d %H:%M:%S || "
-            )
+            ts = datetime.datetime.fromtimestamp(time.time()).strftime("%Y/%m/%d %H:%M:%S || ")
             if self.print_area.yview()[1] == 1:
                 autoscroll = True
             self.print_area.insert(END, ts + msg + "\n", type)
@@ -63,7 +64,7 @@ class mainLoop:
             if autoscroll:
                 self.print_area.see(END)
         self.print_area.configure(state="disabled")
-        
+
     def send_image_pushbullet(self, access_token, img_path):
         url = "https://api.pushbullet.com/v2/upload-request"
         headers = {"Access-Token": access_token, "Content-Type": "application/json"}
@@ -96,7 +97,7 @@ class mainLoop:
         res = requests.post(url, json=data, headers=headers)
         if res.status_code != 200:
             self.print_to_GUI("Error pushing to phone", "error")
-        if res.status_code == 200:    
+        if res.status_code == 200:
             self.print_to_GUI("Pushed screenshot to phone")
 
     def antiAFK(self):
@@ -110,12 +111,12 @@ class mainLoop:
         pyautogui.press("ctrl")
 
     def stopLoop(self):
-        self.stage="exit"
+        self.stage = "exit"
         self.print_to_GUI("Bot stopping...")
 
     def startLoop(self) -> None:
         """
-        Main loop of the bot which goes through the stages and does its necessary action 
+        Main loop of the bot which goes through the stages and does its necessary action
         """
         while True:
             self.stage = check_stage(self.window, self.handle, self.buttons)
@@ -145,7 +146,7 @@ class mainLoop:
                     if self.access_level > 0:
                         pyautogui.press("b")
                         self.print_to_GUI("Thanking the bus driver :)")
-            
+
             elif self.stage == "in-jump":
                 if findbtn("./icons/jump_icon_square.png", img):
                     self.print_to_GUI(f"Jumping out after {self.jumpSecs} seconds")
@@ -160,7 +161,7 @@ class mainLoop:
                         self.player_mover.land_at_closest_loc()
                         self.print_to_GUI("Tree reached")
                         self.waitToCrouchTS = datetime.datetime.now().timestamp()
-                
+
             elif self.stage == "in-game":
                 if self.crouched == False:
                     if datetime.datetime.now().timestamp() - self.waitToCrouchTS > 80.0:
@@ -176,36 +177,36 @@ class mainLoop:
                     self.takeScreenshot = False
                     self.send_image_pushbullet(self.pbAccTkn, stats)
                 else:
-                    self.stage="claim-rewards"
+                    self.stage = "claim-rewards"
 
             elif self.stage == "claim-rewards":
-                img=screenshot_resize(self.window, self.handle, "./screenshot.png")
+                img = screenshot_resize(self.window, self.handle, "./screenshot.png")
                 if findbtn("./icons/collect_button.png", img):
                     clickbtn("./icons/collect_button.png", img)
                 else:
-                    self.stage="claim-rewards-next"
-            
-            elif self.stage == "claim-rewards-next":  
-                img=screenshot_resize(self.window, self.handle, "./screenshot.png")
+                    self.stage = "claim-rewards-next"
+
+            elif self.stage == "claim-rewards-next":
+                img = screenshot_resize(self.window, self.handle, "./screenshot.png")
                 if findbtn("./icons/collect_button_next.png", img):
                     clickbtn("./icons/collect_button_next.png", img)
                 else:
                     self.stage = check_stage(self.window, self.handle, self.buttons)
 
             elif self.stage == "in-map":
-                #TODO add functions that yehia will add
-                return #TODO sheel el return
+                # TODO add functions that yehia will add
+                return  # TODO sheel el return
 
             elif self.stage == "continue":
-                img=screenshot_resize(self.window, self.handle, "./screenshot.png")
+                img = screenshot_resize(self.window, self.handle, "./screenshot.png")
                 if findbtn("./icons/collect_button_next.png", img):
                     clickbtn("./icons/collect_button_next.png", img)
                 elif findbtn("./icons/return_button.png", img):
                     clickbtn("./icons/return_button.png", img)
                 else:
-                    self.stage="solo-lobby"
-            
-            elif self.stage=="exit":
+                    self.stage = "solo-lobby"
+
+            elif self.stage == "exit":
                 self.print_to_GUI("Bot closed")
                 return
             else:
