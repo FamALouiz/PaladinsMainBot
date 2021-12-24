@@ -122,7 +122,7 @@ class mainLoop:
             self.stage = check_stage(self.window, self.handle, self.buttons)
             if self.stage == "solo-lobby":
                 self.print_to_GUI("Looking for play button")
-                img = screenshot_resize(self.window, self.handle, "./screenshot.png")
+                img = screenshot_resize("./screenshot.png")
                 clickbtn(
                     "./icons/play_button.png",
                     img,
@@ -131,7 +131,7 @@ class mainLoop:
 
             elif self.stage == "party-lobby":
                 self.print_to_GUI("Looking for ready button")
-                img = screenshot_resize(self.window, self.handle, "./screenshot.png")
+                img = screenshot_resize("./screenshot.png")
                 clickbtn(
                     "./icons/ready_button.png",
                     img,
@@ -141,26 +141,23 @@ class mainLoop:
             elif self.stage == "in-bus":
                 self.print_to_GUI("Waiting to jump out of the bus")
                 self.numberGames += 1
-                img = screenshot_resize(self.window, self.handle, "./screenshot.png")
-                if findbtn("./icons/bus_icon_square.png", img):
-                    if self.access_level > 0:
-                        pyautogui.press("b")
-                        self.print_to_GUI("Thanking the bus driver :)")
+                if self.access_level > 0:
+                    pyautogui.press("b")
+                    self.print_to_GUI("Thanking the bus driver :)")
 
             elif self.stage == "in-jump":
-                if findbtn("./icons/jump_icon_square.png", img):
-                    self.print_to_GUI(f"Jumping out after {self.jumpSecs} seconds")
-                    time.sleep(self.jumpSecs)
+                self.print_to_GUI(f"Jumping out after {self.jumpSecs} seconds")
+                time.sleep(self.jumpSecs)
+                pyautogui.press("space")
+                self.print_to_GUI("Jumped out")
+                if self.landInTreeBool:
+                    self.print_to_GUI("Navigating towards the nearest tree")
                     pyautogui.press("space")
-                    self.print_to_GUI("Jumped out")
-                    if self.landInTreeBool:
-                        self.print_to_GUI("Navigating towards the nearest tree")
-                        pyautogui.press("space")
-                        pyautogui.press("m")
-                        time.sleep(2.0)
-                        self.player_mover.land_at_closest_loc()
-                        self.print_to_GUI("Tree reached")
-                        self.waitToCrouchTS = datetime.datetime.now().timestamp()
+                    pyautogui.press("m")
+                    time.sleep(2.0)
+                    self.player_mover.land_at_closest_loc()
+                    self.print_to_GUI("Tree reached")
+                    self.waitToCrouchTS = datetime.datetime.now().timestamp()
 
             elif self.stage == "in-game":
                 if self.crouched == False:
@@ -180,25 +177,21 @@ class mainLoop:
                     self.stage = "claim-rewards"
 
             elif self.stage == "claim-rewards":
-                img = screenshot_resize(self.window, self.handle, "./screenshot.png")
+                img = screenshot_resize("./screenshot.png")
                 if findbtn("./icons/collect_button.png", img):
                     clickbtn("./icons/collect_button.png", img)
                 else:
                     self.stage = "claim-rewards-next"
 
             elif self.stage == "claim-rewards-next":
-                img = screenshot_resize(self.window, self.handle, "./screenshot.png")
+                img = screenshot_resize("./screenshot.png")
                 if findbtn("./icons/collect_button_next.png", img):
                     clickbtn("./icons/collect_button_next.png", img)
                 else:
-                    self.stage = check_stage(self.window, self.handle, self.buttons)
-
-            elif self.stage == "in-map":
-                # TODO add functions that yehia will add
-                return  # TODO sheel el return
+                    self.stage = check_stage(self.buttons)
 
             elif self.stage == "continue":
-                img = screenshot_resize(self.window, self.handle, "./screenshot.png")
+                img = screenshot_resize("./screenshot.png")
                 if findbtn("./icons/collect_button_next.png", img):
                     clickbtn("./icons/collect_button_next.png", img)
                 elif findbtn("./icons/return_button.png", img):
@@ -210,4 +203,4 @@ class mainLoop:
                 self.print_to_GUI("Bot closed")
                 return
             else:
-                self.stage = check_stage(self.window, self.handle, self.buttons)
+                self.stage = check_stage(self.buttons)

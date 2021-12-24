@@ -77,12 +77,13 @@ def clickbtn(btn, img):
         raise Exception("Could not find button")
 
 
-def check_stage(window, handle, buttons: list) -> str:
+def check_stage(buttons: list) -> str:
+    global handle, window, pid
     found_btns = []
     for name, btn in btnlist.items():
         if btn.found:
             continue
-        cords = findbtn(btn.img_path, screenshot_resize(window, handle, "./temp.png"))
+        cords = findbtn(btn.img_path, screenshot_resize("./temp.png"))
         if cords:
             btn.cords = cords
             btn.found = True
@@ -105,8 +106,6 @@ def check_stage(window, handle, buttons: list) -> str:
             return "claim-rewards"
         elif "next_button" in found_btns:
             return "claim-rewards-next"
-        elif "esc_button" in found_btns:
-            return "in-map"
         elif "continue_blue_button" in found_btns:
             print("continue button found")
             return "continue"
