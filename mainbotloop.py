@@ -1,12 +1,7 @@
 from functions import *
 from tkinter import *
-import time, requests, datetime
-
-handle, window, PId = get_fortnite_window()
-img = screenshot_resize(window, handle, "./screenshot.png")
-stage = None
-# function to check stage goes here
-
+import time, requests, datetime,random
+from icons import *
 
 class mainLoop:
     """
@@ -45,6 +40,7 @@ class mainLoop:
         self.crouched = False
         self.numberGames = 0
         self.takeScreenshot = True
+        self.buttons=btnlist
     
     def print_to_GUI(self, msg, type="basic"):
         if msg == self.lastMessage:
@@ -63,7 +59,7 @@ class mainLoop:
                 self.print_area.see(END)
         self.print_area.configure(state="disabled")
         
-    def send_image_pushbullet(self, access_token, img_path, game_num):
+    def send_image_pushbullet(self, access_token, img_path):
         url = "https://api.pushbullet.com/v2/upload-request"
         headers = {"Access-Token": access_token, "Content-Type": "application/json"}
         data = {"file_name": img_path, "file_type": "image/jpeg"}
@@ -87,7 +83,7 @@ class mainLoop:
         headers = {"Access-Token": access_token, "Content-Type": "application/json"}
         data = {
             "type": "file",
-            "body": "FortBot screenshot from game %d" % game_num,
+            "body": f"FortBot screenshot from game {self.numberGames}",
             "file_name": file_name,
             "file_type": file_type,
             "file_url": file_url,
@@ -98,12 +94,25 @@ class mainLoop:
         if res.status_code == 200:    
             self.print_to_GUI("Pushed screenshot to phone")
 
+    def antiAFK(self):
+        time.sleep(random.randrange(0, 10))
+        pyautogui.click()
+        pyautogui.press("w")
+        pyautogui.press("space")
+        pyautogui.press("d")
+        pyautogui.press("a")
+        pyautogui.press("s")
+        pyautogui.press("ctrl")
+
     def startLoop(self) -> None:
+        """
+        Main loop of the bot which goes through the stages and does its necessary action 
+        """
         while True:
-            self.stage = check_stage(window, handle, buttons)
+            self.stage = check_stage(self.window, self.handle, self.buttons)
             if self.stage == "solo-lobby":
                 self.print_to_GUI("Looking for play button")
-                img = screenshot_resize(window, handle, "./screenshot.png")
+                img = screenshot_resize(self.window, self.handle, "./screenshot.png")
                 clickbtn(
                     "./icons/play_button.png",
                     img,
@@ -112,7 +121,7 @@ class mainLoop:
 
             elif self.stage == "party-lobby":
                 self.print_to_GUI("Looking for ready button")
-                img = screenshot_resize(window, handle, "./screenshot.png")
+                img = screenshot_resize(self.window, self.handle, "./screenshot.png")
                 clickbtn(
                     "./icons/ready_button.png",
                     img,
@@ -122,7 +131,7 @@ class mainLoop:
             elif self.stage == "in-bus":
                 self.print_to_GUI("Waiting to jump out of the bus")
                 self.numberGames += 1
-                img = screenshot_resize(window, handle, "./screenshot.png")
+                img = screenshot_resize(self.window, self.handle, "./screenshot.png")
                 if findbtn("./icons/bus_icon_square.png", img):
                     if self.access_level > 0:
                         pyautogui.press("b")
@@ -149,19 +158,43 @@ class mainLoop:
                         pyautogui.press("ctrl")
                         self.crouched = True
                         self.print_to_GUI("Waiting to die")
+                self.antiAFK()
 
             elif self.stage == "post-game":
                 if self.pbBool and self.takeScreenshot:
-                    stats = "./tempScreenshot.png"
+                    stats = "./tempScreenshot.jpeg"
                     pyautogui.screenshot(stats)
                     self.takeScreenshot = False
-                    self.send_image_pushbullet(self.pbAccTkn, stats, self.numberGames)
+                    self.send_image_pushbullet(self.pbAccTkn, stats)
+                else:
+                    self.stage="claim-rewards"
 
             elif self.stage == "claim-rewards":
-                if 
+                img=screenshot_resize(self.window, self.handle, "./screenshot.png")
+                if findbtn("./icons/collect_button.png", img):
+                    clickbtn("./icons/collect_button.png", img)
+                else:
+                    self.stage="claim-rewards-next"
+            
             elif self.stage == "claim-rewards-next":  
+                img=screenshot_resize(self.window, self.handle, "./screenshot.png")
+                if findbtn("./icons/collect_button_next.png", img):
+                    clickbtn("./icons/collect_button_next.png", img)
+                else:
+                    self.stage = check_stage(self.window, self.handle, self.buttons)
+
             elif self.stage == "in-map":
+                #TODO add functions that yehia will add
+                return #TODO sheel el return
+
             elif self.stage == "continue":
+                img=screenshot_resize(self.window, self.handle, "./screenshot.png")
+                if findbtn("./icons/collect_button_next.png", img):
+                    clickbtn("./icons/collect_button_next.png", img)
+                elif findbtn("./icons/return_button.png", img):
+                    clickbtn("./icons/return_button.png", img)
+                else:
+                    self.stage="solo-lobby"
             else:
-                self.stage = check_stage(window, handle, buttons)
+                self.stage = check_stage(self.window, self.handle, self.buttons)
 
