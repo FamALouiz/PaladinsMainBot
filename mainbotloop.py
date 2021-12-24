@@ -1,6 +1,6 @@
 from functions import *
 from tkinter import *
-import time, requests, datetime,random
+import time, requests, datetime,random,plrmovement
 from icons import *
 
 class mainLoop:
@@ -26,6 +26,7 @@ class mainLoop:
         landInTreeBool = whether the user wants to land in tree
         tier = user access level
         """
+        self.lastMessage=None
         self.access_level = tier
         self.print_area = listBoxLogger
         self.jumpSecs = jumpSecs
@@ -33,14 +34,18 @@ class mainLoop:
         self.pbBool = pbBool
         self.pbAccTkn = pbAccTkn
         self.landInTreeBool = landInTreeBool
-        self.handle, self.window, self.PId = get_fortnite_window()
+        try:
+            self.handle, self.window, self.PId = get_fortnite_window()
+        except:
+            self.print_to_GUI("Fortnite is not running, please launch the game")
         self.img = screenshot_resize(self.window, self.handle, "./screenshot.png")
         self.stage = None
-        self.player_mover = PlayerMovement("./icons/player_cursor.png")
+        self.player_mover = plrmovement.Player("./icons/player_cursor.png")
         self.crouched = False
         self.numberGames = 0
         self.takeScreenshot = True
         self.buttons=btnlist
+        
     
     def print_to_GUI(self, msg, type="basic"):
         if msg == self.lastMessage:
@@ -103,6 +108,10 @@ class mainLoop:
         pyautogui.press("a")
         pyautogui.press("s")
         pyautogui.press("ctrl")
+
+    def stopLoop(self):
+        self.stage="exit"
+        self.print_to_GUI("Bot stopping...")
 
     def startLoop(self) -> None:
         """
@@ -195,6 +204,9 @@ class mainLoop:
                     clickbtn("./icons/return_button.png", img)
                 else:
                     self.stage="solo-lobby"
+            
+            elif self.stage=="exit":
+                self.print_to_GUI("Bot closed")
+                return
             else:
                 self.stage = check_stage(self.window, self.handle, self.buttons)
-
