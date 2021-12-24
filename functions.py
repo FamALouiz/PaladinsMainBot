@@ -3,54 +3,53 @@ from typing import Optional
 
 import psutil
 import pyautogui
-import pyscreeze
 import pygetwindow as gw
 import win32gui
 import win32process
 from PIL import Image
+
 from icons import btnlist
 
-# class Bot:
-#     def __init__(self) -> None:
+handle: Optional[int] = None
+window: Optional[gw.Window] = None
+pid: Optional[int] = None
 
 
-def get_fortnite_window():
+def get_fortnite_window() -> None:
+    global handle, window, pid
     got_windows = gw.getWindowsWithTitle("Fortnite")
     for window in got_windows:
         window.restore()
         window.activate()
-
         time.sleep(1)
         handle = win32gui.GetForegroundWindow()
-        PId = win32process.GetWindowThreadProcessId(handle)
+        pid = win32process.GetWindowThreadProcessId(handle)
         for proc in psutil.process_iter():
-            if proc.pid == PId[1]:
+            if proc.pid == pid[1]:
                 if proc.name().lower() == "FortniteClient-Win64-Shipping.exe".lower():
-                    return handle, window, PId
+                    return None
                 else:
                     window.minimize()
     raise Exception("No fortnite window found")
 
 
-def isfortnite(handle):
-    return handle == win32gui.GetForegroundWindow()
-
-
-def screenshot_resize(window, handle, path):
-    if not isfortnite(handle):
+def isfortnite():
+    global handle, window, pid
+    if handle != win32gui.GetForegroundWindow():
         print("not fortnite window")
-        window, handle, path = get_fortnite_window()
+        print("opening fortnite")
+        get_fortnite_window()
+
+
+def screenshot_resize(path):
+    global handle, window, pid
+    isfortnite()
     # screenshot the display
     img: Image.Image = pyautogui.screenshot(path)
-    print(type(img))
-    # open image
-    # img = Image.open(path)
     # get screen resolution size
     s_width, s_height = pyautogui.size()
-
     fx, fy = window.topleft
     # crop fortnite window
-
     img = img.crop(
         (
             window.topleft[0],
@@ -113,12 +112,13 @@ def check_stage(window, handle, buttons: list) -> str:
             return "continue"
 
 
-def findbtn(btn, img):
+def findbtn(btn, img, grayscale=False):
     conf = 1.0
     while conf > 0.5:
-        cords = pyautogui.locate(btn, img, confidence=0.9)
+        cords = pyautogui.locate(btn, img, grayscale=grayscale, confidence=conf)
         if cords:
+            print("conf:", conf)
             return cords
         else:
             conf -= 0.05
-    return None
+    return None, None, None, None
