@@ -46,10 +46,9 @@ def screenshot_resize(path):
     global handle, window, pid
     isfortnite()
     # screenshot the display
-    img: Image.Image = pyautogui.screenshot(path)
+    img: Image.Image = pyautogui.screenshot()
     # get screen resolution size
     s_width, s_height = pyautogui.size()
-    fx, fy = window.topleft
     # crop fortnite window
     img = img.crop(
         (
@@ -60,18 +59,18 @@ def screenshot_resize(path):
         )
     )
     img = img.resize((s_width, s_height))
-    img.save(path)  # DEV save image
+    # img.save(path)  # DEV save image
     return img
 
 
 def clickbtn(btn, img, grayscale=False):
     conf = 1.0
-    while conf > 0.7:
+    while conf > 0.75:
         cords = pyautogui.locate(btn, img, grayscale=grayscale, confidence=conf)
         if cords:
             pyautogui.moveTo(pos_resized(x=cords[0] + cords[2] / 2, y=cords[1] + cords[3] / 2))
             print("conf:", conf)
-            # pyautogui.click() # DEV click
+            pyautogui.click()  # DEV click
             return
         else:
             conf -= 0.05
@@ -79,53 +78,62 @@ def clickbtn(btn, img, grayscale=False):
         raise Exception("Could not find button")
 
 
-def check_stage(buttons: dict) -> str:
+def check_stage(buttons: dict, isrunning) -> str:
     global handle, window, pid
     found_btns = []
     img = screenshot_resize("./screenshot.png")
     for name, btn in buttons.items():
+        if not isrunning():
+            return
         if pyautogui.size() != (1920, 1080):
             btn.resizeimage()
-        if btn.found:
-            continue
         cords = findbtn(btn.image, img)
-        if cords != (None, None, None, None):
-            btn.cords = cords
-            btn.found = True
+        if cords is not None:
+            btn.cords = pos_resized(x=(cords[0] + cords[2] / 2), y=(cords[1] + cords[3] / 2))
             print(f"Found {name}")
             found_btns.append(name)
     if found_btns:
         if "play_button" in found_btns:
-            return "solo-lobby"
-        elif "ready_button" in found_btns:
-            return "party-lobby"
-        elif "bus_icon_square" in found_btns:
-            return "in-bus"
+            return "lobby"
+        # elif "bus_icon_square" in found_btns:
+        #     return "in-bus"
         elif "jump_icon_square" in found_btns:
             return "in-jump"
         elif "clock_icon_square" in found_btns or "storm_icon_square" in found_btns:
             return "in-game"
         elif "return_button" in found_btns:
             return "post-game"
-        elif "claim_button" in found_btns:
+        elif "claim_button" in found_btns or "collect_button_next" in found_btns:
             return "claim-rewards"
-        elif "next_button" in found_btns:
-            return "claim-rewards-next"
-        elif "continue_blue_button" in found_btns:
-            print("continue button found")
-            return "continue"
+
+
+def check_btns(buttons: list, isrunning) -> list:
+    global handle, window, pid
+    found_btns = []
+    img = screenshot_resize("./screenshot.png")
+    for name in buttons:
+        btn = btnlist[name]
+        if not isrunning():
+            return []
+        cords = findbtn(btn.image, img)
+        if cords is not None:
+            btn.cords = pos_resized(x=(cords[0] + cords[2] / 2), y=(cords[1] + cords[3] / 2))
+            btn.found = True
+            print(f"Found {name}")
+            found_btns.append(name)
+    return found_btns
 
 
 def findbtn(btn, img, grayscale=False):
     conf = 1.0
-    while conf > 0.7:
+    while conf > 0.75:
         cords = pyautogui.locate(btn, img, grayscale=grayscale, confidence=conf)
         if cords:
             print("conf:", conf)
             return cords
         else:
             conf -= 0.05
-    return None, None, None, None
+    return None
 
 
 def pos_resized(x, y):

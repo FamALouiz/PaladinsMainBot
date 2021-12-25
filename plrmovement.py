@@ -6,7 +6,7 @@ import numpy as np
 from numpy import floor
 import json
 
-from functions import *
+from utilityfuncs import *
 
 
 class Player:
@@ -53,7 +53,7 @@ class Player:
             img = cv2.imread("./screenshot.png")
         else:
             # if minimap is false meaning that it will be getting the player orientation from the minimap
-            center_cursor = (1754.5, 159.5)  # DEV make dynamic
+            center_cursor = pos_resized(1754.5, 159.5)  # DEV make dynamic
             # crops the cursor from the minimap for more accurate results
             cursor_size = (
                 int(center_cursor[0] - 13.5),
@@ -155,6 +155,8 @@ class Player:
         distance = None, None
         calib = True
         key_pressed = False
+        prevdistance = None
+        dist_counter = 0
         while distance != (0, 0):
             # gets the player orientation
             self.get_current_position()
@@ -180,6 +182,15 @@ class Player:
                 # if a key was pressed then remove press
                 key_pressed = False
                 pyautogui.keyUp("w")
+            if prevdistance == distance:
+                # if the distance is the same as the previous distance then add 1 to the counter
+                dist_counter += 1
+            else:
+                # if the distance is different then reset the counter
+                dist_counter = 0
+            if dist_counter > 10:
+                # if the counter is greater than 10 then stop the calibration
+                break
             prevangle = None
             prev_move = None
             while calib:
@@ -187,7 +198,7 @@ class Player:
                 if x > 1900 or x < 100:
                     # if the mouse is out of the screen then move to middle of the screen
                     pyautogui.press("m")
-                    autoit.mouse_move(960, y)  # DEV make dynamic
+                    autoit.mouse_move(int(pyautogui.size()[0] / 2), y)
                     pyautogui.press("m")
                 x, y = autoit.mouse_get_pos()
                 angle_needed = self.calc_angle(destination)

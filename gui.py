@@ -107,7 +107,7 @@ class App:
         self.login = True
         if self.login:
             self.clear()
-            width = 1100
+        width = 1100
         height = 400
         screenwidth = self.root.winfo_screenwidth()
         screenheight = self.root.winfo_screenheight()
@@ -337,9 +337,9 @@ class App:
             self.textBox, (minJumpSec, maxJumpSec), statsBool, pbBool, pbAccTkn, landOnTreesBool
         )
         if not self.mainbot.invalid:
-            self.startButton["state"] = "disabled"
-            self.stopButton["state"] = "normal"
-            self.mainbot.startLoop()
+            if self.mainbot.startLoop():
+                self.startButton["state"] = "disabled"
+                self.stopButton["state"] = "normal"
 
     def stopBot(self):
         self.stopButton["state"] = "disabled"
