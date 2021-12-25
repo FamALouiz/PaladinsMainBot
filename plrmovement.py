@@ -36,7 +36,9 @@ class Player:
     def position(self):
         return self.x, self.y
 
-    def get_current_position(self, ang_range=range(0, 360, 10), minimap=True, map_loc=(0, 0)):
+    def get_current_position(
+        self, ang_range=range(0, 360, 10), minimap=True, map_loc=(0, 0)
+    ):
         # if minimap is true meaning that it will be getting the player location from the map
         if not minimap:
             # opens minimap and then takes a screenshot
@@ -90,7 +92,9 @@ class Player:
             mask[channels[2] > 0] = 1
             transparent_mask = cv2.merge([mask, mask, mask])
             template = cv2.merge([channels[0], channels[1], channels[2]])
-            matched = cv2.matchTemplate(img, template, (cv2.TM_CCORR_NORMED), mask=transparent_mask)
+            matched = cv2.matchTemplate(
+                img, template, (cv2.TM_CCORR_NORMED), mask=transparent_mask
+            )
             if np.max(matched) > max_val:
                 # if a better match was found then save the best match
                 max_val = np.max(matched)
@@ -109,9 +113,14 @@ class Player:
 
     def calc_angle(self, destination: tuple[int, int]):
         # calculates the angle between the player and the destination
-        distance_m = np.sqrt((destination[0] - self.position[0]) ** 2 + (destination[1] - self.position[1]) ** 2)
+        distance_m = np.sqrt(
+            (destination[0] - self.position[0]) ** 2
+            + (destination[1] - self.position[1]) ** 2
+        )
         print(distance_m)
-        anglef_origin = np.rad2deg(np.arcsin((self.position[0] - destination[0]) / distance_m))
+        anglef_origin = np.rad2deg(
+            np.arcsin((self.position[0] - destination[0]) / distance_m)
+        )
         print("angle from origin", anglef_origin, "player angle", self.orientation)
         anglet_dest = self.orientation - anglef_origin
         if self.position[1] < destination[1]:
@@ -201,5 +210,5 @@ if __name__ == "__main__":
     time.sleep(5)
     begin = time.time()
     player = Player("./icons/player_cursor.png")
-    player.move((1580, 616))
+    player.move((1166, 380))
     print("time: ", time.time() - begin)

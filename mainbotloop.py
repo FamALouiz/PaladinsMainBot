@@ -119,7 +119,7 @@ class mainLoop:
         Main loop of the bot which goes through the stages and does its necessary action
         """
         while True:
-            self.stage = check_stage(self.window, self.handle, self.buttons)
+            self.stage = check_stage(self.buttons)
             if self.stage == "solo-lobby":
                 self.print_to_GUI("Looking for play button")
                 img = screenshot_resize("./screenshot.png")

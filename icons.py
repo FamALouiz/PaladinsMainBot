@@ -1,5 +1,6 @@
 from typing import Sequence
 import os
+from PIL import Image
 
 
 class button:
@@ -10,6 +11,7 @@ class button:
         found: bool = False,
     ) -> None:
         self.img_path = img_path
+        self.image = Image.open(img_path)
         self.cords = cords
         self.found = found
 
@@ -22,3 +24,5 @@ btnlist = {}
 for btn in iconlist:
     btn_name = btn.split("/")[-1].split(".")[0].split("icons\\")[1]
     btnlist.update({btn_name: button(btn)})
+
+print(btnlist)

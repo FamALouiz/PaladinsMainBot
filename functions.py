@@ -39,6 +39,7 @@ def isfortnite():
         print("not fortnite window")
         print("opening fortnite")
         get_fortnite_window()
+        time.sleep(4)
 
 
 def screenshot_resize(path):
@@ -58,17 +59,18 @@ def screenshot_resize(path):
             window.bottomright[1],
         )
     )
-    img.resize((s_width, s_height))
+    img = img.resize((s_width, s_height))
     img.save(path)  # DEV save image
     return img
 
 
-def clickbtn(btn, img):
+def clickbtn(btn, img, grayscale=False):
     conf = 1.0
-    while conf > 0.5:
-        cords = pyautogui.locate(btn, img, confidence=conf)
+    while conf > 0.75:
+        cords = pyautogui.locate(btn, img, grayscale=grayscale, confidence=conf)
         if cords:
             pyautogui.moveTo(x=cords[0] + cords[2] / 2, y=cords[1] + cords[3] / 2)
+            print("conf:", conf)
             # pyautogui.click() # DEV click
             return
         else:
@@ -77,10 +79,10 @@ def clickbtn(btn, img):
         raise Exception("Could not find button")
 
 
-def check_stage(buttons: list) -> str:
+def check_stage(buttons: dict) -> str:
     global handle, window, pid
     found_btns = []
-    for name, btn in btnlist.items():
+    for name, btn in buttons.items():
         if btn.found:
             continue
         cords = findbtn(btn.img_path, screenshot_resize("./temp.png"))
@@ -113,7 +115,7 @@ def check_stage(buttons: list) -> str:
 
 def findbtn(btn, img, grayscale=False):
     conf = 1.0
-    while conf > 0.5:
+    while conf > 0.75:
         cords = pyautogui.locate(btn, img, grayscale=grayscale, confidence=conf)
         if cords:
             print("conf:", conf)
@@ -121,3 +123,15 @@ def findbtn(btn, img, grayscale=False):
         else:
             conf -= 0.05
     return None, None, None, None
+
+
+def pos_resized(x, y):
+    global handle, window, pid
+    s_width, s_height = pyautogui.size()
+    w, h = window.size
+    if w == s_width and h == s_height:
+        return x, y
+    windowpos = window.topleft
+    x = x * w / s_width + windowpos[0]
+    y = y * h / s_height + windowpos[1]
+    return x, y
