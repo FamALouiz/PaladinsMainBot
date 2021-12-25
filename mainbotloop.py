@@ -12,7 +12,7 @@ class mainLoop:
     def __init__(
         self,
         listBoxLogger: object,
-        jumpSecs: int,
+        jumpSecs: tuple,
         statsSSBool: bool,
         pbBool: bool,
         pbAccTkn: str,
@@ -30,12 +30,13 @@ class mainLoop:
         self.lastMessage = None
         self.access_level = tier
         self.print_area = listBoxLogger
-        self.jumpSecs = jumpSecs
+        self.jumpTime = random.choice(range(jumpSecs[0], jumpSecs[1]))
         self.statsSSBool = statsSSBool
         self.pbBool = pbBool
         self.pbAccTkn = pbAccTkn
         self.landInTreeBool = landInTreeBool
         self.invalid = False
+        self.inbus = False
         try:
             get_fortnite_window()
         except:
@@ -118,13 +119,14 @@ class mainLoop:
         """
         Main loop of the bot which goes through the stages and does its necessary action
         """
+        isfortnite()
         while True:
             self.stage = check_stage(self.buttons)
             if self.stage == "solo-lobby":
                 self.print_to_GUI("Looking for play button")
                 img = screenshot_resize("./screenshot.png")
                 clickbtn(
-                    "./icons/play_button.png",
+                    self.buttons["play_button"].image,
                     img,
                 )
                 self.print_to_GUI("Play button clicked (waiting for game to start)")
@@ -133,12 +135,16 @@ class mainLoop:
                 self.print_to_GUI("Looking for ready button")
                 img = screenshot_resize("./screenshot.png")
                 clickbtn(
-                    "./icons/ready_button.png",
+                    self.buttons["ready_button"].image,
                     img,
                 )
                 self.print_to_GUI("Ready button clicked (waiting for game to start)")
 
             elif self.stage == "in-bus":
+                if self.inbus:
+                    time.sleep(1)
+                    continue
+                self.inbus = True
                 self.print_to_GUI("Waiting to jump out of the bus")
                 self.numberGames += 1
                 if self.access_level > 0:
@@ -146,21 +152,22 @@ class mainLoop:
                     self.print_to_GUI("Thanking the bus driver :)")
 
             elif self.stage == "in-jump":
-                self.print_to_GUI(f"Jumping out after {self.jumpSecs} seconds")
-                time.sleep(self.jumpSecs)
+                self.print_to_GUI(f"Jumping out after {self.jumpTime} seconds")
+                time.sleep(self.jumpTime)
                 pyautogui.press("space")
                 self.print_to_GUI("Jumped out")
                 if self.landInTreeBool:
-                    self.print_to_GUI("Navigating towards the nearest tree")
-                    pyautogui.press("space")
-                    pyautogui.press("m")
-                    time.sleep(2.0)
-                    self.player_mover.land_at_closest_loc()
-                    self.print_to_GUI("Tree reached")
-                    self.waitToCrouchTS = datetime.datetime.now().timestamp()
+                    if pyautogui.size() == (1920, 1080):
+                        self.print_to_GUI("Navigating towards the nearest tree")
+                        pyautogui.press("space")
+                        self.player_mover.land_at_closest_loc()
+                        self.print_to_GUI("Tree reached")
+                        self.waitToCrouchTS = datetime.datetime.now().timestamp()
+                    else:
+                        self.print_to_GUI("Screen is not 1920x1080 cannot land on trees")
 
             elif self.stage == "in-game":
-                if self.crouched == False:
+                if not self.crouched:
                     if datetime.datetime.now().timestamp() - self.waitToCrouchTS > 80.0:
                         pyautogui.press("ctrl")
                         self.crouched = True
@@ -169,7 +176,7 @@ class mainLoop:
 
             elif self.stage == "post-game":
                 if self.pbBool and self.takeScreenshot:
-                    stats = "./tempScreenshot.jpeg"
+                    stats = f"./screenshots/screenshot_{self.numberGames}.png"
                     pyautogui.screenshot(stats)
                     self.takeScreenshot = False
                     self.send_image_pushbullet(self.pbAccTkn, stats)

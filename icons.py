@@ -1,5 +1,5 @@
 from typing import Sequence
-import os
+import os, pyautogui
 from PIL import Image
 
 
@@ -14,6 +14,11 @@ class button:
         self.image = Image.open(img_path)
         self.cords = cords
         self.found = found
+
+    def resizeimage(self):
+        s_width, s_height = pyautogui.size()
+        siz_x, siz_y = self.image.size
+        self.image = self.image.resize((int(siz_x * (s_width / 1920)), int(siz_y * (s_height / 1080))), Image.ANTIALIAS)
 
 
 # list all png files in icons directory

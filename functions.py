@@ -66,10 +66,10 @@ def screenshot_resize(path):
 
 def clickbtn(btn, img, grayscale=False):
     conf = 1.0
-    while conf > 0.75:
+    while conf > 0.7:
         cords = pyautogui.locate(btn, img, grayscale=grayscale, confidence=conf)
         if cords:
-            pyautogui.moveTo(x=cords[0] + cords[2] / 2, y=cords[1] + cords[3] / 2)
+            pyautogui.moveTo(pos_resized(x=cords[0] + cords[2] / 2, y=cords[1] + cords[3] / 2))
             print("conf:", conf)
             # pyautogui.click() # DEV click
             return
@@ -82,11 +82,14 @@ def clickbtn(btn, img, grayscale=False):
 def check_stage(buttons: dict) -> str:
     global handle, window, pid
     found_btns = []
+    img = screenshot_resize("./screenshot.png")
     for name, btn in buttons.items():
+        if pyautogui.size() != (1920, 1080):
+            btn.resizeimage()
         if btn.found:
             continue
-        cords = findbtn(btn.img_path, screenshot_resize("./temp.png"))
-        if cords:
+        cords = findbtn(btn.image, img)
+        if cords != (None, None, None, None):
             btn.cords = cords
             btn.found = True
             print(f"Found {name}")
@@ -100,7 +103,7 @@ def check_stage(buttons: dict) -> str:
             return "in-bus"
         elif "jump_icon_square" in found_btns:
             return "in-jump"
-        elif "clock_icon_square" in found_btns:
+        elif "clock_icon_square" in found_btns or "storm_icon_square" in found_btns:
             return "in-game"
         elif "return_button" in found_btns:
             return "post-game"
@@ -115,7 +118,7 @@ def check_stage(buttons: dict) -> str:
 
 def findbtn(btn, img, grayscale=False):
     conf = 1.0
-    while conf > 0.75:
+    while conf > 0.7:
         cords = pyautogui.locate(btn, img, grayscale=grayscale, confidence=conf)
         if cords:
             print("conf:", conf)

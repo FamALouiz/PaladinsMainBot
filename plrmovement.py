@@ -4,6 +4,7 @@ import autoit
 import cv2
 import numpy as np
 from numpy import floor
+import json
 
 from functions import *
 
@@ -27,6 +28,8 @@ class Player:
         self.crouched = False
         self.sprinting = False
         self.player_cursor_img = player_cursor_img
+        with open("locations.json", "r") as f:
+            self.locations = json.load(f)
 
     @property
     def center(self):
@@ -36,16 +39,15 @@ class Player:
     def position(self):
         return self.x, self.y
 
-    def get_current_position(
-        self, ang_range=range(0, 360, 10), minimap=True, map_loc=(0, 0)
-    ):
+    def get_current_position(self, ang_range=range(0, 360, 10), minimap=True, map_loc=(0, 0)):
         # if minimap is true meaning that it will be getting the player location from the map
         if not minimap:
             # opens minimap and then takes a screenshot
             pyautogui.press("m")
             print("pressing M")
-            autoit.mouse_move(map_loc[0], map_loc[1])
-            autoit.mouse_click()
+            if map_loc != (0, 0):
+                autoit.mouse_move(map_loc[0], map_loc[1])
+                autoit.mouse_click()
             img: Image.Image = screenshot_resize("./screenshot.png")
             pyautogui.press("m")
             img = cv2.imread("./screenshot.png")
@@ -92,9 +94,7 @@ class Player:
             mask[channels[2] > 0] = 1
             transparent_mask = cv2.merge([mask, mask, mask])
             template = cv2.merge([channels[0], channels[1], channels[2]])
-            matched = cv2.matchTemplate(
-                img, template, (cv2.TM_CCORR_NORMED), mask=transparent_mask
-            )
+            matched = cv2.matchTemplate(img, template, (cv2.TM_CCORR_NORMED), mask=transparent_mask)
             if np.max(matched) > max_val:
                 # if a better match was found then save the best match
                 max_val = np.max(matched)
@@ -113,14 +113,9 @@ class Player:
 
     def calc_angle(self, destination: tuple[int, int]):
         # calculates the angle between the player and the destination
-        distance_m = np.sqrt(
-            (destination[0] - self.position[0]) ** 2
-            + (destination[1] - self.position[1]) ** 2
-        )
+        distance_m = np.sqrt((destination[0] - self.position[0]) ** 2 + (destination[1] - self.position[1]) ** 2)
         print(distance_m)
-        anglef_origin = np.rad2deg(
-            np.arcsin((self.position[0] - destination[0]) / distance_m)
-        )
+        anglef_origin = np.rad2deg(np.arcsin((self.position[0] - destination[0]) / distance_m))
         print("angle from origin", anglef_origin, "player angle", self.orientation)
         anglet_dest = self.orientation - anglef_origin
         if self.position[1] < destination[1]:
@@ -136,6 +131,24 @@ class Player:
             return retval
         else:
             return 180 - retval
+
+    def land_at_closest_loc(self):
+        self.get_current_position()
+        # gets the player position
+        self.get_current_position(
+            range(self.orientation - 10, self.orientation + 10, 5),
+            minimap=False,
+        )
+        # gets the neares location to the player
+        closest_loc = None
+        closest_dist = None
+        for loc in self.locations:
+            distance = (loc[0] - self.position[0], loc[1] - self.position[1])
+            if closest_loc is None or (distance[0] < closest_dist[0] and distance[1] < closest_dist[1]):
+                closest_dist = distance
+                closest_loc = loc
+        print("closest location", closest_loc)
+        self.move(closest_loc)
 
     def move(self, destination: tuple[int, int]):
         # Moves the player to the specified direction
