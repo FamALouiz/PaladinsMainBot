@@ -68,7 +68,9 @@ def clickbtn(btn, img, grayscale=False):
     while conf > 0.75:
         cords = pyautogui.locate(btn, img, grayscale=grayscale, confidence=conf)
         if cords:
-            pyautogui.moveTo(pos_resized(x=cords[0] + cords[2] / 2, y=cords[1] + cords[3] / 2))
+            pyautogui.moveTo(
+                pos_resized(x=cords[0] + cords[2] / 2, y=cords[1] + cords[3] / 2)
+            )
             print("conf:", conf)
             pyautogui.click()  # DEV click
             return
@@ -89,7 +91,9 @@ def check_stage(buttons: dict, isrunning) -> str:
             btn.resizeimage()
         cords = findbtn(btn.image, img)
         if cords is not None:
-            btn.cords = pos_resized(x=(cords[0] + cords[2] / 2), y=(cords[1] + cords[3] / 2))
+            btn.cords = pos_resized(
+                x=(cords[0] + cords[2] / 2), y=(cords[1] + cords[3] / 2)
+            )
             print(f"Found {name}")
             found_btns.append(name)
     if found_btns:
@@ -117,7 +121,9 @@ def check_btns(buttons: list, isrunning) -> list:
             return []
         cords = findbtn(btn.image, img)
         if cords is not None:
-            btn.cords = pos_resized(x=(cords[0] + cords[2] / 2), y=(cords[1] + cords[3] / 2))
+            btn.cords = pos_resized(
+                x=(cords[0] + cords[2] / 2), y=(cords[1] + cords[3] / 2)
+            )
             btn.found = True
             print(f"Found {name}")
             found_btns.append(name)
@@ -126,7 +132,7 @@ def check_btns(buttons: list, isrunning) -> list:
 
 def findbtn(btn, img, grayscale=False):
     conf = 1.0
-    while conf > 0.75:
+    while conf > 0.74:
         cords = pyautogui.locate(btn, img, grayscale=grayscale, confidence=conf)
         if cords:
             print("conf:", conf)

@@ -1,0 +1,9 @@
+future>=0.18.2
+requests>=2.11.1
+numpy>=1.21.4
+opencv-python>=4.5.4.60
+PyAutoGUI>=0.9.53
+keyboard>=0.13.5
+psutil>=5.8.0
+Pillow>=8.4.0
+PyGetWindow>=0.0.9

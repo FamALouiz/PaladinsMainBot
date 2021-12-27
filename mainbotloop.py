@@ -1,6 +1,6 @@
 from utilityfuncs import *
 from tkinter import *
-import time, requests, datetime, random, plrmovement,keyboard
+import time, requests, datetime, random, plrmovement, keyboard
 from icons import *
 import threading
 
@@ -31,7 +31,7 @@ class mainLoop:
         self.lastMessage = None
         self.access_level = tier
         self.print_area = listBoxLogger
-        self.jumpTime = random.choice(range(jumpSecs[0], jumpSecs[1]))
+        self.jumpSecs = jumpSecs
         self.statsSSBool = statsSSBool
         self.pbBool = pbBool
         self.pbAccTkn = pbAccTkn
@@ -60,7 +60,9 @@ class mainLoop:
         else:
             self.print_area.configure(state="normal")
             autoscroll = False
-            ts = datetime.datetime.fromtimestamp(time.time()).strftime("%Y/%m/%d %H:%M:%S || ")
+            ts = datetime.datetime.fromtimestamp(time.time()).strftime(
+                "%Y/%m/%d %H:%M:%S || "
+            )
             if self.print_area.yview()[1] == 1:
                 autoscroll = True
             self.print_area.insert(END, ts + msg + "\n", type)
@@ -119,8 +121,8 @@ class mainLoop:
             self.isrunning = False
             self.stop_event.set()
             self.loopThread = None
+            self.stage = "stop"
             self.print_to_GUI("Bot stopping...")
-            print("bot stopped???")
 
     def startLoop(self) -> bool:
         """
@@ -131,6 +133,7 @@ class mainLoop:
             self.isrunning = True
             self.loopThread = threading.Thread(target=self.actual_loop)
             self.loopThread.start()
+            self.print_to_GUI("Bot started")
             return True
         return False
 
@@ -154,6 +157,8 @@ class mainLoop:
                     self.print_to_GUI("Play button clicked (waiting for game to start)")
                     time.sleep(30)
                     self.stage = "in-bus"
+                else:
+                    self.stage = "claim-rewards"
 
             elif self.stage == "in-bus":
                 if check_btns(stage_btns[self.stage], lambda: self.runningchck()):
@@ -163,10 +168,11 @@ class mainLoop:
                         pyautogui.press("b")
                         self.print_to_GUI("Thanking the bus driver :)")
                     time.sleep(7)
-                    #self.stage = "in-jump"
+                    # self.stage = "in-jump"
                 if check_btns(stage_btns["in-jump"], lambda: self.runningchck()):
-                    self.print_to_GUI(f"Jumping out after {self.jumpTime} seconds")
-                    time.sleep(self.jumpTime)
+                    jumpTime = random.choice(range(self.jumpSecs[0], self.jumpSecs[1]))
+                    self.print_to_GUI(f"Jumping out after {jumpTime} seconds")
+                    time.sleep(jumpTime)
                     self.print_to_GUI("Jumped out")
                     pyautogui.press("space")
                     time.sleep(1)
@@ -179,7 +185,9 @@ class mainLoop:
                             self.player_mover.land_at_closest_loc()
                             self.print_to_GUI("Tree reached")
                         else:
-                            self.print_to_GUI("Screen is not 1920x1080 cannot land on trees")
+                            self.print_to_GUI(
+                                "Screen is not 1920x1080 cannot land on trees"
+                            )
                     else:
                         time.sleep(60)
                     self.stage = "in-game"
@@ -187,7 +195,7 @@ class mainLoop:
                 else:
                     time.sleep(1)
 
-            #DEV this was copied to the 
+            # DEV this was copied to the
             #  elif self.stage == "in-jump":
             #     if check_btns(stage_btns[self.stage], lambda: self.runningchck()):
             #         self.print_to_GUI(f"Jumping out after {self.jumpTime} seconds")
@@ -212,24 +220,22 @@ class mainLoop:
             #         time.sleep(1)
 
             elif self.stage == "in-game":
-                if check_btns(stage_btns[self.stage], lambda: self.runningchck()):
-                    self.print_to_GUI("Waiting to die")
-                    if not self.crouched:
-                        if datetime.datetime.now().timestamp() - self.waitToCrouchTS > 80.0:
-                            pyautogui.press("ctrl")
-                            self.print_to_GUI("Crouching")
-                            self.crouched = True
-                    self.antiAFK()
-                    time.sleep(10)
-                    self.stage = "post-game"
-                    if prevstage == "in-game":
-                        ingamecount += 1
-                    if ingamecount > 80:
-                        self.print_to_GUI("maybe??? in loop")
-                        self.stage = check_stage(self.buttons, lambda: self.runningchck())
-                        ingamecount = 0
-                elif check_btns(stage_btns["post-game"], lambda: self.runningchck()):
-                    self.stage = "post-game"
+                self.print_to_GUI("Waiting to die")
+                if not self.crouched:
+                    if datetime.datetime.now().timestamp() - self.waitToCrouchTS > 80.0:
+                        pyautogui.press("ctrl")
+                        self.print_to_GUI("Crouching")
+                        self.crouched = True
+                self.print_to_GUI("Activating Anti-AFK")
+                self.antiAFK()
+                time.sleep(10)
+                self.stage = "post-game"
+                # if prevstage == "in-game":
+                #     ingamecount += 1
+                # if ingamecount > 20:
+                #     self.print_to_GUI("Bot might be in loop re-checking stage")
+                #     self.stage = check_stage(self.buttons, lambda: self.runningchck())
+                #     ingamecount = 0
 
             elif self.stage == "post-game":
                 if check_btns(stage_btns[self.stage], lambda: self.runningchck()):
@@ -242,8 +248,6 @@ class mainLoop:
                     btnlist["return_button"].click()
                     self.stage = "claim-rewards"
                 else:
-                    self.print_to_GUI("Waiting to die")
-                    time.sleep(1)
                     self.stage = "in-game"
 
             elif self.stage == "claim-rewards":
@@ -256,6 +260,8 @@ class mainLoop:
                     self.stage = "lobby"
                 else:
                     self.stage = "lobby"
+            elif self.stage == "stop":
+                self.print_to_GUI("Bot stopped")
 
             # if self.stage == prevstage:
             #     stagecount += 1

@@ -27,7 +27,7 @@ class Player:
         self.orientation = 0
         self.crouched = False
         self.sprinting = False
-        self.player_cursor_img = player_cursor_img
+        self.player_cursor_img = cv2.imread(player_cursor_img)
         with open("locations.json", "r") as f:
             self.locations = json.load(f)
 
@@ -50,9 +50,10 @@ class Player:
             if map_loc != (0, 0):
                 autoit.mouse_move(map_loc[0], map_loc[1])
                 autoit.mouse_click()
-            img: Image.Image = screenshot_resize("./screenshot.png")
+            img = screenshot_resize("./screenshot.png")
             pyautogui.press("m")
-            img = cv2.imread("./screenshot.png")
+            img = np.array(img)
+            img = img[:, :, ::-1].copy()
         else:
             # if minimap is false meaning that it will be getting the player orientation from the minimap
             center_cursor = pos_resized(1754.5, 159.5)  # DEV make dynamic
@@ -65,9 +66,9 @@ class Player:
             )
             img: Image.Image = screenshot_resize("./screenshot.png")
             img = img.crop(cursor_size)
-            img.save("./screenshot.png")
-            img = cv2.imread("./screenshot.png")
-        cursor = cv2.imread(self.player_cursor_img)
+            img = np.array(img)
+            img = img[:, :, ::-1].copy()
+        cursor = self.player_cursor_img
         width, height = cursor.shape[:2]
         max_val = 0
         rotation = 0
@@ -151,6 +152,7 @@ class Player:
         # gets the neares location to the player
         closest_loc = None
         closest_dist = None
+        print("position", self.position)
         for loc in self.locations:
             distance = np.sqrt(
                 (loc[0] - self.position[0]) ** 2 + (loc[1] - self.position[1]) ** 2
@@ -182,23 +184,28 @@ class Player:
                 destination[0] - self.position[0],
                 destination[1] - self.position[1],
             )
-            if (
-                int(floor(distance[0] * 10) / 10),
-                int(floor(distance[1] * 10) / 10),
-            ) == (0, 0):
-                # if the player is at the destination approximate to 10 pixels
-                print("destination reached")
-                return
             if key_pressed:
                 # if a key was pressed then remove press
                 key_pressed = False
                 pyautogui.keyUp("w")
+            if (
+                int(floor(distance[0] / 100) * 100),
+                int(floor(distance[1] / 100) * 100),
+            ) == (0, 0):
+                # if the player is at the destination approximate to 10 pixels
+                print("destination reached")
+                return
+            print(
+                f"Distance {int(floor(distance[0] / 100) * 100), int(floor(distance[1] / 100) * 100)}"
+            )
             if prevdistance == distance:
                 # if the distance is the same as the previous distance then add 1 to the counter
                 dist_counter += 1
+                print("same distance")
             else:
                 # if the distance is different then reset the counter
                 dist_counter = 0
+                prevdistance = distance
             if dist_counter > 10:
                 # if the counter is greater than 10 then stop the calibration
                 break
@@ -230,10 +237,11 @@ class Player:
                 self.get_current_position()
                 if 5 > abs(self.calc_angle(destination)):
                     calib = False
+                    print("orientation calibration complete")
                 if 5 > (180 + self.calc_angle(destination)):
                     calib = False
+                    print("orientation calibration complete")
                 print("need to turn", angle_needed)
-            print("orientation calibration complete")
 
             # move player forward
             pyautogui.keyDown("w")
@@ -241,9 +249,10 @@ class Player:
             time.sleep(2.5)
 
 
-if __name__ == "__main__":
-    time.sleep(5)
-    begin = time.time()
-    player = Player("./icons/player_cursor.png")
-    player.move((1166, 380))
-    print("time: ", time.time() - begin)
+# if __name__ == "__main__":
+# time.sleep(5)
+# isfortnite()
+# begin = time.time()
+# player = Player("./icons/player_cursor.png")
+# player.land_at_closest_loc()
+# print("time: ", time.time() - begin)
