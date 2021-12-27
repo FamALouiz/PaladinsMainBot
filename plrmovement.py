@@ -195,6 +195,13 @@ class Player:
                 # if the player is at the destination approximate to 10 pixels
                 print("destination reached")
                 return
+            if prevdistance is not None:
+                # if the angle difference is too large then don't change direction
+                diffx = abs(distance[0]) + abs(prevdistance[0])
+                diffy = abs(distance[1]) + abs(prevdistance[1])
+                if diffx >= 400 or diffy>=400:
+                    print("angle difference too large, correcting")
+                    distance = prevdistance
             print(
                 f"Distance {int(floor(distance[0] / 100) * 100), int(floor(distance[1] / 100) * 100)}"
             )
@@ -206,7 +213,7 @@ class Player:
                 # if the distance is different then reset the counter
                 dist_counter = 0
                 prevdistance = distance
-            if dist_counter > 10:
+            if dist_counter > 6:
                 # if the counter is greater than 10 then stop the calibration
                 break
             prevangle = None
@@ -224,7 +231,6 @@ class Player:
                 pixel_distance = 250 * (angle_needed / abs(angle_needed))
                 if prevangle is not None:
                     # if the angle difference is too large then don't change direction
-                    # WARNING not working aslan might as well remove
                     diff = abs(angle_needed) + abs(prevangle)
                     if 20 <= diff <= 340:
                         prevangle = angle_needed
@@ -242,11 +248,10 @@ class Player:
                     calib = False
                     print("orientation calibration complete")
                 print("need to turn", angle_needed)
-
             # move player forward
             pyautogui.keyDown("w")
             key_pressed = True
-            time.sleep(2.5)
+            time.sleep(1)
 
 
 # if __name__ == "__main__":

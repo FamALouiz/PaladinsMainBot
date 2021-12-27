@@ -37,9 +37,10 @@ for btn in iconlist:
 
 stage_btns = {
     "lobby": ["play_button"],
-    "in-bus": ["bus_icon_square", "clock_icon_square"],
+    "pre-game":["clock_icon_square"],
+    "in-bus": ["bus_icon_square"],
     "in-jump": ["jump_icon_square"],
-    "in-game": ["storm_icon_square", "ingame_clock_square"],
+    "in-game": ["storm_icon_square", "ingame_clock_square", "ingame_clock_square2"],
     "claim-rewards": ["collect_button", "collect_button_next"],
-    "post-game": ["return_button"],
+    "post-game": ["return_button", "esc_button"],
 }

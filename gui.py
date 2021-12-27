@@ -1,7 +1,7 @@
 import os
 import tkinter as tk
 from tkinter import filedialog
-from tkinter.constants import END
+from tkinter.constants import END, TRUE
 import tkinter.font as tkFont
 import requests, datetime, time, mainbotloop, uuid, sys
 
@@ -105,7 +105,7 @@ class App:
     def free_tr_btn_command(self):
         self.tier=0
         self.clear()
-        width = 1100
+        width = 750
         height = 400
         screenwidth = self.root.winfo_screenwidth()
         screenheight = self.root.winfo_screenheight()
@@ -144,6 +144,10 @@ class App:
         self.textBox["font"] = ft
         self.textBox["fg"] = "#333333"
         self.textBox.place(x=180, y=50, width=520, height=260)
+        self.textBox.tag_config("warning", background="#fffa65", selectbackground="black")
+        self.textBox.tag_config("error", background="#e74c3c", selectbackground="black")
+        self.textBox.tag_config("control", background="#2ecc71", selectbackground="black")
+        self.textBox.tag_config("basic", background="white", selectbackground="black")
 
         logoutButton = tk.Button(self.root)
         logoutButton["bg"] = "#efefef"
@@ -155,19 +159,20 @@ class App:
         logoutButton.place(x=55, y=270, width=70, height=25)
         logoutButton["command"] = self.logout
 
-    def authenticate(self,email):
-        url=
-        payload = 
-        secret=
-        r = requests.post(url, data=payload)
-        jsonAns = r.json()
-        if jsonAns["days"]>0:
-            return True
-        else:
-            return False  
+    # def authenticate(self,email):
+    #     url=
+    #     payload = 
+    #     secret=
+    #     r = requests.post(url, data=payload)
+    #     jsonAns = r.json()
+    #     if jsonAns["days"]>0:
+    #         return True
+    #     else:
+    #         return False  
 
     def login_btn_command(self):
-        self.login=self.authenticate(self.email_entry.get())
+        # self.login=self.authenticate(self.email_entry.get())
+        #self.login=True
         if self.login:
             self.clear()
             width = 1100
@@ -182,7 +187,7 @@ class App:
             self.fontFamily = "Calibri"
 
             self.startButton = tk.Button(self.root)
-            self.startButton["bg"] = "#22ff00"
+            self.startButton["bg"] = "#41c42d"
             ft = tkFont.Font(family=self.fontFamily, size=10)
             self.startButton["font"] = ft
             self.startButton["fg"] = "#000000"
@@ -209,7 +214,11 @@ class App:
             self.textBox["font"] = ft
             self.textBox["fg"] = "#333333"
             self.textBox.place(x=180, y=50, width=520, height=260)
-
+            self.textBox.tag_config("warning", background="#fffa65", selectbackground="black")
+            self.textBox.tag_config("error", background="#e74c3c", selectbackground="black")
+            self.textBox.tag_config("control", background="#2ecc71", selectbackground="black")
+            self.textBox.tag_config("basic", background="white", selectbackground="black")
+            
             logoutButton = tk.Button(self.root)
             logoutButton["bg"] = "#efefef"
             ft = tkFont.Font(family=self.fontFamily, size=10)
@@ -307,7 +316,7 @@ class App:
             self.landInTreesCheck["font"] = ft
             self.landInTreesCheck["fg"] = "#333333"
             self.landInTreesCheck["justify"] = "left"
-            self.landInTreesCheck["text"] = "Land on top of trees (1920x1080 resolution only)"
+            self.landInTreesCheck["text"] = "Land on set location (1920x1080 resolution only)"
             self.landInTreesCheck.place(x=745, y=120, width=300, height=25)
             self.landInTreesCheck["offvalue"] = "0"
             self.landInTreesCheck["onvalue"] = "1"
@@ -407,10 +416,10 @@ class App:
             pbAccTkn = self.token.get()
             self.mainbot = mainbotloop.mainLoop(
                 self.textBox, (minJumpSec, maxJumpSec), statsBool, pbBool, pbAccTkn, landOnTreesBool, tier=self.tier)
-            if not self.mainbot.invalid:
-                if self.mainbot.startLoop():
-                    self.startButton["state"] = "disabled"
-                    self.stopButton["state"] = "normal"
+        if not self.mainbot.invalid:
+            if self.mainbot.startLoop():
+                self.startButton["state"] = "disabled"
+                self.stopButton["state"] = "normal"
 
     def stopBot(self):
         self.stopButton["state"] = "disabled"

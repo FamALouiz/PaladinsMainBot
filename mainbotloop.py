@@ -38,10 +38,13 @@ class mainLoop:
         self.landInTreeBool = landInTreeBool
         self.invalid = False
         self.inbus = False
+        self.waitToCrouchTS=0
+        self.firstInGame=True
+
         try:
             get_fortnite_window()
         except:
-            self.print_to_GUI("Fortnite is not running, please launch the game")
+            self.print_to_GUI("Fortnite is not running, please launch the game", "error")
             self.invalid = True
             return
         self.img = screenshot_resize("./screenshot.png")
@@ -107,13 +110,17 @@ class mainLoop:
             self.print_to_GUI("Pushed screenshot to phone")
 
     def antiAFK(self):
-        time.sleep(random.randrange(0, 10))
         pyautogui.click()
         pyautogui.press("w")
+        time.sleep(1)
         pyautogui.press("space")
+        time.sleep(1)
         pyautogui.press("d")
+        time.sleep(1)
         pyautogui.press("a")
+        time.sleep(1)
         pyautogui.press("s")
+        time.sleep(1)
         pyautogui.press("ctrl")
 
     def stopLoop(self):
@@ -148,6 +155,9 @@ class mainLoop:
         ingamecount = 0
         while self.isrunning:
             print(self.stage)
+            if self.tier==0 and self.numberGames>1:
+                self.print_to_GUI("Trial has ended, please open discord link to register:  https://discord.gg/")
+                break
             if not self.isrunning:
                 break
             if self.stage == "lobby":
@@ -155,13 +165,17 @@ class mainLoop:
                 if check_btns(stage_btns[self.stage], lambda: self.runningchck()):
                     btnlist["play_button"].click()
                     self.print_to_GUI("Play button clicked (waiting for game to start)")
+                    self.print_to_GUI(f"Game #{self.numberGames+1}", "control")
                     time.sleep(30)
                     self.stage = "in-bus"
                 else:
                     self.stage = "claim-rewards"
 
             elif self.stage == "in-bus":
+                if check_btns(stage_btns["pre-game"], lambda: self.runningchck()):
+                    self.print_to_GUI("In pre-game lobby waiting for bus")
                 if check_btns(stage_btns[self.stage], lambda: self.runningchck()):
+                    time.sleep(12)
                     self.print_to_GUI("Waiting to jump out of the bus")
                     self.numberGames += 1
                     if self.access_level > 0:
@@ -180,62 +194,40 @@ class mainLoop:
                     pyautogui.press("space")
                     if self.landInTreeBool:
                         if pyautogui.size() == (1920, 1080):
-                            self.print_to_GUI("Navigating towards the nearest tree")
+                            self.print_to_GUI("Navigating towards the nearest location")
                             pyautogui.press("space")
                             self.player_mover.land_at_closest_loc()
-                            self.print_to_GUI("Tree reached")
+                            self.print_to_GUI("Location reached")
                         else:
                             self.print_to_GUI(
-                                "Screen is not 1920x1080 cannot land on trees"
+                                "Screen is not 1920x1080 cannot land on location"
                             )
                     else:
                         time.sleep(60)
                     self.stage = "in-game"
-                    self.waitToCrouchTS = datetime.datetime.now().timestamp()
                 else:
                     time.sleep(1)
 
-            # DEV this was copied to the
-            #  elif self.stage == "in-jump":
-            #     if check_btns(stage_btns[self.stage], lambda: self.runningchck()):
-            #         self.print_to_GUI(f"Jumping out after {self.jumpTime} seconds")
-            #         time.sleep(self.jumpTime)
-            #         pyautogui.press("space")
-            #         time.sleep(2)
-            #         pyautogui.press("space")
-            #         self.print_to_GUI("Jumped out")
-            #         if self.landInTreeBool:
-            #             if pyautogui.size() == (1920, 1080):
-            #                 self.print_to_GUI("Navigating towards the nearest tree")
-            #                 pyautogui.press("space")
-            #                 self.player_mover.land_at_closest_loc()
-            #                 self.print_to_GUI("Tree reached")
-            #             else:
-            #                 self.print_to_GUI("Screen is not 1920x1080 cannot land on trees")
-            #         else:
-            #             time.sleep(60)
-            #         self.stage = "in-game"
-            #         self.waitToCrouchTS = datetime.datetime.now().timestamp()
-            #     else:
-            #         time.sleep(1)
-
             elif self.stage == "in-game":
-                self.print_to_GUI("Waiting to die")
-                if not self.crouched:
-                    if datetime.datetime.now().timestamp() - self.waitToCrouchTS > 80.0:
+                if self.firstInGame:
+                    self.print_to_GUI("Waiting to die")
+                    self.print_to_GUI("Activating Anti-AFK")
+                    self.waitToCrouchTS = datetime.datetime.now().timestamp()
+                    self.firstInGame=False
+                if self.crouched!=True:
+                    if datetime.datetime.now().timestamp() - self.waitToCrouchTS > 30.0:
                         pyautogui.press("ctrl")
                         self.print_to_GUI("Crouching")
                         self.crouched = True
-                self.print_to_GUI("Activating Anti-AFK")
                 self.antiAFK()
                 time.sleep(10)
                 self.stage = "post-game"
-                # if prevstage == "in-game":
-                #     ingamecount += 1
-                # if ingamecount > 20:
-                #     self.print_to_GUI("Bot might be in loop re-checking stage")
-                #     self.stage = check_stage(self.buttons, lambda: self.runningchck())
-                #     ingamecount = 0
+                if prevstage == "in-game":
+                    ingamecount += 1
+                if ingamecount > 20:
+                    self.print_to_GUI("Bot might be in loop re-checking stage")
+                    self.stage = check_stage(self.buttons, lambda: self.runningchck())
+                    ingamecount = 0
 
             elif self.stage == "post-game":
                 if check_btns(stage_btns[self.stage], lambda: self.runningchck()):
@@ -263,13 +255,13 @@ class mainLoop:
             elif self.stage == "stop":
                 self.print_to_GUI("Bot stopped")
 
-            # if self.stage == prevstage:
-            #     stagecount += 1
-            # else:
-            #     prevstage = self.stage
-            #     stagecount = 0
-            # if stagecount > 15:
-            #     self.print_to_GUI("Stuck in loop")
-            #     time.sleep(1)
-            #     self.stage = check_stage(self.buttons, lambda: self.runningchck())
-            #     stagecount = 0
+            if self.stage == prevstage:
+                stagecount += 1
+            else:
+                prevstage = self.stage
+                stagecount = 0
+            if stagecount > 50:
+                self.print_to_GUI("Stuck in loop")
+                time.sleep(5)
+                self.stage = check_stage(self.buttons, lambda: self.runningchck())
+                stagecount = 0
