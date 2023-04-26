@@ -36,6 +36,10 @@ class BotGUI:
         self.mainFrame = Frame((self.root), pady=30, padx=30)
         self.showLoginFrame()
         self.root.mainloop()
+        self.sbFlank = Scrollbar()
+        self.sbFlank.pack_forget()
+        self.sbSupport = Scrollbar()
+        self.sbSupport.pack_forget()
 
     def initRegEntries(self):
         try:
@@ -212,7 +216,7 @@ class BotGUI:
         busJumpFrame = Frame(optionsFrame)
         busJumpFrame.columnconfigure(0, weight=1)
         busJumpFrame.columnconfigure(4, weight=1)
-        lblBusJump1 = Label(busJumpFrame, text="Pick a Champion")
+        lblBusJump1 = Label(busJumpFrame, text="Pick a Champion from the buttons above")
         self.treesInt = IntVar()
         self.statsSSInt = IntVar()
         statsSSchkbtn = Checkbutton(
@@ -243,6 +247,8 @@ class BotGUI:
         self.btnPbTest = Button(
             pushbulletFrame, text="Test", command=(self.pbSendTestMessage)
         )
+        btnShowFlank = Button(text="Pick Flanker", command=self.showAttackScroll)
+        btnShowSupport = Button(text="Pick Support", command=self.showSupportScroll)
         if tier >= 1:
             botLogFrame.grid(row=3, column=1, sticky=E)
             self.btnClearLog.grid(row=0, column=0, pady=10, padx=10, sticky=E)
@@ -257,11 +263,47 @@ class BotGUI:
             labelAccToken.grid(row=1, column=0, sticky=W)
             self.entryAccToken.grid(row=2, column=0, pady=(0, 10))
             self.btnPbTest.grid(row=2, column=1, pady=(0, 10))
+            btnShowFlank.grid(row=2, column=0)
+            btnShowSupport.grid(row=1, column=0)
+
         winreg.CloseKey(key)
 
     def resetSettings(self):
         self.resetRegEntries()
         self.initMainFrame(self.tier)
+
+    def showAttackScroll(self):
+        text = Text(self.root)
+        text.grid(row=2, column=1)
+        self.sbFlank = Scrollbar(self.root, command=text.yview)
+        self.sbFlank.grid(row=2, column=1)
+        text.configure(yscrollcommand=self.sbFlank.set)
+        for i in range(10):
+            button = Button(text)
+            text.window_create("end", window=button)
+            text.insert("end", "\n")
+        text.configure(state="disabled")
+
+    def showSupportScroll(self):
+        text = Text(self.root)
+        text.grid(row=2, column=1)
+        self.sbSupport = Scrollbar(self.root, command=text.yview)
+        self.sbSupport.grid(row=2, column=1)
+        text.configure(yscrollcommand=self.sbSupport.set)
+        button = Button(text="Groove", command=self.pickSupportGroove)
+        text.window_create("end", window=button)
+        text.insert("end", "\n")
+        for i in range(11):
+            button = Button(text)
+            text.window_create("end", window=button)
+            text.insert("end", "\n")
+        text.configure(state="disabled")
+
+    def pickSupportGroove(self):
+        print("GROOOOVVVE!!!")
+
+    def clickFlankChampion(self):
+        print("TEST2")
 
     def showLoginFrame(self):
         self.loginFrame.grid()
