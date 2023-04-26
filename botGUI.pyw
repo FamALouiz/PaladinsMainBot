@@ -2,6 +2,52 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import font
 import mainBotLoop, asyncio, threading, time, uuid, winreg, datetime, os, sys, ssl
+import pyautogui
+from PIL import *
+
+""" iterator = PositionableSequenceIterator(
+            [[a, b, c] for a, b, c in zip(btnlist2.keys(), btnlist2.values(), icons2)]
+        )"""
+
+iconlistGrover = [
+    os.path.join(r"PaladinMainbot_pngs\Grover", f)
+    for f in os.listdir(r"PaladinMainbot_pngs\Grover")
+    if f.endswith(".png")
+]
+
+
+iconsGrover = [
+    r"PaladinMainbot_pngs\Grover" + "/" + f
+    for f in os.listdir(r"PaladinMainbot_pngs\Grover")
+]
+
+
+class PositionableSequenceIterator:
+    def __init__(self, sequence):
+        self.seq = sequence
+        self._nextpos = 0
+
+    @property
+    def pos(self):
+        pos = self._nextpos
+        return 0 if pos is None else pos - 1
+
+    @pos.setter
+    def pos(self, newpos):
+        if not 0 <= newpos < len(self.seq):
+            raise IndexError(newpos)
+        self._nextpos = newpos
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        try:
+            return self.seq[self._nextpos or 0]
+        except IndexError:
+            raise StopIteration
+        finally:
+            self._nextpos += 1
 
 
 def resource_path(rel_path):
@@ -300,7 +346,21 @@ class BotGUI:
         text.configure(state="disabled")
 
     def pickSupportGroove(self):
-        print("GROOOOVVVE!!!")
+        iterator = PositionableSequenceIterator(
+            [[a, b] for a, b in zip(iconlistGrover, iconsGrover)]
+        )
+        for i in iterator:
+            icon = i[0]
+            try:
+                pyautogui.click(
+                    pyautogui.center(pyautogui.locateOnScreen(icon, confidence=0.9))
+                )
+                self.print_to_GUI(f"Clicked on {icon}")
+            except:
+                self.print_to_GUI(f"{icon} not found")
+                iterator.pos -= 1 if iterator.pos > 0 else 0
+                time.sleep(5)
+            time.sleep(5)
 
     def clickFlankChampion(self):
         print("TEST2")
