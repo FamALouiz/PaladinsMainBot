@@ -349,18 +349,22 @@ class BotGUI:
         iterator = PositionableSequenceIterator(
             [[a, b] for a, b in zip(iconlistGrover, iconsGrover)]
         )
-        for i in iterator:
-            icon = i[0]
-            try:
-                pyautogui.click(
-                    pyautogui.center(pyautogui.locateOnScreen(icon, confidence=0.9))
-                )
-                self.print_to_GUI(f"Clicked on {icon}")
-            except:
-                self.print_to_GUI(f"{icon} not found")
-                iterator.pos -= 1 if iterator.pos > 0 else 0
-                time.sleep(5)
-            time.sleep(5)
+        flag = True
+        while flag:
+            for i in iterator:
+                icon = i[0]
+                try:
+                    pyautogui.click(
+                        pyautogui.center(pyautogui.locateOnScreen(icon, confidence=0.9))
+                    )
+                    self.print_to_GUI(f"Found {icon}")
+                except:
+                    self.print_to_GUI(f"Checking next png")
+                else:
+                    flag = False
+                time.sleep(4)
+
+        self.print_to_GUI(f"Done Grove")
 
     def clickFlankChampion(self):
         print("TEST2")
