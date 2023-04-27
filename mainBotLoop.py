@@ -1,16 +1,34 @@
-import numpy as np, cv2
+import numpy as np
+import cv2
 
 try:
     from cv2 import cv2
 except ImportError:
     pass
 
-import os, sys, time, pyautogui, keyboard, win32gui, win32con, random, datetime, asyncio, threading, winreg
+import psutil
+import pygetwindow as gw
+import win32gui
+import win32process
+import os
+import sys
+import time
+import pyautogui
+import keyboard
+import win32gui
+import win32con
+import random
+import datetime
+import asyncio
+import threading
+import winreg
 from PIL import ImageGrab
 from tkinter import *
 import requests
 from my_icons import ButtonsAndIcons
 from player_movement import PlayerMovement
+
+championSelected = False
 
 
 class MainBotLoop:
@@ -104,25 +122,27 @@ class MainBotLoop:
             self.fortniteHandle = hwnd
 
     def startLoop(self, enableStart):
-        if not self.running:
-            self.fortniteHandle = None
-            win32gui.EnumWindows(self.enumCallback, "fortnite")
-            if self.fortniteHandle is not None:
-                if self.env != "development":
-                    win32gui.ShowWindow(self.fortniteHandle, win32con.SW_SHOWDEFAULT)
-                    win32gui.BringWindowToTop(self.fortniteHandle)
-                    win32gui.SetForegroundWindow(self.fortniteHandle)
-                    self.print_to_GUI("Fortnite brought to foreground")
-                    self.fortniteHandle = None
-            if self.access_level == 0:
-                self.maxLoops = random.randint(1, 3)
-                self.jumpSecs = (0, 25)
-            self.stop_event.clear()
-            self.loopThread = threading.Thread(
-                target=(self.loopClosure), args=[enableStart]
+        if not championSelected:
+            self.print_to_GUI(
+                "You did not pick a champion yet. Pick a champion to continue.",
+                "warning",
             )
-            self.loopThread.start()
-            return True
+            return
+        if not self.running:
+            got_windows = gw.getWindowsWithTitle("Paladins (64-bit, DX11)")
+            for window in got_windows:
+                window.restore()
+                window.activate()
+                time.sleep(1)
+                handle = win32gui.GetForegroundWindow()
+                pid = win32process.GetWindowThreadProcessId(handle)
+                for proc in psutil.process_iter():
+                    if proc.pid == pid[1]:
+                        if proc.name().lower() == "Paladins.exe".lower():
+                            return True
+                        else:
+                            window.minimize()
+            self.print_to_GUI("Paladins not found... Couldn't start", "warning")
 
     def loopClosure(self, enableStartButton):
         self.print_to_GUI(
@@ -166,12 +186,12 @@ class MainBotLoop:
             self.reset_variables()
         handle = win32gui.GetForegroundWindow()
         windowName = str(win32gui.GetWindowText(handle))
-        if "fortnite" not in windowName.lower():
+        if "paladins" not in windowName.lower():
             shortwn = windowName[: 30 if len(windowName) > 30 else len(windowName)]
             if shortwn != windowName:
                 shortwn += " ..."
             self.print_to_GUI(
-                "Active window: '" + shortwn + "', please open Fortnite", "warning"
+                "Active window: '" + shortwn + "', please open Palainds", "warning"
             )
             if self.env != "development":
                 time.sleep(0.5)
@@ -186,6 +206,8 @@ class MainBotLoop:
             self.screenshot = cv2.cvtColor(np.array(self.screenshot), cv2.COLOR_RGB2BGR)
             ss_height, ss_width, _ = self.screenshot.shape
             loc = None
+
+        """
         if self.work_mode == "lobby":
             self.print_to_GUI("Looking for Play_button")
             if self.escAndContCount % 5 == 0:
@@ -498,6 +520,7 @@ class MainBotLoop:
                             time.sleep(1.0)
             else:
                 self.print_to_GUI("Waiting for the rest of the party to die")
+    """
 
     def reset_variables(self):
         self.work_mode = "lobby"

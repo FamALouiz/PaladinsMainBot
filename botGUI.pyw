@@ -1,12 +1,23 @@
+import requests
 from tkinter import *
 from tkinter import filedialog
 from tkinter import font
-import mainBotLoop, asyncio, threading, time, uuid, winreg, datetime, os, sys, ssl
+import mainBotLoop
+import asyncio
+import threading
+import time
+import uuid
+import winreg
+import datetime
+import os
+import sys
+import ssl
 import pyautogui
 from PIL import *
 
 """ iterator = PositionableSequenceIterator(
-            [[a, b, c] for a, b, c in zip(btnlist2.keys(), btnlist2.values(), icons2)]
+            [[a, b, c]
+                for a, b, c in zip(btnlist2.keys(), btnlist2.values(), icons2)]
         )"""
 
 iconlistGrover = [
@@ -56,9 +67,6 @@ def resource_path(rel_path):
     return os.path.join(os.path.abspath("."), rel_path)
 
 
-import requests
-
-
 class BotGUI:
     def __init__(self):
         self.initRegEntries()
@@ -82,10 +90,12 @@ class BotGUI:
         self.mainFrame = Frame((self.root), pady=30, padx=30)
         self.showLoginFrame()
         self.root.mainloop()
+        self.champion = None
         self.sbFlank = Scrollbar()
         self.sbFlank.pack_forget()
         self.sbSupport = Scrollbar()
         self.sbSupport.pack_forget()
+        self.championFunction = None
 
     def initRegEntries(self):
         try:
@@ -336,7 +346,7 @@ class BotGUI:
         self.sbSupport = Scrollbar(self.root, command=text.yview)
         self.sbSupport.grid(row=2, column=1)
         text.configure(yscrollcommand=self.sbSupport.set)
-        button = Button(text="Groove", command=self.pickSupportGroove)
+        button = Button(text="Groove", command=self.setSupportChampionGrover)
         text.window_create("end", window=button)
         text.insert("end", "\n")
         for i in range(11):
@@ -345,11 +355,17 @@ class BotGUI:
             text.insert("end", "\n")
         text.configure(state="disabled")
 
-    def pickSupportGroove(self):
+    def setSupportChampionGrover(self):
+        print("Grover")
+        mainBotLoop.championSelected = True
+        self.championFunction = "self.pickSupportGrover"
+
+    def pickSupportGrover(self):
         iterator = PositionableSequenceIterator(
             [[a, b] for a, b in zip(iconlistGrover, iconsGrover)]
         )
         flag = True
+        print("Done")
         while flag:
             for i in iterator:
                 icon = i[0]
@@ -363,6 +379,8 @@ class BotGUI:
                 else:
                     flag = False
                 time.sleep(4)
+                print("woah")
+            time.sleep(10)
 
         self.print_to_GUI(f"Done Grove")
 
@@ -497,6 +515,8 @@ class BotGUI:
             self.tier,
         )
         if self.bot.startLoop(lambda: self.enableStart(self.btnStart, self.btnStop)):
+            func = eval(self.championFunction)
+            func()
             self.btnStart["state"] = "disabled"
             self.btnStop["state"] = "normal"
         winreg.CloseKey(registry_key)
@@ -511,6 +531,7 @@ class BotGUI:
 
     def logout(self):
         self.showLoginFrame()
+        mainBotLoop.championSelected = False
         if self.bot is not None:
             self.stopBot()
             self.bot = None
