@@ -125,14 +125,14 @@ class MainBotLoop:
             return
         if not self.running:
             self.fortniteHandle = None
-            win32gui.EnumWindows(self.enumCallback, "fortnite")
+            win32gui.EnumWindows(self.enumCallback, "paladins")
             if self.fortniteHandle is not None:
                 if self.env != "development":
                     win32gui.ShowWindow(self.fortniteHandle,
                                         win32con.SW_SHOWDEFAULT)
                     win32gui.BringWindowToTop(self.fortniteHandle)
                     win32gui.SetForegroundWindow(self.fortniteHandle)
-                    self.print_to_GUI("Fortnite brought to foreground")
+                    self.print_to_GUI("Paladins brought to foreground")
                     self.fortniteHandle = None
             if self.access_level == 0:
                 self.maxLoops = random.randint(1, 3)
