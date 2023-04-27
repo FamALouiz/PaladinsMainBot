@@ -12,6 +12,53 @@ import datetime
 import os
 import sys
 import ssl
+import pyautogui
+from PIL import *
+
+""" iterator = PositionableSequenceIterator(
+            [[a, b, c]
+                for a, b, c in zip(btnlist2.keys(), btnlist2.values(), icons2)]
+        )"""
+
+iconlistGrover = [
+    os.path.join(r"PaladinMainbot_pngs\Grover", f)
+    for f in os.listdir(r"PaladinMainbot_pngs\Grover")
+    if f.endswith(".png")
+]
+
+
+iconsGrover = [
+    r"PaladinMainbot_pngs\Grover" + "/" + f
+    for f in os.listdir(r"PaladinMainbot_pngs\Grover")
+]
+
+
+class PositionableSequenceIterator:
+    def __init__(self, sequence):
+        self.seq = sequence
+        self._nextpos = 0
+
+    @property
+    def pos(self):
+        pos = self._nextpos
+        return 0 if pos is None else pos - 1
+
+    @pos.setter
+    def pos(self, newpos):
+        if not 0 <= newpos < len(self.seq):
+            raise IndexError(newpos)
+        self._nextpos = newpos
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        try:
+            return self.seq[self._nextpos or 0]
+        except IndexError:
+            raise StopIteration
+        finally:
+            self._nextpos += 1
 
 
 def resource_path(rel_path):
@@ -43,6 +90,11 @@ class BotGUI:
         self.mainFrame = Frame((self.root), pady=30, padx=30)
         self.showLoginFrame()
         self.root.mainloop()
+        self.champion = None
+        self.sbFlank = Scrollbar()
+        self.sbFlank.pack_forget()
+        self.sbSupport = Scrollbar()
+        self.sbSupport.pack_forget()
 
     def initRegEntries(self):
         try:
@@ -229,7 +281,8 @@ class BotGUI:
         busJumpFrame = Frame(optionsFrame)
         busJumpFrame.columnconfigure(0, weight=1)
         busJumpFrame.columnconfigure(4, weight=1)
-        lblBusJump1 = Label(busJumpFrame, text="Pick a Champion")
+        lblBusJump1 = Label(
+            busJumpFrame, text="Pick a Champion from the buttons above")
         self.treesInt = IntVar()
         self.statsSSInt = IntVar()
         statsSSchkbtn = Checkbutton(
@@ -261,6 +314,10 @@ class BotGUI:
         self.btnPbTest = Button(
             pushbulletFrame, text="Test", command=(self.pbSendTestMessage)
         )
+        btnShowFlank = Button(text="Pick Flanker",
+                              command=self.showAttackScroll)
+        btnShowSupport = Button(text="Pick Support",
+                                command=self.showSupportScroll)
         if tier >= 1:
             botLogFrame.grid(row=3, column=1, sticky=E)
             self.btnClearLog.grid(row=0, column=0, pady=10, padx=10, sticky=E)
@@ -276,11 +333,70 @@ class BotGUI:
             labelAccToken.grid(row=1, column=0, sticky=W)
             self.entryAccToken.grid(row=2, column=0, pady=(0, 10))
             self.btnPbTest.grid(row=2, column=1, pady=(0, 10))
+            btnShowFlank.grid(row=2, column=0)
+            btnShowSupport.grid(row=1, column=0)
+
         winreg.CloseKey(key)
 
     def resetSettings(self):
         self.resetRegEntries()
         self.initMainFrame(self.tier)
+
+    def showAttackScroll(self):
+        text = Text(self.root)
+        text.grid(row=2, column=1)
+        self.sbFlank = Scrollbar(self.root, command=text.yview)
+        self.sbFlank.grid(row=2, column=1)
+        text.configure(yscrollcommand=self.sbFlank.set)
+        for i in range(10):
+            button = Button(text)
+            text.window_create("end", window=button)
+            text.insert("end", "\n")
+        text.configure(state="disabled")
+
+    def showSupportScroll(self):
+        text = Text(self.root)
+        text.grid(row=2, column=1)
+        self.sbSupport = Scrollbar(self.root, command=text.yview)
+        self.sbSupport.grid(row=2, column=1)
+        text.configure(yscrollcommand=self.sbSupport.set)
+        button = Button(
+            text="Groove", command=self.setSupportChampion("Grover"))
+        text.window_create("end", window=button)
+        text.insert("end", "\n")
+        for i in range(11):
+            button = Button(text)
+            text.window_create("end", window=button)
+            text.insert("end", "\n")
+        text.configure(state="disabled")
+
+    def setSupportChampion(self, name):
+        self.champion = name
+
+    def pickSupportGroove(self):
+        iterator = PositionableSequenceIterator(
+            [[a, b] for a, b in zip(iconlistGrover, iconsGrover)]
+        )
+        flag = True
+        while flag:
+            for i in iterator:
+                icon = i[0]
+                try:
+                    pyautogui.click(
+                        pyautogui.center(
+                            pyautogui.locateOnScreen(icon, confidence=0.9))
+                    )
+                    self.print_to_GUI(f"Found {icon}")
+                except:
+                    self.print_to_GUI(f"Checking next png")
+                else:
+                    flag = False
+                time.sleep(4)
+
+        self.print_to_GUI(f"Done Grove")
+
+    def clickFlankChampion(self):
+        print("TEST2")
 
     def showLoginFrame(self):
         self.loginFrame.grid()
@@ -411,6 +527,9 @@ class BotGUI:
             landOnTreesBool,
             self.tier,
         )
+        if self.champion == None:
+            return
+        self.bot.championSelected = True
         if self.bot.startLoop(lambda: self.enableStart(self.btnStart, self.btnStop)):
             self.btnStart["state"] = "disabled"
             self.btnStop["state"] = "normal"
