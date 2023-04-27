@@ -1,11 +1,23 @@
-import numpy as np, cv2
+import numpy as np
+import cv2
 
 try:
     from cv2 import cv2
 except ImportError:
     pass
 
-import os, sys, time, pyautogui, keyboard, win32gui, win32con, random, datetime, asyncio, threading, winreg
+import os
+import sys
+import time
+import pyautogui
+import keyboard
+import win32gui
+import win32con
+import random
+import datetime
+import asyncio
+import threading
+import winreg
 from PIL import ImageGrab
 from tkinter import *
 import requests
@@ -41,6 +53,7 @@ class MainBotLoop:
         self.escAndContCount = 1
         self.look_for_jump = True
         self.lastMessage = ""
+        self.championSelected = False
         self.return_loc = None
         self.screenshot = []
         self.matched = []
@@ -52,9 +65,11 @@ class MainBotLoop:
             )
             value, _ = winreg.QueryValueEx(registry_key, "esc_button_scale")
             self.esc_button_scale = int(value)
-            value, _ = winreg.QueryValueEx(registry_key, "continue_button_scale")
+            value, _ = winreg.QueryValueEx(
+                registry_key, "continue_button_scale")
             self.continue_button_scale = int(value)
-            value, _ = winreg.QueryValueEx(registry_key, "collect_button_scale")
+            value, _ = winreg.QueryValueEx(
+                registry_key, "collect_button_scale")
             self.collect_button_scale = int(value)
             value, _ = winreg.QueryValueEx(registry_key, "play_button_scale")
             self.play_button_scale = int(value)
@@ -104,12 +119,17 @@ class MainBotLoop:
             self.fortniteHandle = hwnd
 
     def startLoop(self, enableStart):
+        if not self.championSelected:
+            self.print_to_GUI(
+                "You did not pick a champion yet. Pick a champion to continue.", "warning")
+            return
         if not self.running:
             self.fortniteHandle = None
             win32gui.EnumWindows(self.enumCallback, "fortnite")
             if self.fortniteHandle is not None:
                 if self.env != "development":
-                    win32gui.ShowWindow(self.fortniteHandle, win32con.SW_SHOWDEFAULT)
+                    win32gui.ShowWindow(self.fortniteHandle,
+                                        win32con.SW_SHOWDEFAULT)
                     win32gui.BringWindowToTop(self.fortniteHandle)
                     win32gui.SetForegroundWindow(self.fortniteHandle)
                     self.print_to_GUI("Fortnite brought to foreground")
@@ -148,7 +168,8 @@ class MainBotLoop:
             self.loopThread = None
             win32gui.EnumWindows(self.enumCallback, "fortbot")
             if self.fortniteHandle is not None:
-                win32gui.ShowWindow(self.fortniteHandle, win32con.SW_SHOWDEFAULT)
+                win32gui.ShowWindow(self.fortniteHandle,
+                                    win32con.SW_SHOWDEFAULT)
                 win32gui.BringWindowToTop(self.fortniteHandle)
                 win32gui.SetForegroundWindow(self.fortniteHandle)
                 self.fortniteHandle = None
@@ -166,12 +187,13 @@ class MainBotLoop:
             self.reset_variables()
         handle = win32gui.GetForegroundWindow()
         windowName = str(win32gui.GetWindowText(handle))
-        if "fortnite" not in windowName.lower():
-            shortwn = windowName[: 30 if len(windowName) > 30 else len(windowName)]
+        if "paladins" not in windowName.lower():
+            shortwn = windowName[: 30 if len(
+                windowName) > 30 else len(windowName)]
             if shortwn != windowName:
                 shortwn += " ..."
             self.print_to_GUI(
-                "Active window: '" + shortwn + "', please open Fortnite", "warning"
+                "Active window: '" + shortwn + "', please open Palainds", "warning"
             )
             if self.env != "development":
                 time.sleep(0.5)
@@ -183,9 +205,11 @@ class MainBotLoop:
             return
         else:
             self.screenshot = ImageGrab.grab(bbox)
-            self.screenshot = cv2.cvtColor(np.array(self.screenshot), cv2.COLOR_RGB2BGR)
+            self.screenshot = cv2.cvtColor(
+                np.array(self.screenshot), cv2.COLOR_RGB2BGR)
             ss_height, ss_width, _ = self.screenshot.shape
             loc = None
+        '''
         if self.work_mode == "lobby":
             self.print_to_GUI("Looking for Play_button")
             if self.escAndContCount % 5 == 0:
@@ -498,6 +522,7 @@ class MainBotLoop:
                             time.sleep(1.0)
             else:
                 self.print_to_GUI("Waiting for the rest of the party to die")
+    '''
 
     def reset_variables(self):
         self.work_mode = "lobby"
@@ -510,7 +535,7 @@ class MainBotLoop:
             self.matched = cv2.matchTemplate(
                 (
                     self.screenshot[
-                        area_bbox[0] : area_bbox[1], area_bbox[2] : area_bbox[3], :
+                        area_bbox[0]: area_bbox[1], area_bbox[2]: area_bbox[3], :
                     ]
                 ),
                 button,
@@ -591,7 +616,7 @@ class MainBotLoop:
                 self.matched = cv2.matchTemplate(
                     (
                         self.screenshot[
-                            area_bbox[0] : area_bbox[1], area_bbox[2] : area_bbox[3], :
+                            area_bbox[0]: area_bbox[1], area_bbox[2]: area_bbox[3], :
                         ]
                     ),
                     btn,
@@ -611,18 +636,20 @@ class MainBotLoop:
                         winreg.HKEY_CURRENT_USER, key_path, 0, winreg.KEY_WRITE
                     )
                     winreg.SetValueEx(
-                        registry_key, "icons_scale", 0, winreg.REG_SZ, str(new_scale)
+                        registry_key, "icons_scale", 0, winreg.REG_SZ, str(
+                            new_scale)
                     )
                     winreg.CloseKey(registry_key)
                 except WindowsError:
                     print("Error setting registry entry.")
 
-                self.print_to_GUI("Icons scale set to: " + str(self.icons_scale))
+                self.print_to_GUI("Icons scale set to: " +
+                                  str(self.icons_scale))
         else:
             self.matched = cv2.matchTemplate(
                 (
                     self.screenshot[
-                        area_bbox[0] : area_bbox[1], area_bbox[2] : area_bbox[3], :
+                        area_bbox[0]: area_bbox[1], area_bbox[2]: area_bbox[3], :
                     ]
                 ),
                 (buttons[self.icons_scale]),
@@ -637,11 +664,13 @@ class MainBotLoop:
 
     def send_image_pushbullet(self, access_token, img_path, game_num):
         url = "https://api.pushbullet.com/v2/upload-request"
-        headers = {"Access-Token": access_token, "Content-Type": "application/json"}
+        headers = {"Access-Token": access_token,
+                   "Content-Type": "application/json"}
         data = {"file_name": img_path, "file_type": "image/jpeg"}
         res = requests.post(url, json=data, headers=headers)
         if res.status_code != 200:
-            self.print_to_GUI("Error authenticating with Access Token", "error")
+            self.print_to_GUI(
+                "Error authenticating with Access Token", "error")
             return
         resJson = res.json()
         file_name = resJson["file_name"]
@@ -656,7 +685,8 @@ class MainBotLoop:
             self.print_to_GUI("Error uploading file", "error")
             return
         url = "https://api.pushbullet.com/v2/pushes"
-        headers = {"Access-Token": access_token, "Content-Type": "application/json"}
+        headers = {"Access-Token": access_token,
+                   "Content-Type": "application/json"}
         data = {
             "type": "file",
             "body": "FortBot screenshot from game %d" % game_num,

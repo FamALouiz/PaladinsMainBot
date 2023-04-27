@@ -1,16 +1,23 @@
+import requests
 from tkinter import *
 from tkinter import filedialog
 from tkinter import font
-import mainBotLoop, asyncio, threading, time, uuid, winreg, datetime, os, sys, ssl
+import mainBotLoop
+import asyncio
+import threading
+import time
+import uuid
+import winreg
+import datetime
+import os
+import sys
+import ssl
 
 
 def resource_path(rel_path):
     if hasattr(sys, "_MEIPASS"):
         return os.path.join(sys._MEIPASS, rel_path)
     return os.path.join(os.path.abspath("."), rel_path)
-
-
-import requests
 
 
 class BotGUI:
@@ -69,7 +76,8 @@ class BotGUI:
                 registry_key, "esc_button_scale", 0, winreg.REG_SZ, str(-1)
             )
             winreg.SetValueEx(
-                registry_key, "continue_button_scale", 0, winreg.REG_SZ, str(-1)
+                registry_key, "continue_button_scale", 0, winreg.REG_SZ, str(
+                    -1)
             )
             winreg.SetValueEx(
                 registry_key, "collect_button_scale", 0, winreg.REG_SZ, str(-1)
@@ -80,16 +88,23 @@ class BotGUI:
             winreg.SetValueEx(
                 registry_key, "return_button_scale", 0, winreg.REG_SZ, str(-1)
             )
-            winreg.SetValueEx(registry_key, "icons_scale", 0, winreg.REG_SZ, str(-1))
+            winreg.SetValueEx(registry_key, "icons_scale",
+                              0, winreg.REG_SZ, str(-1))
             winreg.SetValueEx(
                 registry_key, "team_alive_scale", 0, winreg.REG_SZ, str(-1)
             )
-            winreg.SetValueEx(registry_key, "remember_login", 0, winreg.REG_SZ, "off")
-            winreg.SetValueEx(registry_key, "login_email", 0, winreg.REG_SZ, "")
-            winreg.SetValueEx(registry_key, "land_on_trees", 0, winreg.REG_SZ, "off")
-            winreg.SetValueEx(registry_key, "take_ss_local", 0, winreg.REG_SZ, "off")
-            winreg.SetValueEx(registry_key, "send_ss_pb", 0, winreg.REG_SZ, "off")
-            winreg.SetValueEx(registry_key, "pb_acc_token", 0, winreg.REG_SZ, "")
+            winreg.SetValueEx(registry_key, "remember_login",
+                              0, winreg.REG_SZ, "off")
+            winreg.SetValueEx(registry_key, "login_email",
+                              0, winreg.REG_SZ, "")
+            winreg.SetValueEx(registry_key, "land_on_trees",
+                              0, winreg.REG_SZ, "off")
+            winreg.SetValueEx(registry_key, "take_ss_local",
+                              0, winreg.REG_SZ, "off")
+            winreg.SetValueEx(registry_key, "send_ss_pb",
+                              0, winreg.REG_SZ, "off")
+            winreg.SetValueEx(registry_key, "pb_acc_token",
+                              0, winreg.REG_SZ, "")
             winreg.CloseKey(registry_key)
         except WindowsError:
             print("Error resetting registry entries.")
@@ -193,7 +208,8 @@ class BotGUI:
             font=(self.bigFont),
             command=(self.stopBot),
         )
-        btnLogout = Button(botControlFrame, text="Logout", command=(self.logout))
+        btnLogout = Button(botControlFrame, text="Logout",
+                           command=(self.logout))
         self.listBoxLogger.grid(row=0, column=1)
         scBarLogger.grid(row=0, column=2, sticky=(N + S + W))
         botControlFrame.grid(row=0, column=0, sticky=(NE + SW))
@@ -204,7 +220,8 @@ class BotGUI:
         self.btnClearLog = Button(
             botLogFrame, text="Clear Log", command=(self.clearLog)
         )
-        self.btnSaveLog = Button(botLogFrame, text="Save Log", command=(self.saveLog))
+        self.btnSaveLog = Button(
+            botLogFrame, text="Save Log", command=(self.saveLog))
         optionsFrame = LabelFrame((self.mainFrame), text="Settings")
         self.btnResetScale = Button(
             optionsFrame, text="Reset saved settings", command=(self.resetSettings)
@@ -234,7 +251,8 @@ class BotGUI:
         if value == "on":
             pbchkbtn.select()
         self.accToken = StringVar()
-        labelAccToken = Label(pushbulletFrame, text="Insert your Access Token below:")
+        labelAccToken = Label(
+            pushbulletFrame, text="Insert your Access Token below:")
         self.entryAccToken = Entry(
             pushbulletFrame, width=40, show="*", textvariable=(self.accToken)
         )
@@ -248,7 +266,8 @@ class BotGUI:
             self.btnClearLog.grid(row=0, column=0, pady=10, padx=10, sticky=E)
             self.btnSaveLog.grid(row=0, column=1, pady=10, padx=10, sticky=W)
             optionsFrame.grid(row=0, column=3, padx=10, sticky=N)
-            self.btnResetScale.grid(row=4, column=0, pady=10, padx=10, sticky=E)
+            self.btnResetScale.grid(
+                row=4, column=0, pady=10, padx=10, sticky=E)
             busJumpFrame.grid(row=0, column=0, sticky=N)
             lblBusJump1.grid(row=0, column=0, columnspan=5)
             statsSSchkbtn.grid(row=2, column=0, pady=0, sticky=N)
@@ -337,7 +356,8 @@ class BotGUI:
                     winreg.SetValueEx(
                         registry_key, "remember_login", 0, winreg.REG_SZ, "off"
                     )
-                    winreg.SetValueEx(registry_key, "login_email", 0, winreg.REG_SZ, "")
+                    winreg.SetValueEx(
+                        registry_key, "login_email", 0, winreg.REG_SZ, "")
                 winreg.CloseKey(registry_key)
                 self.initMainFrame(self.tier)
                 self.showMainFrame()
@@ -381,7 +401,8 @@ class BotGUI:
         winreg.SetValueEx(
             registry_key, "send_ss_pb", 0, winreg.REG_SZ, "on" if pbBool else "off"
         )
-        winreg.SetValueEx(registry_key, "pb_acc_token", 0, winreg.REG_SZ, pbAccTkn)
+        winreg.SetValueEx(registry_key, "pb_acc_token",
+                          0, winreg.REG_SZ, pbAccTkn)
         self.bot = mainBotLoop.MainBotLoop(
             self.listBoxLogger,
             statsBool,
