@@ -527,9 +527,8 @@ class BotGUI:
             landOnTreesBool,
             self.tier,
         )
-        if self.champion == None:
-            return
-        self.bot.championSelected = True
+        if self.champion is not None:
+            self.bot.championSelected = True
         if self.bot.startLoop(lambda: self.enableStart(self.btnStart, self.btnStop)):
             self.btnStart["state"] = "disabled"
             self.btnStop["state"] = "normal"
