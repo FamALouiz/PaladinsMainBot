@@ -220,8 +220,8 @@ class mainLoop:
                 iterator.pos = iterator.pos if iterator.pos > 0 else 0
             time.sleep(0.3)
 
-        time.sleep(10)
-        self.print_to_GUI(f"Done Grove")
+        time.sleep(5)
+        self.print_to_GUI(f"Done {champion}")
 
     def startGame(self):
         current = None
@@ -275,10 +275,10 @@ class mainLoop:
                                     self.print_to_GUI(f"No Error")
                                     printing = False
                                 continue
-                            time.sleep(2)
+                            time.sleep(0.5)
                         else:
                             flag = False
-                            time.sleep(3)
+                            time.sleep(0.5)
                 flag = True
                 while flag:
                     try:
@@ -303,9 +303,9 @@ class mainLoop:
                 except:
                     self.print_to_GUI(f"Waiting for {icon}")
                     iterator.pos = iterator.pos if iterator.pos > 0 else 0
-                    time.sleep(2)
-            time.sleep(2)
-        time.sleep(2)
+                    time.sleep(0.5)
+            time.sleep(0.5)
+        time.sleep(0.5)
         self.print_to_GUI(f"Started Game")
         time.sleep(3)
 
