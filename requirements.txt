@@ -7,3 +7,4 @@ keyboard>=0.13.5
 psutil>=5.8.0
 Pillow>=8.4.0
 PyGetWindow>=0.0.9
+py3-validate-email>=1.0.5

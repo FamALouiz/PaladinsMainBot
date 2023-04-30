@@ -8,8 +8,6 @@ import win32gui
 import win32process
 from PIL import Image
 
-from icons import btnlist
-
 handle: Optional[int] = None
 window: Optional[gw.Window] = None
 pid: Optional[int] = None
@@ -17,7 +15,7 @@ pid: Optional[int] = None
 
 def get_fortnite_window() -> None:
     global handle, window, pid
-    got_windows = gw.getWindowsWithTitle("Fortnite")
+    got_windows = gw.getWindowsWithTitle("Paladins (64-bit, DX11)")
     for window in got_windows:
         window.restore()
         window.activate()
@@ -26,19 +24,47 @@ def get_fortnite_window() -> None:
         pid = win32process.GetWindowThreadProcessId(handle)
         for proc in psutil.process_iter():
             if proc.pid == pid[1]:
-                if proc.name().lower() == "FortniteClient-Win64-Shipping.exe".lower():
+                if proc.name().lower() == "Paladins.exe".lower():
                     return None
                 else:
                     window.minimize()
-    raise Exception("No fortnite window found")
+
+    raise Exception("No Paladins window found")
+
+
+def get_steam_window() -> None:
+    global handle, window, pid
+    got_windows = gw.getWindowsWithTitle("Steam")
+    for window in got_windows:
+        window.restore()
+        window.activate()
+        time.sleep(1)
+        handle = win32gui.GetForegroundWindow()
+        pid = win32process.GetWindowThreadProcessId(handle)
+        for proc in psutil.process_iter():
+            if proc.pid == pid[1]:
+                if proc.name().lower() == "Steam.exe".lower():
+                    return None
+                else:
+                    window.minimize()
+    raise Exception("No Steam window found")
 
 
 def isfortnite():
     global handle, window, pid
     if handle != win32gui.GetForegroundWindow():
-        print("not fortnite window")
-        print("opening fortnite")
+        print("not paladin window")
+        print("opening paladins")
         get_fortnite_window()
+        time.sleep(4)
+
+
+def isSteam():
+    global handle, window, pid
+    if handle != win32gui.GetForegroundWindow():
+        print("no steam")
+        print("opening steam")
+        get_steam_window()
         time.sleep(4)
 
 
@@ -63,21 +89,8 @@ def screenshot_resize(path):
     return img
 
 
-def clickbtn(btn, img, grayscale=False):
-    conf = 1.0
-    while conf > 0.75:
-        cords = pyautogui.locate(btn, img, grayscale=grayscale, confidence=conf)
-        if cords:
-            pyautogui.moveTo(
-                pos_resized(x=cords[0] + cords[2] / 2, y=cords[1] + cords[3] / 2)
-            )
-            print("conf:", conf)
-            pyautogui.click()  # DEV click
-            return
-        else:
-            conf -= 0.05
-    else:
-        raise Exception("Could not find button")
+def clickbtn(image, Region=None, Precision=0.8):
+    return None
 
 
 def check_stage(buttons: dict, isrunning) -> str:
@@ -99,35 +112,20 @@ def check_stage(buttons: dict, isrunning) -> str:
     if found_btns:
         if "play_button" in found_btns:
             return "lobby"
-        # elif "bus_icon_square" in found_btns:
-        #     return "in-bus"
-        elif "jump_icon_square" in found_btns:
-            return "in-jump"
-        elif "clock_icon_square" in found_btns or "storm_icon_square" in found_btns:
+        elif "bus_icon_square" in found_btns:
+            return "in-bus"
+        elif "jump_icon_square" in found_btns or "clock_icon_square" in found_btns:
+            return "in-bus"
+        elif (
+            "ingame_clock_square" in found_btns
+            or "storm_icon_square" in found_btns
+            or "ingame_clock_square2" in found_btns
+        ):
             return "in-game"
         elif "return_button" in found_btns:
             return "post-game"
         elif "claim_button" in found_btns or "collect_button_next" in found_btns:
             return "claim-rewards"
-
-
-def check_btns(buttons: list, isrunning) -> list:
-    global handle, window, pid
-    found_btns = []
-    img = screenshot_resize("./screenshot.png")
-    for name in buttons:
-        btn = btnlist[name]
-        if not isrunning():
-            return []
-        cords = findbtn(btn.image, img)
-        if cords is not None:
-            btn.cords = pos_resized(
-                x=(cords[0] + cords[2] / 2), y=(cords[1] + cords[3] / 2)
-            )
-            btn.found = True
-            print(f"Found {name}")
-            found_btns.append(name)
-    return found_btns
 
 
 def findbtn(btn, img, grayscale=False):

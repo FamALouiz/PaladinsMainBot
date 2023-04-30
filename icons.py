@@ -1,6 +1,7 @@
 from typing import Sequence
 import os, pyautogui
 from PIL import Image
+import cv2
 
 
 class button:
@@ -26,18 +27,9 @@ class button:
         pyautogui.click()  # DEV click
 
 
-# list all png files in icons directory
-path = "./icons"
-iconlist = [os.path.join(path, f) for f in os.listdir(path) if f.endswith(".png")]
-
-btnlist = {}
-for btn in iconlist:
-    btn_name = btn.split("/")[-1].split(".")[0].split("icons\\")[1]
-    btnlist.update({btn_name: button(btn)})
-
 stage_btns = {
-    "lobby": ["play_button"],
-    "pre-game":["clock_icon_square"],
+    "lobby": ["play_button", "return_button"],
+    "pre-game": ["clock_icon_square"],
     "in-bus": ["bus_icon_square"],
     "in-jump": ["jump_icon_square"],
     "in-game": ["storm_icon_square", "ingame_clock_square", "ingame_clock_square2"],

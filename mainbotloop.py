@@ -1,8 +1,65 @@
 from utilityfuncs import *
 from tkinter import *
-import time, requests, datetime, random, plrmovement, keyboard
+import time, requests, datetime
 from icons import *
 import threading
+import os
+
+champion = "GROVER"
+antiAFK = None
+championType = "Support"
+championSelected = False
+championPath = eval(f"r'PaladinMainbot_pngs\{championType}\{champion}'")
+championIcon = eval(f"r'PaladinMainbot_pngs\{championType}\{champion}\\0ChampIcon.png'")
+
+iconlist = [
+    os.path.join(championPath, f)
+    for f in os.listdir(championPath)
+    if f.endswith(".png")
+][1:]
+
+
+icons = [championPath + "/" + f for f in os.listdir(championPath)][1:]
+
+iconsStart = [
+    r"PaladinMainbot_pngs\1LobbyPlay.png",
+    r"PaladinMainbot_pngs\2JoinQueue.png",
+    r"PaladinMainbot_pngs\3Error.png",
+    r"PaladinMainbot_pngs\5Champlockin.png",
+]
+
+iconRequeue = r"PaladinMainbot_pngs\ReQueue.png"
+
+champion = None
+championType = None
+
+
+class PositionableSequenceIterator:
+    def __init__(self, sequence):
+        self.seq = sequence
+        self._nextpos = 0
+
+    @property
+    def pos(self):
+        pos = self._nextpos
+        return 0 if pos is None else pos - 1
+
+    @pos.setter
+    def pos(self, newpos):
+        if not 0 <= newpos < len(self.seq):
+            raise IndexError(newpos)
+        self._nextpos = newpos
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        try:
+            return self.seq[self._nextpos or 0]
+        except IndexError:
+            raise StopIteration
+        finally:
+            self._nextpos += 1
 
 
 class mainLoop:
@@ -18,6 +75,7 @@ class mainLoop:
         pbBool,
         pbAccTkn,
         landInTreeBool,
+        times,
         tier=0,
     ) -> None:
         """
@@ -38,22 +96,32 @@ class mainLoop:
         self.landInTreeBool = landInTreeBool
         self.invalid = False
         self.inbus = False
-        self.waitToCrouchTS=0
-        self.firstInGame=True
-
+        self.waitToCrouchTS = 0
+        self.firstInGame = True
+        self.tier = tier
+        self.times = 0
+        self.count = 1
+        self.championPath = None
+        self.championIcon = None
+        self.iconlist = None
+        self.icons = None
+        """
         try:
             get_fortnite_window()
         except:
-            self.print_to_GUI("Fortnite is not running, please launch the game", "error")
+            self.print_to_GUI(
+                "Paladins is not running, please launch the game", "error"
+            )
             self.invalid = True
             return
-        self.img = screenshot_resize("./screenshot.png")
+        """
+        # self.img = screenshot_resize("./screenshot.png")
         self.stage = None
-        self.player_mover = plrmovement.Player("./icons/player_cursor.png")
+        # self.player_mover = plrmovement.Player("./icons/player_cursor.png")
         self.crouched = False
         self.numberGames = 0
         self.takeScreenshot = True
-        self.buttons = btnlist
+        # self.buttons = btnlist
         self.isrunning = False
         self.stop_event = threading.Event()
 
@@ -109,19 +177,146 @@ class mainLoop:
         if res.status_code == 200:
             self.print_to_GUI("Pushed screenshot to phone")
 
-    def antiAFK(self):
+    def updateData(self):
+        self.championPath = eval(f"r'PaladinMainbot_pngs\{championType}\{champion}'")
+        self.championIcon = eval(
+            f"r'PaladinMainbot_pngs\{championType}\{champion}\\0ChampIcon.png'"
+        )
+
+        self.iconlist = [
+            os.path.join(championPath, f)
+            for f in os.listdir(championPath)
+            if f.endswith(".png")
+        ][1:]
+
+        self.icons = [championPath + "/" + f for f in os.listdir(championPath)][1:]
+
+    def pickChampion(self):
+        time.sleep(2)
+        if not self.isrunning:
+            return
+        iterator = PositionableSequenceIterator(
+            [[a, b] for a, b in zip(self.iconlist, self.icons)]
+        )
+        flag = True
+        if not self.isrunning:
+            return
+        for i in iterator:
+            if not self.isrunning:
+                return
+            icon = i[0]
+            try:
+                pyautogui.click(
+                    pyautogui.center(pyautogui.locateOnScreen(icon, confidence=0.75))
+                )
+                self.print_to_GUI(f"Clicked on {icon}")
+            except:
+                self.print_to_GUI(f"Didn't find {icon}... waiting for it")
+                iterator.pos -= 1 if iterator.pos > 0 else 0
+            time.sleep(0.3)
+
+        time.sleep(10)
+        self.print_to_GUI(f"Done Grove")
+
+    def startGame(self):
+        current = None
+        if not self.isrunning:
+            return
+        iterator = PositionableSequenceIterator([a for a in iconsStart])
+        if not self.isrunning:
+            return
+        for i in iterator:
+            if not self.isrunning:
+                return
+            icon = i
+            if i == r"PaladinMainbot_pngs\3Error.png":
+                current = i
+                try:
+                    pyautogui.click(
+                        pyautogui.center(pyautogui.locateOnScreen(icon, confidence=0.9))
+                    )
+                    self.print_to_GUI(f"Found {icon}")
+                except:
+                    self.print_to_GUI(f"No Error")
+                    continue
+
+            elif i == r"PaladinMainbot_pngs\5Champlockin.png":
+                flag = True
+                while flag:
+                    try:
+                        self.pickChampionIcon()
+                        pyautogui.click(
+                            pyautogui.center(
+                                pyautogui.locateOnScreen(icon, confidence=0.70)
+                            )
+                        )
+                        self.print_to_GUI(f"Found {icon}")
+                    except:
+                        self.print_to_GUI(
+                            f"Waiting for {icon} and checking if there is any errors"
+                        )
+                        try:
+                            pyautogui.click(
+                                pyautogui.center(
+                                    pyautogui.locateOnScreen(current, confidence=0.9)
+                                )
+                            )
+                            self.print_to_GUI(f"Found {current}")
+                        except:
+                            self.print_to_GUI(f"No Error")
+                            continue
+                        time.sleep(2)
+                    else:
+                        flag = False
+                        time.sleep(3)
+                continue
+            try:
+                pyautogui.click(
+                    pyautogui.center(pyautogui.locateOnScreen(icon, confidence=0.70))
+                )
+                self.print_to_GUI(f"Found {icon}")
+            except:
+                self.print_to_GUI(f"Waiting for {icon}")
+                iterator.pos -= 1 if iterator.pos > 0 else 0
+                time.sleep(2)
+            time.sleep(4)
+        time.sleep(2)
+        self.print_to_GUI(f"Started Game")
+        time.sleep(3)
+
+    def pickChampionIcon(self):
+        try:
+            pyautogui.click(
+                pyautogui.center(
+                    pyautogui.locateOnScreen(self.championIcon, confidence=0.9)
+                )
+            )
+            self.print_to_GUI(f"Found {self.championIcon}")
+        except:
+            self.print_to_GUI(f"Waiting for {self.championIcon}")
+            raise Exception("Champion not found")
+
+    def antiAFKGrover(self):
         pyautogui.click()
-        pyautogui.press("w")
+        pyautogui.press("f")
+        pyautogui.click()
         time.sleep(1)
-        pyautogui.press("space")
+        pyautogui.press("q")
+        pyautogui.click()
+        time.sleep(1)
+        pyautogui.press("e")
+        pyautogui.click()
+        time.sleep(1)
+        pyautogui.press("a")
+        pyautogui.click()
         time.sleep(1)
         pyautogui.press("d")
         time.sleep(1)
-        pyautogui.press("a")
+        pyautogui.press("d")
         time.sleep(1)
         pyautogui.press("s")
+        pyautogui.click()
         time.sleep(1)
-        pyautogui.press("ctrl")
 
     def stopLoop(self):
         if self.isrunning:
@@ -130,11 +325,16 @@ class mainLoop:
             self.loopThread = None
             self.stage = "stop"
             self.print_to_GUI("Bot stopping...")
+            del self
 
     def startLoop(self) -> bool:
         """
         Main loop of the bot which goes through the stages and does its necessary action
         """
+        if champion == None:
+            self.print_to_GUI("Please select a champion to continue", "warning")
+            self.stopLoop()
+            return False
         if not self.isrunning:
             self.stop_event.clear()
             self.isrunning = True
@@ -144,23 +344,104 @@ class mainLoop:
             return True
         return False
 
+    def get_fortnite_window(self):
+        got_windows = gw.getWindowsWithTitle("Paladins")
+        for window in got_windows:
+            window.restore()
+            window.activate()
+            time.sleep(1)
+            handle = win32gui.GetForegroundWindow()
+            pid = win32process.GetWindowThreadProcessId(handle)
+            for proc in psutil.process_iter():
+                if proc.pid == pid[1]:
+                    if proc.name().lower() == "Paladins.exe".lower():
+                        return None
+                    else:
+                        window.minimize()
+
+        self.print_to_GUI("Paladins not open... Stop bot and open paladins", "error")
+        raise Exception("Paladins not found")
+
     def runningchck(self):
         return self.isrunning
 
+    def inGameAndRequeue(self):
+        # in game TBD
+        flag = True
+        while flag:
+            if not self.isrunning:
+                return
+            try:
+                pyautogui.click(
+                    pyautogui.center(
+                        pyautogui.locateOnScreen(iconRequeue, confidence=0.9)
+                    )
+                )
+                self.print_to_GUI(f"Found {iconRequeue}")
+            except:
+                self.print_to_GUI(f"Waiting for {iconRequeue}... Anti-AFK invoke")
+                if not self.isrunning:
+                    return
+                self.antiAFKGrover()
+                time.sleep(2)
+            else:
+                flag = False
+        time.sleep(2)
+
     def actual_loop(self):
-        isfortnite()
-        self.stage = check_stage(self.buttons, lambda: self.runningchck())
+        while True:
+            self.updateData()
+            self.pbBool = True
+            flag = True
+            if flag:
+                # self.get_fortnite_window()
+                time.sleep(2)
+                self.startGame()
+                time.sleep(2)
+                flag = False
+            self.pickChampion()
+            self.inGameAndRequeue()
+            self.print_to_GUI(f"Game #{self.count}", "control")
+            self.count += 1
+            if self.takeScreenshot:
+                self.print_to_GUI("Returning to lobby")
+                if self.pbBool and self.takeScreenshot:
+                    stats = f"./screenshots/screenshot_{self.count}.png"
+                    pyautogui.screenshot(stats)
+                    self.takeScreenshot = False
+                    self.send_image_pushbullet(self.pbAccTkn, stats)
+        """flag = True
+        while True:
+            if not self.isrunning:
+                return
+            try:
+                pyautogui.click(
+                    pyautogui.center(pyautogui.locateOnScreen(steam, confidence=0.9))
+                )
+                self.print_to_GUI("Clicking on Steam")
+                time.sleep(3)
+                break
+            except:
+                if flag:
+                    self.print_to_GUI("No Steam open")
+                    self.print_to_GUI("Waiting steam to open...")
+                    flag = False
+                time.sleep(10)
+        """
+        """self.stage = check_stage(self.buttons, lambda: self.runningchck())
         prevstage = ""
         stagecount = 0
         ingamecount = 0
         while self.isrunning:
             print(self.stage)
-            if self.tier==0 and self.numberGames>1:
-                self.print_to_GUI("Trial has ended, please open discord link to register:  https://discord.gg/")
-                break
             if not self.isrunning:
                 break
             if self.stage == "lobby":
+                if self.tier == 0 and self.numberGames >= 1:
+                    self.print_to_GUI(
+                        "Trial has ended, please open discord link to register:  https://discord.gg/"
+                    )
+                    break
                 self.print_to_GUI("Looking for play button")
                 if check_btns(stage_btns[self.stage], lambda: self.runningchck()):
                     btnlist["play_button"].click()
@@ -213,8 +494,8 @@ class mainLoop:
                     self.print_to_GUI("Waiting to die")
                     self.print_to_GUI("Activating Anti-AFK")
                     self.waitToCrouchTS = datetime.datetime.now().timestamp()
-                    self.firstInGame=False
-                if self.crouched!=True:
+                    self.firstInGame = False
+                if self.crouched != True:
                     if datetime.datetime.now().timestamp() - self.waitToCrouchTS > 30.0:
                         pyautogui.press("ctrl")
                         self.print_to_GUI("Crouching")
@@ -252,16 +533,20 @@ class mainLoop:
                     self.stage = "lobby"
                 else:
                     self.stage = "lobby"
+
             elif self.stage == "stop":
                 self.print_to_GUI("Bot stopped")
+
+            elif self.stage == None:
+                self.stage = check_stage(self.buttons, lambda: self.runningchck())
 
             if self.stage == prevstage:
                 stagecount += 1
             else:
                 prevstage = self.stage
                 stagecount = 0
-            if stagecount > 50:
+
+            if stagecount > 30:
                 self.print_to_GUI("Stuck in loop")
-                time.sleep(5)
                 self.stage = check_stage(self.buttons, lambda: self.runningchck())
-                stagecount = 0
+                stagecount = 0 """

@@ -1,10 +1,10 @@
 import os
 import tkinter as tk
 from tkinter import filedialog
-from tkinter.constants import END, TRUE
+from tkinter.constants import E, END, TRUE
 import tkinter.font as tkFont
-import requests, datetime, time, mainbotloop, uuid, sys
-from validate_email import validate_email
+import requests, datetime, time, mainbotloop, uuid, sys, re
+import pyautogui
 
 
 def resource_path(rel_path):
@@ -17,28 +17,33 @@ class App:
     def __init__(self):
         self.root = tk.Tk()
         # setting title
-        self.root.title(str(uuid.uuid4())[:8])
-        self.root.iconbitmap(resource_path("bot_icon.ico"))
+        self.root.title(str("AnubisCrystalBot"))
+        self.root.iconbitmap("bot_icon.ico")
         # setting window size
         width = 500
         height = 250
         screenwidth = self.root.winfo_screenwidth()
         screenheight = self.root.winfo_screenheight()
-        alignstr = "%dx%d+%d+%d" % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
+        alignstr = "%dx%d+%d+%d" % (
+            width,
+            height,
+            (screenwidth - width) / 2,
+            (screenheight - height) / 2,
+        )
         self.root.geometry(alignstr)
         self.root.resizable(width=False, height=False)
-        self.fontFamily = "Arial"
+        self.fontFamily = "Calibri"
         self.mainbot = None
-        self.tier=3
-        self.login=False
+        self.tier = 3
+        self.login = False
 
         self.title_label = tk.Label(self.root)
         ft = tkFont.Font(family=self.fontFamily, size=24)
         self.title_label["font"] = ft
         self.title_label["fg"] = "#333333"
         self.title_label["justify"] = "center"
-        self.title_label["text"] = "FortBot - Log in"
-        self.title_label.place(x=140, y=10, width=219, height=69)
+        self.title_label["text"] = "AnubisCrystalBot - Log in"
+        self.title_label.place(x=10, y=10, width=500, height=69)
 
         self.email_label = tk.Label(self.root)
         ft = tkFont.Font(family=self.fontFamily, size=14)
@@ -78,19 +83,145 @@ class App:
         self.login_btn["fg"] = "#ffffff"
         self.login_btn["justify"] = "center"
         self.login_btn["text"] = "Login"
-        self.login_btn.place(x=70, y=180, width=161, height=41)
+        self.login_btn.place(x=180, y=180, width=161, height=41)
         self.login_btn["command"] = self.login_btn_command
 
-        self.free_tr_btn = tk.Button(self.root)
-        self.free_tr_btn["bg"] = "#fffa65"
-        ft = tkFont.Font(family="Franklin Gothic Medium", size=14, weight="bold")
-        self.free_tr_btn["font"] = ft
-        self.free_tr_btn["fg"] = "#000000"
-        self.free_tr_btn["justify"] = "center"
-        self.free_tr_btn["text"] = "Free Trial"
-        self.free_tr_btn.place(x=280, y=180, width=161, height=41)
-        self.free_tr_btn["command"] = self.free_tr_btn_command
         self.root.mainloop()
+
+    def showAttackScroll(self):
+        text = tk.Text(self.root)
+        text.grid(row=2, column=1)
+        self.sbFlank = tk.Scrollbar(self.root, command=text.yview)
+        self.sbFlank.grid(row=2, column=1)
+        text.configure(yscrollcommand=self.sbFlank.set)
+        for i in range(10):
+            button = tk.Button(text)
+            text.window_create("end", window=button)
+            text.insert("end", "\n")
+        text.configure(state="disabled")
+
+    def showSupportScroll(self):
+        text = tk.Text(self.root)
+        text.place(x=1200, y=20, width=200, height=500)
+        button = tk.Button(text="Groove", command=self.setSupportChampionGrover)
+        text.window_create("end", window=button)
+        text.insert("end", "\n")
+        button = tk.Button(text="Corvus", command=self.setSupportChampionCorvus)
+        text.window_create("end", window=button)
+        text.insert("end", "\n")
+        button = tk.Button(text="Furia", command=self.setSupportChampionFuria)
+        text.window_create("end", window=button)
+        text.insert("end", "\n")
+        button = tk.Button(text="Grohk", command=self.setSupportChampionGrohk)
+        text.window_create("end", window=button)
+        text.insert("end", "\n")
+        button = tk.Button(text="Io", command=self.setSupportChampionIo)
+        text.window_create("end", window=button)
+        text.insert("end", "\n")
+        button = tk.Button(text="Jenos", command=self.setSupportChampionJenos)
+        text.window_create("end", window=button)
+        text.insert("end", "\n")
+        button = tk.Button(text="Lillith", command=self.setSupportChampionLillith)
+        text.window_create("end", window=button)
+        text.insert("end", "\n")
+        button = tk.Button(text="Maldamba", command=self.setSupportChampionMaldamba)
+        text.window_create("end", window=button)
+        text.insert("end", "\n")
+        button = tk.Button(text="Pip", command=self.setSupportChampionPip)
+        text.window_create("end", window=button)
+        text.insert("end", "\n")
+        button = tk.Button(text="Rei", command=self.setSupportChampionRei)
+        text.window_create("end", window=button)
+        text.insert("end", "\n")
+        button = tk.Button(text="Seris", command=self.setSupportChampionSeris)
+        text.window_create("end", window=button)
+        text.insert("end", "\n")
+        button = tk.Button(text="Ying", command=self.setSupportChampionYing)
+        text.window_create("end", window=button)
+        text.insert("end", "\n")
+        text.configure(state="disabled")
+
+    def setSupportChampionGrover(self):
+        mainbotloop.championType = "Support"
+        mainbotloop.championSelected = True
+        mainbotloop.champion = "GROVER"
+        self.print_to_GUI("Picking Grover")
+
+    def setSupportChampionCorvus(self):
+        mainbotloop.championType = "Support"
+        mainbotloop.championSelected = True
+        mainbotloop.champion = "CORVUS"
+        self.print_to_GUI("Picking Corvus")
+
+    def setSupportChampionFuria(self):
+        mainbotloop.championType = "Support"
+        mainbotloop.championSelected = True
+        mainbotloop.champion = "FURIA"
+        self.print_to_GUI("Picking Furia")
+
+    def setSupportChampionGrohk(self):
+        mainbotloop.championType = "Support"
+        mainbotloop.championSelected = True
+        mainbotloop.champion = "GROHK"
+        self.print_to_GUI("Picking Grohk")
+
+    def setSupportChampionGrover(self):
+        print("GROVER")
+        mainbotloop.championType = "Support"
+        mainbotloop.championSelected = True
+        mainbotloop.champion = "GROVER"
+        self.print_to_GUI("Picking Grover")
+
+    def setSupportChampionIo(self):
+        mainbotloop.championType = "Support"
+        mainbotloop.championSelected = True
+        mainbotloop.champion = "IO"
+        self.print_to_GUI("Picking Io")
+
+    def setSupportChampionJenos(self):
+        mainbotloop.championType = "Support"
+        mainbotloop.championSelected = True
+        mainbotloop.champion = "JENOS"
+        self.print_to_GUI("Picking Jenos")
+
+    def setSupportChampionLillith(self):
+        mainbotloop.championType = "Support"
+        mainbotloop.championSelected = True
+        mainbotloop.champion = "LILLITH"
+        self.print_to_GUI("Picking Lillith")
+
+    def setSupportChampionMaldamba(self):
+        mainbotloop.championType = "Support"
+        mainbotloop.championSelected = True
+        mainbotloop.champion = "MAL'DAMBA"
+        self.print_to_GUI("Picking Mal'Damba")
+
+    def setSupportChampionPip(self):
+        mainbotloop.championType = "Support"
+        mainbotloop.championSelected = True
+        mainbotloop.champion = "PIP"
+        self.print_to_GUI("Picking Pip")
+
+    def setSupportChampionRei(self):
+        mainbotloop.championType = "Support"
+        mainbotloop.championSelected = True
+        mainbotloop.champion = "REI"
+        self.print_to_GUI("Picking Rei")
+
+    def setSupportChampionSeris(self):
+        mainbotloop.championType = "Support"
+        mainbotloop.championSelected = True
+        mainbotloop.champion = "SERIS"
+        self.print_to_GUI("Picking Seris")
+
+    def setSupportChampionYing(self):
+        mainbotloop.championType = "Support"
+        mainbotloop.championSelected = True
+        mainbotloop.champion = "YING"
+        self.print_to_GUI("Picking Ying")
+
+    def clickFlankChampion(self):
+        print("TEST2")
 
     def clear(self):
         widget_list = self.root.place_slaves()
@@ -104,13 +235,18 @@ class App:
             print("unchecked")
 
     def free_tr_btn_command(self):
-        self.tier=0
+        self.tier = 0
         self.clear()
         width = 750
         height = 400
         screenwidth = self.root.winfo_screenwidth()
         screenheight = self.root.winfo_screenheight()
-        alignstr = "%dx%d+%d+%d" % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
+        alignstr = "%dx%d+%d+%d" % (
+            width,
+            height,
+            (screenwidth - width) / 2,
+            (screenheight - height) / 2,
+        )
         self.root.geometry(alignstr)
         self.root.resizable(width=False, height=False)
 
@@ -145,9 +281,13 @@ class App:
         self.textBox["font"] = ft
         self.textBox["fg"] = "#333333"
         self.textBox.place(x=180, y=50, width=520, height=260)
-        self.textBox.tag_config("warning", background="#fffa65", selectbackground="black")
+        self.textBox.tag_config(
+            "warning", background="#fffa65", selectbackground="black"
+        )
         self.textBox.tag_config("error", background="#e74c3c", selectbackground="black")
-        self.textBox.tag_config("control", background="#2ecc71", selectbackground="black")
+        self.textBox.tag_config(
+            "control", background="#2ecc71", selectbackground="black"
+        )
         self.textBox.tag_config("basic", background="white", selectbackground="black")
 
         logoutButton = tk.Button(self.root)
@@ -161,86 +301,35 @@ class App:
         logoutButton["command"] = self.logout
 
     def authenticate(self):
-        resp = requests.get("https://rentry.co/pk2h5/raw")
-        emails = resp.text.split("\n")
+        n_email = self.email_entry.get()
+        resp = requests.get(
+            "https://rentry.co/pk2h5/raw", verify="./certifi/cacert.pem"
+        ).text
+        mo = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}")
+        emails = mo.findall(resp)
 
-        self.email_error=tk.Label(self.root)
-        self.email_error["text"]="invalid login. please try again"
-        ft = tkFont.Font(family=self.fontFamily, size=10)
-        self.email_error["font"] = ft
-        self.email_error["fg"] = "#ff0000"
-        self.email_error.place(x=130, y=220, width=267, height=15)
-
-        for i in emails:
-            is_valid = validate_email(
-                email_address=i,
-                check_format=True,
-                check_blacklist=True,
-                check_dns=True,
-                dns_timeout=10,
-                check_smtp=True,
-                smtp_timeout=10,
-                smtp_helo_host='my.host.name',
-                smtp_from_address='my@from.addr.ess',
-                smtp_skip_tls=False,
-                smtp_tls_context=None,
-                smtp_debug=False
-                )
-            
-            print(i)
-
-            if is_valid:
+        for email in emails:
+            if n_email == email:
                 return True
-        
+
         return False
 
-    # def authenticate(self):
-    #     # payload 
-    #     # secret=
-    #     # r = requests.post(url, data=payload)
-    #     # jsonAns = r.json()
-    #     # if jsonAns["days"]>0:
-    #         # return True
-    #     # else:
-    #         # return False  
-    #     url="https://rentry.co/pk2h5/raw"
-
-    #     r = request.get("https://rentry.co/pk2h5/raw")
-    #     emails = r.text.split("\n")
-
-    #     for i in emails:
-    #         is_valid = validate_email(
-    #             email_address=i,
-    #             check_format=True,
-    #             check_blacklist=True,
-    #             check_dns=True,
-    #             dns_timeout=10,
-    #             check_smtp=True,
-    #             smtp_timeout=10,
-    #             smtp_helo_host='my.host.name',
-    #             smtp_from_address='my@from.addr.ess',
-    #             smtp_skip_tls=False,
-    #             smtp_tls_context=None,
-    #             smtp_debug=False
-    #             )
-
-    #         if is_valid:
-    #             return True
-        
-    #     return False
-
-
-
     def login_btn_command(self):
-        self.login=self.authenticate()
+        # self.login=self.authenticate()
         # self.login=True
-        if self.login:
+        """self.authenticate() =="""
+        if True:
             self.clear()
-            width = 1100
-            height = 400
+            width = 1600
+            height = 700
             screenwidth = self.root.winfo_screenwidth()
             screenheight = self.root.winfo_screenheight()
-            alignstr = "%dx%d+%d+%d" % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
+            alignstr = "%dx%d+%d+%d" % (
+                width,
+                height,
+                (screenwidth - width) / 2,
+                (screenheight - height) / 2,
+            )
             self.root.geometry(alignstr)
             self.root.resizable(width=False, height=False)
 
@@ -275,11 +364,19 @@ class App:
             self.textBox["font"] = ft
             self.textBox["fg"] = "#333333"
             self.textBox.place(x=180, y=50, width=520, height=260)
-            self.textBox.tag_config("warning", background="#fffa65", selectbackground="black")
-            self.textBox.tag_config("error", background="#e74c3c", selectbackground="black")
-            self.textBox.tag_config("control", background="#2ecc71", selectbackground="black")
-            self.textBox.tag_config("basic", background="white", selectbackground="black")
-            
+            self.textBox.tag_config(
+                "warning", background="#fffa65", selectbackground="black"
+            )
+            self.textBox.tag_config(
+                "error", background="#e74c3c", selectbackground="black"
+            )
+            self.textBox.tag_config(
+                "control", background="#2ecc71", selectbackground="black"
+            )
+            self.textBox.tag_config(
+                "basic", background="white", selectbackground="black"
+            )
+
             logoutButton = tk.Button(self.root)
             logoutButton["bg"] = "#efefef"
             ft = tkFont.Font(family=self.fontFamily, size=10)
@@ -317,79 +414,15 @@ class App:
             clearButton.place(x=540, y=330, width=70, height=25)
             clearButton["command"] = self.clearText
 
-            jumpLabel = tk.Label(self.root)
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            jumpLabel["font"] = ft
-            jumpLabel["fg"] = "#333333"
-            jumpLabel["justify"] = "center"
-            jumpLabel["text"] = "Jump from bus randomly"
-            jumpLabel.place(x=830, y=60, width=140, height=30)
-
-            self.minJumpTimeVal = tk.IntVar()
-            self.minJumpTime = tk.Entry(self.root)
-            self.minJumpTime["borderwidth"] = "1px"
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            self.minJumpTime["font"] = ft
-            self.minJumpTime["fg"] = "#333333"
-            self.minJumpTime["justify"] = "left"
-            self.minJumpTime["text"] = self.minJumpTimeVal
-            self.minJumpTime.place(x=830, y=90, width=30, height=31)
-
-            self.maxJumpTimeVal = tk.IntVar()
-            self.maxJumpTimeVal.set(25)
-            self.maxJumpTime = tk.Entry(self.root)
-            self.maxJumpTime["borderwidth"] = "1px"
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            self.maxJumpTime["font"] = ft
-            self.maxJumpTime["fg"] = "#333333"
-            self.maxJumpTime["justify"] = "left"
-            self.maxJumpTime["text"] = self.maxJumpTimeVal
-            self.maxJumpTime.place(x=940, y=90, width=30, height=30)
-
-            fromLabel = tk.Label(self.root)
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            fromLabel["font"] = ft
-            fromLabel["fg"] = "#333333"
-            fromLabel["justify"] = "center"
-            fromLabel["text"] = "from:"
-            fromLabel.place(x=750, y=90, width=70, height=25)
-
-            toLabel = tk.Label(self.root)
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            toLabel["font"] = ft
-            toLabel["fg"] = "#333333"
-            toLabel["justify"] = "center"
-            toLabel["text"] = "to:"
-            toLabel.place(x=870, y=90, width=70, height=25)
-
-            secondsLabel = tk.Label(self.root)
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            secondsLabel["font"] = ft
-            secondsLabel["fg"] = "#333333"
-            secondsLabel["justify"] = "center"
-            secondsLabel["text"] = "seconds"
-            secondsLabel.place(x=980, y=90, width=70, height=25)
-
-            self.landInTreesCheckVal = tk.IntVar()
-            self.landInTreesCheck = tk.Checkbutton(self.root)
-            self.landInTreesCheck["anchor"] = "w"
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            self.landInTreesCheck["font"] = ft
-            self.landInTreesCheck["fg"] = "#333333"
-            self.landInTreesCheck["justify"] = "left"
-            self.landInTreesCheck["text"] = "Land on set location (1920x1080 resolution only)"
-            self.landInTreesCheck.place(x=745, y=120, width=300, height=25)
-            self.landInTreesCheck["offvalue"] = "0"
-            self.landInTreesCheck["onvalue"] = "1"
-            self.landInTreesCheck["variable"] = self.landInTreesCheckVal
-
             self.screenshotCheckVal = tk.IntVar()
             self.screenshotCheck = tk.Checkbutton(self.root)
             ft = tkFont.Font(family=self.fontFamily, size=10)
             self.screenshotCheck["font"] = ft
             self.screenshotCheck["fg"] = "#333333"
             self.screenshotCheck["justify"] = "left"
-            self.screenshotCheck["text"] = "Save screenshots of Match Stats to your computer"
+            self.screenshotCheck[
+                "text"
+            ] = "Save screenshots of Match Stats to your computer"
             self.screenshotCheck.place(x=745, y=150, width=300, height=25)
             self.screenshotCheck["offvalue"] = "0"
             self.screenshotCheck["onvalue"] = "1"
@@ -414,6 +447,16 @@ class App:
             self.pushCheck["offvalue"] = 0
             self.pushCheck["onvalue"] = 1
             self.pushCheck["variable"] = self.pushCheckVal
+
+            """self.btnShowFlank = tk.Button(self.root)
+            self.btnShowFlank["text"] = "Pick Flanker"
+            self.btnShowFlank["command"] = self.showAttackScroll
+            self.btnShowFlank.place(x=90, y=180, width=161, height=41)"""
+
+            self.btnShowSupport = tk.Button(self.root)
+            self.btnShowSupport["text"] = "Pick Support"
+            self.btnShowSupport["command"] = self.showSupportScroll
+            self.btnShowSupport.place(x=50, y=180, width=90, height=30)
 
             self.token = tk.Entry(self.root)
             self.token["borderwidth"] = "1px"
@@ -451,32 +494,32 @@ class App:
             resetButton["text"] = "Reset saved settings "
             resetButton.place(x=940, y=310, width=118, height=30)
         else:
-            self.email_error=tk.Label(self.root)
-            self.email_error["text"]="invalid login. please try again"
+            self.email_error = tk.Label(self.root)
+            self.email_error["text"] = "invalid login. please try again"
             ft = tkFont.Font(family=self.fontFamily, size=10)
             self.email_error["font"] = ft
             self.email_error["fg"] = "#ff0000"
             self.email_error.place(x=130, y=220, width=267, height=15)
 
     def startBot(self):
-        if self.tier==0:
-             self.mainbot = mainbotloop.mainLoop(self.textBox, (0, 25), False, False, 0, False, tier=self.tier)
+        if self.tier == 0:
+            self.mainbot = mainbotloop.mainLoop(
+                self.textBox, (0, 25), False, False, 0, False, tier=self.tier, times=0
+            )
         else:
-            try:
-                minJumpSec = self.minJumpTimeVal.get()
-                maxJumpSec = self.maxJumpTimeVal.get()
-            except:
-                self.print_to_GUI("Time input not valid please re-enter")
-                return
-            if (minJumpSec < 0 or minJumpSec > 25) or (maxJumpSec < 0 or maxJumpSec > 25) or (minJumpSec > maxJumpSec):
-                self.print_to_GUI("Time input not valid please re-enter")
-                return
-            landOnTreesBool = self.landInTreesCheckVal.get()
             statsBool = self.screenshotCheckVal.get()
             pbBool = self.pushCheckVal.get()
             pbAccTkn = self.token.get()
             self.mainbot = mainbotloop.mainLoop(
-                self.textBox, (minJumpSec, maxJumpSec), statsBool, pbBool, pbAccTkn, landOnTreesBool, tier=self.tier)
+                self.textBox,
+                (2, 4),
+                statsBool,
+                pbBool,
+                pbAccTkn,
+                False,
+                tier=self.tier,
+                times=0,
+            )
         if not self.mainbot.invalid:
             if self.mainbot.startLoop():
                 self.startButton["state"] = "disabled"
@@ -512,15 +555,19 @@ class App:
         height = 250
         screenwidth = self.root.winfo_screenwidth()
         screenheight = self.root.winfo_screenheight()
-        alignstr = "%dx%d+%d+%d" % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
+        alignstr = "%dx%d+%d+%d" % (
+            width,
+            height,
+            (screenwidth - width) / 2,
+            (screenheight - height) / 2,
+        )
         self.root.geometry(alignstr)
         self.root.resizable(width=False, height=False)
         self.title_label.place(x=140, y=10, width=219, height=69)
         self.email_label.place(x=50, y=100, width=70, height=25)
         self.email_entry.place(x=130, y=90, width=267, height=42)
         self.rembr_chkbx.place(x=180, y=140, width=167, height=30)
-        self.login_btn.place(x=70, y=180, width=161, height=41)
-        self.free_tr_btn.place(x=280, y=180, width=161, height=41)
+        self.login_btn.place(x=180, y=180, width=161, height=41)
 
     def logout(self):
         self.showLoginFrame()
@@ -533,7 +580,11 @@ class App:
     def pbSendTestMessage(self):
         url = "https://api.pushbullet.com/v2/pushes"
         headers = {"Access-Token": self.token.get()}
-        data = {"type": "note", "title": "FortBot Pushbullet test", "body": "1, 2, 3 ... all set!"}
+        data = {
+            "type": "note",
+            "title": "FortBot Pushbullet test",
+            "body": "1, 2, 3 ... all set!",
+        }
         res = requests.post(url, json=data, headers=headers)
         if res.status_code != 200 or self.token.get() == "":
             self.print_to_GUI("Incorrect Access Token for Pushbullet", "error")
@@ -545,7 +596,9 @@ class App:
             return
         self.textBox.configure(state="normal")
         autoscroll = False
-        ts = datetime.datetime.fromtimestamp(time.time()).strftime("%Y/%m/%d %H:%M:%S || ")
+        ts = datetime.datetime.fromtimestamp(time.time()).strftime(
+            "%Y/%m/%d %H:%M:%S || "
+        )
         if self.textBox.yview()[1] == 1:
             autoscroll = True
         self.textBox.insert(END, ts + msg + "\n", type)
