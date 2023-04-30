@@ -184,12 +184,15 @@ class mainLoop:
         )
 
         self.iconlist = [
-            os.path.join(championPath, f)
-            for f in os.listdir(championPath)
+            os.path.join(self.championPath, f)
+            for f in os.listdir(self.championPath)
             if f.endswith(".png")
         ][1:]
 
-        self.icons = [championPath + "/" + f for f in os.listdir(championPath)][1:]
+        self.icons = [
+            self.championPath + "/" + f for f in os.listdir(self.championPath)
+        ][1:]
+        print(self.icons, self.iconlist)
 
     def pickChampion(self):
         time.sleep(2)
@@ -211,8 +214,10 @@ class mainLoop:
                 )
                 self.print_to_GUI(f"Clicked on {icon}")
             except:
-                self.print_to_GUI(f"Didn't find {icon}... waiting for it")
-                iterator.pos -= 1 if iterator.pos > 0 else 0
+                if flag:
+                    self.print_to_GUI(f"Didn't find {icon}... waiting for it")
+                    flag = False
+                iterator.pos = iterator.pos if iterator.pos > 0 else 0
             time.sleep(0.3)
 
         time.sleep(10)
@@ -241,10 +246,42 @@ class mainLoop:
                     continue
 
             elif i == r"PaladinMainbot_pngs\5Champlockin.png":
+                if not self.isrunning:
+                    return
+                flag = True
+                printing = True
+                while flag:
+                    if not self.isrunning:
+                        return
+                    else:
+                        try:
+                            self.pickChampionIcon()
+                        except:
+                            if printing:
+                                self.print_to_GUI(
+                                    f"Waiting to click champion and checking for errors"
+                                )
+                            try:
+                                pyautogui.click(
+                                    pyautogui.center(
+                                        pyautogui.locateOnScreen(
+                                            current, confidence=0.9
+                                        )
+                                    )
+                                )
+                                self.print_to_GUI(f"Found {current}")
+                            except:
+                                if printing:
+                                    self.print_to_GUI(f"No Error")
+                                    printing = False
+                                continue
+                            time.sleep(2)
+                        else:
+                            flag = False
+                            time.sleep(3)
                 flag = True
                 while flag:
                     try:
-                        self.pickChampionIcon()
                         pyautogui.click(
                             pyautogui.center(
                                 pyautogui.locateOnScreen(icon, confidence=0.70)
@@ -252,34 +289,22 @@ class mainLoop:
                         )
                         self.print_to_GUI(f"Found {icon}")
                     except:
-                        self.print_to_GUI(
-                            f"Waiting for {icon} and checking if there is any errors"
-                        )
-                        try:
-                            pyautogui.click(
-                                pyautogui.center(
-                                    pyautogui.locateOnScreen(current, confidence=0.9)
-                                )
-                            )
-                            self.print_to_GUI(f"Found {current}")
-                        except:
-                            self.print_to_GUI(f"No Error")
-                            continue
-                        time.sleep(2)
+                        self.print_to_GUI(f"Waiting for {icon}")
                     else:
                         flag = False
-                        time.sleep(3)
-                continue
-            try:
-                pyautogui.click(
-                    pyautogui.center(pyautogui.locateOnScreen(icon, confidence=0.70))
-                )
-                self.print_to_GUI(f"Found {icon}")
-            except:
-                self.print_to_GUI(f"Waiting for {icon}")
-                iterator.pos -= 1 if iterator.pos > 0 else 0
-                time.sleep(2)
-            time.sleep(4)
+            else:
+                try:
+                    pyautogui.click(
+                        pyautogui.center(
+                            pyautogui.locateOnScreen(icon, confidence=0.70)
+                        )
+                    )
+                    self.print_to_GUI(f"Found {icon}")
+                except:
+                    self.print_to_GUI(f"Waiting for {icon}")
+                    iterator.pos = iterator.pos if iterator.pos > 0 else 0
+                    time.sleep(2)
+            time.sleep(2)
         time.sleep(2)
         self.print_to_GUI(f"Started Game")
         time.sleep(3)
@@ -293,7 +318,6 @@ class mainLoop:
             )
             self.print_to_GUI(f"Found {self.championIcon}")
         except:
-            self.print_to_GUI(f"Waiting for {self.championIcon}")
             raise Exception("Champion not found")
 
     def antiAFKGrover(self):
@@ -401,9 +425,10 @@ class mainLoop:
                 flag = False
             self.pickChampion()
             self.inGameAndRequeue()
-            self.print_to_GUI(f"Game #{self.count}", "control")
-            self.count += 1
-            if self.takeScreenshot:
+            if not self.isrunning:
+                self.print_to_GUI(f"Game #{self.count}", "control")
+                self.count += 1
+            if self.takeScreenshot and not self.isrunning:
                 self.print_to_GUI("Returning to lobby")
                 if self.pbBool and self.takeScreenshot:
                     stats = f"./screenshots/screenshot_{self.count}.png"
