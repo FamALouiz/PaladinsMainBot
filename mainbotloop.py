@@ -413,21 +413,23 @@ class mainLoop:
         time.sleep(2)
 
     def actual_loop(self):
+        flag = True
         while True:
             self.updateData()
             self.pbBool = True
-            flag = True
             if flag:
-                # self.get_fortnite_window()
+                self.get_fortnite_window()
                 time.sleep(2)
                 self.startGame()
                 time.sleep(2)
                 flag = False
             self.pickChampion()
             self.inGameAndRequeue()
-            if not self.isrunning:
+            if self.isrunning:
                 self.print_to_GUI(f"Game #{self.count}", "control")
                 self.count += 1
+            elif not self.isrunning:
+                return
             if self.takeScreenshot and not self.isrunning:
                 self.print_to_GUI("Returning to lobby")
                 if self.pbBool and self.takeScreenshot:
