@@ -294,6 +294,13 @@ class App:
                     "lastLogin": now,
                 }
             )
+            keys.push(
+                {
+                    "Date" : datetime.date().strftime("%m/%d/%Y"),
+                    "days" : 365,
+                    "key" : reg_key,
+                }
+            )
 
     def showAttackScroll(self):
         text = tk.Text(self.root)
