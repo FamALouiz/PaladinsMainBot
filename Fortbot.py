@@ -5,6 +5,8 @@ from tkinter.constants import E, END, TRUE
 import tkinter.font as tkFont
 import requests, datetime, time, mainbotloop, uuid, sys, re
 import pyautogui
+from firebase_admin import db
+import firebase_admin
 
 
 def resource_path(rel_path):
@@ -17,11 +19,31 @@ class App:
     def __init__(self):
         self.root = tk.Tk()
         # setting title
+        self.cred = firebase_admin.credentials.Certificate(
+            {
+                "type": "service_account",
+                "project_id": "testing-python-9d5ff",
+                "private_key_id": "d0dd0f69a26d73b1ef30812ef04146d02f146d07",
+                "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCoZlHUBMQSHfTM\njc2brxjGM10fu5UXYvBklBgJ3MJcQHxqFx9bO87I7nlZvwZMzI7PEVHWr5jT2oXd\nj6rxKlCpOuyD6pDxATkwmFsCgqpTxSIAjvQk0mp4X8GmFRrDqOg0kvkkGxS9TNBX\n/S+CVLP7fy9wXrBSLHyTlEeJ6TRFgy2iL8Qv7dv3VnIz/5/FFukCXCDKO5no2sQ9\njysN6ffB2oQXB0Bg2K7ir0FyQ3QJdRHfvlAjKPAMiQhDeNd0gzr95FGB8Z+fzIev\n3xSYgRwfA+up/c3TOPnLvRQ74LIGz3UHbxFw1UMyj1t973FHWHtoR0A7mQNVnKij\n1ImbMNE7AgMBAAECggEALGd2kkKDdQeDImEN40xjavfmSVTMNnN3Uf4e7JLSiULT\ny6G3OfZmS2NeikSto5iY248ElmiNEuffPpIAkEEJLeaEsTAr8fDRpLe338yWnyov\nEhif1gnJ213ckS+ldAxY1mwe199wM45KrbjsSyCMqPdbifTd530liECkMIBWsTE9\nLJLFh6PKS+P4TodWJOK5FPUhYS2s+mmkcQ+PoyMpkxY6Ihno9pJOt7rxYORn1ufl\n8cNAPiECZbzgmCLnXAxXjGZHi7wOA7e9eGobM9aBkvIL1439c0OdHFxwAJue9mxC\nprlfNWkOioemxIOpwCn27Ab4OmQ+zhs2DCbKy1iNgQKBgQDb3EIBxjAxSojQPdSO\nS3aGrtxjFaHDuzQP9a2hJh+ozRG7o79ctsQl0nzDmJcF2vEckScyunhRSjZhHbpU\n0M2xCaef6+5bQVyrDCCOuFapz9CG7hd2u2PJKk5R2aCu7tluIZPv6KOYR+m6LBEH\nLDPUbQ5bfeA03JnhWLtHWLVdwQKBgQDEFJd3csXM7fsQbAD0/9fJ7Mae7qu6xW0B\nijuRTVP+XVRP+nUhU+dGRD5itqvfFs1dFXMw4jhLG8Aq5w8XRMVZ8iLUT0gzO4Yr\nPX1geKKn2uq0XWs4qVWi4E9NzBnyUtQSf1fSMRG2858T9mp2MmAsaSiBaH19EJZH\nXpTWcREl+wKBgQCWm7Vjvb35phM+g3x91VfmPxadkY30pOKvJB7Cy3jYi1HgdfV6\nr4CCYEQzQO4Dhs2wQgbWC0KsfOfvcwvXWgntgq2fMWFghc/TJEWRPtmvDbrNE4Bj\nR0692Qs5qpkV/GxZswrCR1z5zhlf/RvVDASdOe+h4QKbc5q98aio4S2sgQKBgDnx\nt90Vrrxjq2jr8dB09qj2bq+y6k7UXuUwm2/SATtPC0ZjRk/mApdyPVlgkCPqEiAq\n4ZKVl3sipURIad4/dW6iLoa9MyHoujp2/mEO5UpjWC6a2L+y0trCHM1pvlUtAvzA\nYwx7cbe2ANGeZVGui1s0bELpxQO7bh2DJsrEOQQXAoGATekXJGKOIRz3jNm1Qvqd\nAf4OzYU7zpHTLPZEmSJ9ubbZa75nzwjPpE8sf8a6FPMRdgaYvg6aHbOaOW9OEStL\nEqqh4SQFXrh+s+vMzbaCNMEo5V870r6MnHRHOULSwtPvo7GNZz/u0/vBfw+SXq+o\nyyaIznMaaznadiBdGgfE03k=\n-----END PRIVATE KEY-----\n",
+                "client_email": "firebase-adminsdk-fek1b@testing-python-9d5ff.iam.gserviceaccount.com",
+                "client_id": "110568083276339576805",
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+                "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+                "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fek1b%40testing-python-9d5ff.iam.gserviceaccount.com",
+            }
+        )
+        self.firebase = firebase_admin.initialize_app(
+            self.cred,
+            {
+                "databaseURL": "https://anubisproducts-53639.firebaseio.com/",
+            },
+        )
         self.root.title(str("AnubisCrystalBot"))
         self.root.iconbitmap("bot_icon.ico")
         # setting window size
         width = 500
-        height = 250
+        height = 400
         screenwidth = self.root.winfo_screenwidth()
         screenheight = self.root.winfo_screenheight()
         alignstr = "%dx%d+%d+%d" % (
@@ -62,13 +84,30 @@ class App:
         self.email_entry["text"] = ""
         self.email_entry.place(x=130, y=90, width=267, height=42)
 
+        self.password_label = tk.Label(self.root)
+        ft = tkFont.Font(family=self.fontFamily, size=14)
+        self.password_label["font"] = ft
+        self.password_label["fg"] = "#333333"
+        self.password_label["justify"] = "center"
+        self.password_label["text"] = "Password"
+        self.password_label.place(x=50, y=160, width=80, height=25)
+
+        self.password_entry = tk.Entry(self.root)
+        self.password_entry["borderwidth"] = "1px"
+        ft = tkFont.Font(family=self.fontFamily, size=14)
+        self.password_entry["font"] = ft
+        self.password_entry["fg"] = "#333333"
+        self.password_entry["justify"] = "left"
+        self.password_entry["text"] = ""
+        self.password_entry.place(x=130, y=150, width=267, height=42)
+
         self.rembr_chkbx = tk.Checkbutton(self.root)
         ft = tkFont.Font(family=self.fontFamily, size=12)
         self.rembr_chkbx["font"] = ft
         self.rembr_chkbx["fg"] = "#333333"
         self.rembr_chkbx["justify"] = "center"
         self.rembr_chkbx["text"] = "Remember me"
-        self.rembr_chkbx.place(x=180, y=140, width=167, height=30)
+        self.rembr_chkbx.place(x=180, y=300, width=167, height=30)
         self.rembr_chkbx_value = tk.BooleanVar()
         self.rembr_chkbx["variable"] = self.rembr_chkbx_value
         # self.rembr_chkbx["variable"].set(False)
@@ -83,7 +122,7 @@ class App:
         self.login_btn["fg"] = "#ffffff"
         self.login_btn["justify"] = "center"
         self.login_btn["text"] = "Login"
-        self.login_btn.place(x=180, y=180, width=161, height=41)
+        self.login_btn.place(x=180, y=330, width=161, height=41)
         self.login_btn["command"] = self.login_btn_command
 
         self.root.mainloop()
@@ -302,23 +341,45 @@ class App:
 
     def authenticate(self):
         n_email = self.email_entry.get()
-        resp = requests.get(
-            "https://rentry.co/pk2h5/raw", verify="./certifi/cacert.pem"
-        ).text
-        mo = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}")
-        emails = mo.findall(resp)
-
-        for email in emails:
-            if n_email == email:
-                return True
-
+        n_password = self.password_entry.get()
+        users = db.get("/PaladinsUsers")
+        emailCheck = False
+        passwordCheck = False
+        for user in users:
+            if n_email == user["Email"]:
+                emailCheck = True
+            if n_password == user["Password"]:
+                passwordCheck = True
+            if emailCheck and passwordCheck:
+                endDate = user["enddate"]
+                currentDate = datetime.datetime.now()
+                date_format = "%Y-%m-%dT%H:%M:%SZ"
+                date_obj = datetime.datetime.strptime(endDate, date_format)
+                if endDate > currentDate:
+                    self.email_error = tk.Label(self.root)
+                    self.email_error["text"] = "Ops! Key has ran out"
+                    ft = tkFont.Font(family=self.fontFamily, size=10)
+                    self.email_error["font"] = ft
+                    self.email_error["fg"] = "#ff0000"
+                    self.email_error.place(x=130, y=340, width=267, height=15)
+                    return False
+                else:
+                    return True
+            else:
+                n_email = False
+                n_password = False
+        self.email_error = tk.Label(self.root)
+        self.email_error["text"] = "Invalid login. please try again"
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        self.email_error["font"] = ft
+        self.email_error["fg"] = "#ff0000"
+        self.email_error.place(x=130, y=220, width=267, height=15)
         return False
 
     def login_btn_command(self):
         # self.login=self.authenticate()
         # self.login=True
-        """self.authenticate() =="""
-        if True:
+        if self.authenticate() == True:
             self.clear()
             width = 1600
             height = 700
