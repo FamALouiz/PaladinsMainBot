@@ -247,7 +247,7 @@ class App:
     def Register(self):
         reg_email = self.register_email_entry.get()
         reg_password = self.register_password_entry.get()
-        key = self.register_key_entry.get()
+        reg_key = self.register_key_entry.get()
         username = self.register_username_entry.get()
         if "@" not in reg_email or ".com" not in reg_email:
             self.email_error = tk.Label(self.registerWindow)
@@ -267,11 +267,23 @@ class App:
                     self.email_error["fg"] = "#ff0000"
                     self.email_error.place(x=130, y=215, width=267, height=15)
                     return
+
+            keys = db.reference("/PaladinsKeys")
+            for key in keys.get():
+                if key["key"] == reg_key:
+                    self.email_error = tk.Label(self.registerWindow)
+                    self.email_error["text"] = "Key already used"
+                    ft = tkFont.Font(family=self.fontFamily, size=10)
+                    self.email_error["font"] = ft
+                    self.email_error["fg"] = "#ff0000"
+                    self.email_error.place(x=130, y=215, width=267, height=15)
+                    return
+
             now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%sZ")
             users.push(
                 {
                     "Email": reg_email,
-                    "KeyUsed": key,
+                    "KeyUsed": reg_key,
                     "PaladinsVersin": "1.0.0.1",
                     "Password": reg_password,
                     "RemLogin": False,
@@ -511,7 +523,7 @@ class App:
                 currentDate = datetime.datetime.now()
                 date_format = "%Y-%m-%dT%H:%M:%SZ"
                 date_obj = datetime.datetime.strptime(endDate, date_format)
-                if endDate > currentDate:
+                if date_obj > currentDate:
                     self.email_error = tk.Label(self.root)
                     self.email_error["text"] = "Ops! Key has ran out"
                     ft = tkFont.Font(family=self.fontFamily, size=10)
