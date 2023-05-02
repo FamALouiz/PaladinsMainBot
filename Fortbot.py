@@ -107,7 +107,7 @@ class App:
         self.rembr_chkbx["fg"] = "#333333"
         self.rembr_chkbx["justify"] = "center"
         self.rembr_chkbx["text"] = "Remember me"
-        self.rembr_chkbx.place(x=180, y=300, width=167, height=30)
+        self.rembr_chkbx.place(x=180, y=235, width=167, height=30)
         self.rembr_chkbx_value = tk.BooleanVar()
         self.rembr_chkbx["variable"] = self.rembr_chkbx_value
         # self.rembr_chkbx["variable"].set(False)
@@ -125,7 +125,19 @@ class App:
         self.login_btn.place(x=180, y=330, width=161, height=41)
         self.login_btn["command"] = self.login_btn_command
 
+        self.register_btn = tk.Button(self.root)
+        self.register_btn["bg"] = "#6b42f4"
+        ft = tkFont.Font(family="Franklin Gothic Medium", size=14, weight="bold")
+        self.register_btn["font"] = ft
+        self.register_btn["fg"] = "#ffffff"
+        self.register_btn["justify"] = "center"
+        self.register_btn["text"] = "Register"
+        self.register_btn.place(x=180, y=270, width=161, height=41)
+        self.register_btn["command"] = self.register_btn_command
         self.root.mainloop()
+
+    def register_btn_command(self):
+        print("test")
 
     def showAttackScroll(self):
         text = tk.Text(self.root)
@@ -342,7 +354,7 @@ class App:
     def authenticate(self):
         n_email = self.email_entry.get()
         n_password = self.password_entry.get()
-        users = db.get("/PaladinsUsers")
+        users = db.reference("/PaladinsUsers").get()
         emailCheck = False
         passwordCheck = False
         for user in users:
@@ -361,7 +373,7 @@ class App:
                     ft = tkFont.Font(family=self.fontFamily, size=10)
                     self.email_error["font"] = ft
                     self.email_error["fg"] = "#ff0000"
-                    self.email_error.place(x=130, y=340, width=267, height=15)
+                    self.email_error.place(x=130, y=215, width=267, height=15)
                     return False
                 else:
                     return True
@@ -373,7 +385,7 @@ class App:
         ft = tkFont.Font(family=self.fontFamily, size=10)
         self.email_error["font"] = ft
         self.email_error["fg"] = "#ff0000"
-        self.email_error.place(x=130, y=220, width=267, height=15)
+        self.email_error.place(x=130, y=215, width=267, height=15)
         return False
 
     def login_btn_command(self):
