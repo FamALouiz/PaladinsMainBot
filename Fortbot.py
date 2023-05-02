@@ -251,35 +251,47 @@ class App:
         username = self.register_username_entry.get()
         if "@" not in reg_email or ".com" not in reg_email:
             self.email_error = tk.Label(self.registerWindow)
-            self.email_error["text"] = "Invalid Email"
+            self.email_error["text"] = "Invalid Email please use xxx@xxxx.com"
             ft = tkFont.Font(family=self.fontFamily, size=10)
             self.email_error["font"] = ft
             self.email_error["fg"] = "#ff0000"
-            self.email_error.place(x=130, y=215, width=267, height=15)
+            self.email_error.place(x=130, y=425, width=267, height=15)
         else:
-            users = db.reference("/PaladinsUsers").get()
-            for user in users:
-                if users[user]["Username"] == username:
+            users = db.reference("/PaladinsUsers")
+            usersGet = db.reference("/PaladinsUsers").get()
+            for user in usersGet:
+                if usersGet[user]["Username"] == username:
                     self.email_error = tk.Label(self.registerWindow)
                     self.email_error["text"] = "Username already used"
                     ft = tkFont.Font(family=self.fontFamily, size=10)
                     self.email_error["font"] = ft
                     self.email_error["fg"] = "#ff0000"
-                    self.email_error.place(x=130, y=215, width=267, height=15)
+                    self.email_error.place(x=130, y=425, width=267, height=15)
                     return
 
-            keys = db.reference("/PaladinsKeys").get()
-            for key in keys:
-                if keys[key]["key"] == reg_key:
+            for user in usersGet:
+                if usersGet[user]["Email"] == reg_email:
+                    self.email_error = tk.Label(self.registerWindow)
+                    self.email_error["text"] = "Email already used"
+                    ft = tkFont.Font(family=self.fontFamily, size=10)
+                    self.email_error["font"] = ft
+                    self.email_error["fg"] = "#ff0000"
+                    self.email_error.place(x=130, y=425, width=267, height=15)
+                    return
+
+            keys = db.reference("/PaladinsKeys")
+            keysGet = db.reference("/PaladinsKeys").get()
+            for key in keysGet:
+                if keysGet[key]["key"] == reg_key:
                     self.email_error = tk.Label(self.registerWindow)
                     self.email_error["text"] = "Key already used"
                     ft = tkFont.Font(family=self.fontFamily, size=10)
                     self.email_error["font"] = ft
                     self.email_error["fg"] = "#ff0000"
-                    self.email_error.place(x=130, y=215, width=267, height=15)
+                    self.email_error.place(x=130, y=425, width=267, height=15)
                     return
 
-            now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%SZ")
+            now = datetime.datetime.now()
             users.push(
                 {
                     "Email": reg_email,
@@ -288,19 +300,32 @@ class App:
                     "Password": reg_password,
                     "RemLogin": False,
                     "Username": username,
-                    "date": now,
+                    "date": str(now.strftime("%Y-%m-%dT%H-%M-%SZ")),
                     "days": 365,
-                    "enddate": now + datetime.timedelta(days=365),
-                    "lastLogin": now,
+                    "enddate": str(
+                        (now + datetime.timedelta(days=365)).strftime(
+                            "%Y-%m-%dT%H-%M-%SZ"
+                        )
+                    ),
+                    "lastLogin": str(now.strftime("%Y-%m-%dT%H-%M-%SZ")),
                 }
             )
             keys.push(
                 {
-                    "Date": datetime.date().strftime("%m/%d/%Y"),
+                    "Date": str(datetime.datetime.now().strftime("%m/%d/%Y")),
                     "days": 365,
                     "key": reg_key,
                 }
             )
+            self.email_error = tk.Label(self.registerWindow)
+            self.email_error["text"] = "Done!"
+            ft = tkFont.Font(family=self.fontFamily, size=10)
+            self.email_error["font"] = ft
+            self.email_error["fg"] = "#ff0000"
+            self.email_error.place(x=130, y=425, width=267, height=15)
+            time.sleep(5)
+            self.registerWindow.destroy()
+            return
 
     def showAttackScroll(self):
         text = tk.Text(self.root)
