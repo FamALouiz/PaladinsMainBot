@@ -137,7 +137,91 @@ class App:
         self.root.mainloop()
 
     def register_btn_command(self):
-        print("test")
+        self.registerWindow = tk.Tk()
+        self.registerWindow.title(str("Register"))
+        self.registerWindow.iconbitmap("bot_icon.ico")
+        # setting window size
+        width = 500
+        height = 300
+        screenwidth = self.registerWindow.winfo_screenwidth()
+        screenheight = self.registerWindow.winfo_screenheight()
+        alignstr = "%dx%d+%d+%d" % (
+            width,
+            height,
+            (screenwidth - width) / 2,
+            (screenheight - height) / 2,
+        )
+        self.registerWindow.geometry(alignstr)
+        self.registerWindow.resizable(width=False, height=False)
+        self.fontFamily = "Calibri"
+        self.mainbot = None
+        self.tier = 3
+        self.login = False
+
+        self.register_title_label = tk.Label(self.registerWindow)
+        ft = tkFont.Font(family=self.fontFamily, size=24)
+        self.register_title_label["font"] = ft
+        self.register_title_label["fg"] = "#333333"
+        self.register_title_label["justify"] = "center"
+        self.register_title_label["text"] = "AnubisCrystalBot - Register"
+        self.register_title_label.place(x=10, y=10, width=500, height=69)
+
+        self.register_email_label = tk.Label(self.registerWindow)
+        ft = tkFont.Font(family=self.fontFamily, size=14)
+        self.register_email_label["font"] = ft
+        self.register_email_label["fg"] = "#333333"
+        self.register_email_label["justify"] = "center"
+        self.register_email_label["text"] = "Email"
+        self.register_email_label.place(x=50, y=100, width=70, height=25)
+
+        self.register_email_entry = tk.Entry(self.registerWindow)
+        self.register_email_entry["borderwidth"] = "1px"
+        ft = tkFont.Font(family=self.fontFamily, size=14)
+        self.register_email_entry["font"] = ft
+        self.register_email_entry["fg"] = "#333333"
+        self.register_email_entry["justify"] = "left"
+        self.register_email_entry["text"] = ""
+        self.register_email_entry.place(x=130, y=90, width=267, height=42)
+
+        self.register_password_label = tk.Label(self.registerWindow)
+        ft = tkFont.Font(family=self.fontFamily, size=14)
+        self.register_password_label["font"] = ft
+        self.register_password_label["fg"] = "#333333"
+        self.register_password_label["justify"] = "center"
+        self.register_password_label["text"] = "Password"
+        self.register_password_label.place(x=50, y=160, width=80, height=25)
+
+        self.register_password_entry = tk.Entry(self.registerWindow)
+        self.register_password_entry["borderwidth"] = "1px"
+        ft = tkFont.Font(family=self.fontFamily, size=14)
+        self.register_password_entry["font"] = ft
+        self.register_password_entry["fg"] = "#333333"
+        self.register_password_entry["justify"] = "left"
+        self.register_password_entry["text"] = ""
+        self.register_password_entry.place(x=130, y=150, width=267, height=42)
+
+        self.done_btn = tk.Button(self.registerWindow)
+        self.done_btn["bg"] = "#6b42f4"
+        ft = tkFont.Font(family="Franklin Gothic Medium", size=14, weight="bold")
+        self.done_btn["font"] = ft
+        self.done_btn["fg"] = "#ffffff"
+        self.done_btn["justify"] = "center"
+        self.done_btn["text"] = "Register"
+        self.done_btn.place(x=180, y=220, width=161, height=41)
+        self.done_btn["command"] = self.Register
+
+    def Register(self):
+        reg_email = self.register_email_entry.get()
+        reg_password = self.register_password_entry.get()
+        if "@" not in reg_email or ".com" not in reg_email:
+            self.email_error = tk.Label(self.registerWindow)
+            self.email_error["text"] = "Invalid Email"
+            ft = tkFont.Font(family=self.fontFamily, size=10)
+            self.email_error["font"] = ft
+            self.email_error["fg"] = "#ff0000"
+            self.email_error.place(x=130, y=215, width=267, height=15)
+        else:
+            print("TEST")
 
     def showAttackScroll(self):
         text = tk.Text(self.root)
