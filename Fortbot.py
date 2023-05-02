@@ -22,15 +22,15 @@ class App:
         self.cred = firebase_admin.credentials.Certificate(
             {
                 "type": "service_account",
-                "project_id": "testing-python-9d5ff",
-                "private_key_id": "d0dd0f69a26d73b1ef30812ef04146d02f146d07",
-                "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCoZlHUBMQSHfTM\njc2brxjGM10fu5UXYvBklBgJ3MJcQHxqFx9bO87I7nlZvwZMzI7PEVHWr5jT2oXd\nj6rxKlCpOuyD6pDxATkwmFsCgqpTxSIAjvQk0mp4X8GmFRrDqOg0kvkkGxS9TNBX\n/S+CVLP7fy9wXrBSLHyTlEeJ6TRFgy2iL8Qv7dv3VnIz/5/FFukCXCDKO5no2sQ9\njysN6ffB2oQXB0Bg2K7ir0FyQ3QJdRHfvlAjKPAMiQhDeNd0gzr95FGB8Z+fzIev\n3xSYgRwfA+up/c3TOPnLvRQ74LIGz3UHbxFw1UMyj1t973FHWHtoR0A7mQNVnKij\n1ImbMNE7AgMBAAECggEALGd2kkKDdQeDImEN40xjavfmSVTMNnN3Uf4e7JLSiULT\ny6G3OfZmS2NeikSto5iY248ElmiNEuffPpIAkEEJLeaEsTAr8fDRpLe338yWnyov\nEhif1gnJ213ckS+ldAxY1mwe199wM45KrbjsSyCMqPdbifTd530liECkMIBWsTE9\nLJLFh6PKS+P4TodWJOK5FPUhYS2s+mmkcQ+PoyMpkxY6Ihno9pJOt7rxYORn1ufl\n8cNAPiECZbzgmCLnXAxXjGZHi7wOA7e9eGobM9aBkvIL1439c0OdHFxwAJue9mxC\nprlfNWkOioemxIOpwCn27Ab4OmQ+zhs2DCbKy1iNgQKBgQDb3EIBxjAxSojQPdSO\nS3aGrtxjFaHDuzQP9a2hJh+ozRG7o79ctsQl0nzDmJcF2vEckScyunhRSjZhHbpU\n0M2xCaef6+5bQVyrDCCOuFapz9CG7hd2u2PJKk5R2aCu7tluIZPv6KOYR+m6LBEH\nLDPUbQ5bfeA03JnhWLtHWLVdwQKBgQDEFJd3csXM7fsQbAD0/9fJ7Mae7qu6xW0B\nijuRTVP+XVRP+nUhU+dGRD5itqvfFs1dFXMw4jhLG8Aq5w8XRMVZ8iLUT0gzO4Yr\nPX1geKKn2uq0XWs4qVWi4E9NzBnyUtQSf1fSMRG2858T9mp2MmAsaSiBaH19EJZH\nXpTWcREl+wKBgQCWm7Vjvb35phM+g3x91VfmPxadkY30pOKvJB7Cy3jYi1HgdfV6\nr4CCYEQzQO4Dhs2wQgbWC0KsfOfvcwvXWgntgq2fMWFghc/TJEWRPtmvDbrNE4Bj\nR0692Qs5qpkV/GxZswrCR1z5zhlf/RvVDASdOe+h4QKbc5q98aio4S2sgQKBgDnx\nt90Vrrxjq2jr8dB09qj2bq+y6k7UXuUwm2/SATtPC0ZjRk/mApdyPVlgkCPqEiAq\n4ZKVl3sipURIad4/dW6iLoa9MyHoujp2/mEO5UpjWC6a2L+y0trCHM1pvlUtAvzA\nYwx7cbe2ANGeZVGui1s0bELpxQO7bh2DJsrEOQQXAoGATekXJGKOIRz3jNm1Qvqd\nAf4OzYU7zpHTLPZEmSJ9ubbZa75nzwjPpE8sf8a6FPMRdgaYvg6aHbOaOW9OEStL\nEqqh4SQFXrh+s+vMzbaCNMEo5V870r6MnHRHOULSwtPvo7GNZz/u0/vBfw+SXq+o\nyyaIznMaaznadiBdGgfE03k=\n-----END PRIVATE KEY-----\n",
-                "client_email": "firebase-adminsdk-fek1b@testing-python-9d5ff.iam.gserviceaccount.com",
-                "client_id": "110568083276339576805",
+                "project_id": "anubisproducts-53639",
+                "private_key_id": "b0c012df053f0a1bae30f0384c3fc1bd8dad18e2",
+                "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDlI/U3nCTjKrhk\nGIEHB8fMQ76gv2GjGLc8uoone0DBEYdAbHxBstSI+GajN+vGVyWZsUx4MZdRpTWZ\nUnjL95NSCghSlzHqZ2gp0451B4BGzU6Z9UjOEG36ImrAu5k12XXFupMooiD/rxzK\n98gyZLo1w17oFGohok9BNuwyAo5z3XDxQHKeIx4VqD6XV9Qw4StXoCUcY+fMJ+I5\noNlambdNzy7wparGizyiDP8Qhqpztyp4A/uhK5pCvAT8ntjkJHfwXL+jXYI32Z2i\nUy90Eys5+98s0Z8ARpsonfFLELfKowR2lQucTrOWc529SOWeXWyMibNHILyiUUoU\nlHvt0FqrAgMBAAECggEAFaz2m+mV5bVbVwCoZ/lY8Z4w8LTZ8Bs87i45Nm3m3Lyj\nPjlk8bQQfdp9nxABqjQBNw46DR6n0U3fCZ9vFOBZG8geLG3oB2P7ywUbsz9f55Kx\nTkgROIj+VkyeK5gzcJAfH3K8S/o2Q+mVQC/7TKURpldSaYLQ3VikxacD5eEvB4+r\nsVgXwy1xvdmtuDRGSjqxplGFunzJYovDqyBTy5dT7f7SNkRr/e/fPh3vKR78QAts\nDMA6CslZIXNdG4pxglMcSJVaQG+R65CLfkWg0+a0WRst8HWyW/Z2WRpEeOf1YLWC\ny/hrnB1e+//N5/HhAR2l6NfzUlk9hBV2fhRB5B6+qQKBgQD5asubQ0ICDIRaUDTz\nne7MibG7beLDaphPTT2UxN52/E4b0IPPF+rBk2Tkj4aigqrLDoimb421HitrxSa7\nBA9VQYIoU3Hlg3m++kFA9mHKNlazt5pfefbPFV6X9xhFlKAPaa/8nWiZdwml8VQV\nmwoGsiU4AjsWrjRU1fwoZVGOowKBgQDrMClaHu7dF44TUPGX8DWKGa1qJ/gX//pP\nJPXSg7jq08Ex992MN+SBK06hHnJg4wrsbDdkg2H7PkU268vmQyln/IWIbz+7tedf\nWxKxAObyepxvLHivdxTrlF4xND06ybk6J/QrMqP8n65FhY87dZQ6VHZa11zzgqOX\nwQK9xCNsWQKBgQCw2WWXKKB0HXX3J6n0F0bMZtHMCUVhtIJcsHL6uoDXM10a4cWk\nINxG94Dxg0c+kZISurJv+OcsxkCZgMhOkLlihTmJ6Gj5CTlZDc8ZBdoe7FqbwZLH\nIg67lPZmoEDojVLUuuabIu2Y60u/CxfI3g7E4qn7RbGqCkl24eeSqQykKwKBgBQv\noQz8JLJTSD1+MA5DbsT4qTq4TYH51Ykfef3kkmWNYUKhrKFRVsqDZg9MJrMMKa7b\nJvH4mNtQn+4z1N9hmlczhF6OdeDtnvs/PN52Xlwni++62GzvApups1/zxOGb2MsW\nDM38XbjcF8Ad04pd8CgFgdcQLwkziEkJJuwUvpmZAoGBAPaple+dAT+i/lj9IhY9\nfmj6M51bUPsrqQ0rll8i/qkjZpj5pWSvrDPR87Yx/FlT/0nWPNQM1CdCM8T1nurs\na8/hXikM8eVxck7llRByRIWcqHLTcNSgNbQFcQFyAqCj1tFuHJxh170t/fIxfRsM\ncsT6nlxAWRcCsJxeSueLzXmG\n-----END PRIVATE KEY-----\n",
+                "client_email": "firebase-adminsdk-b0ful@anubisproducts-53639.iam.gserviceaccount.com",
+                "client_id": "104661599066749704789",
                 "auth_uri": "https://accounts.google.com/o/oauth2/auth",
                 "token_uri": "https://oauth2.googleapis.com/token",
                 "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-                "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fek1b%40testing-python-9d5ff.iam.gserviceaccount.com",
+                "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-b0ful%40anubisproducts-53639.iam.gserviceaccount.com",
             }
         )
         self.firebase = firebase_admin.initialize_app(
@@ -166,6 +166,40 @@ class App:
         self.register_title_label["text"] = "AnubisCrystalBot - Register"
         self.register_title_label.place(x=10, y=10, width=500, height=69)
 
+        self.register_username_label = tk.Label(self.registerWindow)
+        ft = tkFont.Font(family=self.fontFamily, size=14)
+        self.register_username_label["font"] = ft
+        self.register_username_label["fg"] = "#333333"
+        self.register_username_label["justify"] = "center"
+        self.register_username_label["text"] = "Username"
+        self.register_username_label.place(x=50, y=40, width=90, height=25)
+
+        self.register_username_entry = tk.Entry(self.registerWindow)
+        self.register_username_entry["borderwidth"] = "1px"
+        ft = tkFont.Font(family=self.fontFamily, size=14)
+        self.register_username_entry["font"] = ft
+        self.register_username_entry["fg"] = "#333333"
+        self.register_username_entry["justify"] = "left"
+        self.register_username_entry["text"] = ""
+        self.register_username_entry.place(x=130, y=40, width=267, height=42)
+
+        self.register_key_label = tk.Label(self.registerWindow)
+        ft = tkFont.Font(family=self.fontFamily, size=14)
+        self.register_key_label["font"] = ft
+        self.register_key_label["fg"] = "#333333"
+        self.register_key_label["justify"] = "center"
+        self.register_key_label["text"] = "Key"
+        self.register_key_label.place(x=50, y=70, width=70, height=25)
+
+        self.register_key_entry = tk.Entry(self.registerWindow)
+        self.register_key_entry["borderwidth"] = "1px"
+        ft = tkFont.Font(family=self.fontFamily, size=14)
+        self.register_key_entry["font"] = ft
+        self.register_key_entry["fg"] = "#333333"
+        self.register_key_entry["justify"] = "left"
+        self.register_key_entry["text"] = ""
+        self.register_key_entry.place(x=130, y=80, width=267, height=42)
+
         self.register_email_label = tk.Label(self.registerWindow)
         ft = tkFont.Font(family=self.fontFamily, size=14)
         self.register_email_label["font"] = ft
@@ -213,6 +247,8 @@ class App:
     def Register(self):
         reg_email = self.register_email_entry.get()
         reg_password = self.register_password_entry.get()
+        key = self.register_key_entry.get()
+        username = self.register_username_entry.get()
         if "@" not in reg_email or ".com" not in reg_email:
             self.email_error = tk.Label(self.registerWindow)
             self.email_error["text"] = "Invalid Email"
@@ -221,7 +257,31 @@ class App:
             self.email_error["fg"] = "#ff0000"
             self.email_error.place(x=130, y=215, width=267, height=15)
         else:
-            print("TEST")
+            users = db.reference("/PaladinsUsers")
+            for user in users.get():
+                if user["Username"] == username:
+                    self.email_error = tk.Label(self.registerWindow)
+                    self.email_error["text"] = "Username already used"
+                    ft = tkFont.Font(family=self.fontFamily, size=10)
+                    self.email_error["font"] = ft
+                    self.email_error["fg"] = "#ff0000"
+                    self.email_error.place(x=130, y=215, width=267, height=15)
+                    return
+            now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%sZ")
+            users.push(
+                {
+                    "Email": reg_email,
+                    "KeyUsed": key,
+                    "PaladinsVersin": "1.0.0.1",
+                    "Password": reg_password,
+                    "RemLogin": False,
+                    "Username": username,
+                    "date": now,
+                    "days": 365,
+                    "enddate": now + datetime.timedelta(days=365),
+                    "lastLogin": now,
+                }
+            )
 
     def showAttackScroll(self):
         text = tk.Text(self.root)
