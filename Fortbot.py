@@ -283,48 +283,42 @@ class App:
             keysGet = db.reference("/PaladinsKeys").get()
             for key in keysGet:
                 if keysGet[key]["key"] == reg_key:
-                    self.email_error = tk.Label(self.registerWindow)
-                    self.email_error["text"] = "Key already used"
+
+                    now = datetime.datetime.now()
+                    users.push(
+                        {
+                            "Email": reg_email,
+                            "KeyUsed": reg_key,
+                            "PaladinsVersin": "1.0.0.1",
+                            "Password": reg_password,
+                            "RemLogin": False,
+                            "Username": username,
+                            "date": str(now.strftime("%Y-%m-%dT%H-%M-%SZ")),
+                            "days": keysGet[key]["days"],
+                            "enddate": str(
+                                (
+                                    now + datetime.timedelta(days=keysGet[key]["days"])
+                                ).strftime("%Y-%m-%dT%H-%M-%SZ")
+                            ),
+                            "lastLogin": str(now.strftime("%Y-%m-%dT%H-%M-%SZ")),
+                        }
+                    )
+                    self.email_error = tk.Label(self.root)
+                    self.email_error["text"] = f"Registered! Username: {username}"
                     ft = tkFont.Font(family=self.fontFamily, size=10)
                     self.email_error["font"] = ft
                     self.email_error["fg"] = "#ff0000"
                     self.email_error.place(x=130, y=425, width=267, height=15)
+                    self.registerWindow.destroy()
+                    db.reference(f"/PaladinsKeys/{key}").delete()
                     return
 
-            now = datetime.datetime.now()
-            users.push(
-                {
-                    "Email": reg_email,
-                    "KeyUsed": reg_key,
-                    "PaladinsVersin": "1.0.0.1",
-                    "Password": reg_password,
-                    "RemLogin": False,
-                    "Username": username,
-                    "date": str(now.strftime("%Y-%m-%dT%H-%M-%SZ")),
-                    "days": 365,
-                    "enddate": str(
-                        (now + datetime.timedelta(days=365)).strftime(
-                            "%Y-%m-%dT%H-%M-%SZ"
-                        )
-                    ),
-                    "lastLogin": str(now.strftime("%Y-%m-%dT%H-%M-%SZ")),
-                }
-            )
-            keys.push(
-                {
-                    "Date": str(datetime.datetime.now().strftime("%m/%d/%Y")),
-                    "days": 365,
-                    "key": reg_key,
-                }
-            )
             self.email_error = tk.Label(self.registerWindow)
-            self.email_error["text"] = "Done!"
+            self.email_error["text"] = "Key not found"
             ft = tkFont.Font(family=self.fontFamily, size=10)
             self.email_error["font"] = ft
             self.email_error["fg"] = "#ff0000"
             self.email_error.place(x=130, y=425, width=267, height=15)
-            time.sleep(5)
-            self.registerWindow.destroy()
             return
 
     def showAttackScroll(self):
