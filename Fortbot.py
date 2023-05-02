@@ -257,9 +257,9 @@ class App:
             self.email_error["fg"] = "#ff0000"
             self.email_error.place(x=130, y=215, width=267, height=15)
         else:
-            users = db.reference("/PaladinsUsers")
-            for user in users.get():
-                if user["Username"] == username:
+            users = db.reference("/PaladinsUsers").get()
+            for user in users:
+                if users[user]["Username"] == username:
                     self.email_error = tk.Label(self.registerWindow)
                     self.email_error["text"] = "Username already used"
                     ft = tkFont.Font(family=self.fontFamily, size=10)
@@ -268,9 +268,9 @@ class App:
                     self.email_error.place(x=130, y=215, width=267, height=15)
                     return
 
-            keys = db.reference("/PaladinsKeys")
-            for key in keys.get():
-                if key["key"] == reg_key:
+            keys = db.reference("/PaladinsKeys").get()
+            for key in keys:
+                if keys[key]["key"] == reg_key:
                     self.email_error = tk.Label(self.registerWindow)
                     self.email_error["text"] = "Key already used"
                     ft = tkFont.Font(family=self.fontFamily, size=10)
@@ -296,9 +296,9 @@ class App:
             )
             keys.push(
                 {
-                    "Date" : datetime.date().strftime("%m/%d/%Y"),
-                    "days" : 365,
-                    "key" : reg_key,
+                    "Date": datetime.date().strftime("%m/%d/%Y"),
+                    "days": 365,
+                    "key": reg_key,
                 }
             )
 
@@ -521,12 +521,12 @@ class App:
         emailCheck = False
         passwordCheck = False
         for user in users:
-            if n_email == user["Email"]:
+            if n_email == users[user]["Email"]:
                 emailCheck = True
-            if n_password == user["Password"]:
+            if n_password == users[user]["Password"]:
                 passwordCheck = True
             if emailCheck and passwordCheck:
-                endDate = user["enddate"]
+                endDate = users[user]["enddate"]
                 currentDate = datetime.datetime.now()
                 date_format = "%Y-%m-%dT%H:%M:%SZ"
                 date_obj = datetime.datetime.strptime(endDate, date_format)
@@ -729,13 +729,6 @@ class App:
             resetButton["justify"] = "center"
             resetButton["text"] = "Reset saved settings "
             resetButton.place(x=940, y=310, width=118, height=30)
-        else:
-            self.email_error = tk.Label(self.root)
-            self.email_error["text"] = "invalid login. please try again"
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            self.email_error["font"] = ft
-            self.email_error["fg"] = "#ff0000"
-            self.email_error.place(x=130, y=220, width=267, height=15)
 
     def startBot(self):
         if self.tier == 0:
