@@ -279,7 +279,7 @@ class App:
                     self.email_error.place(x=130, y=215, width=267, height=15)
                     return
 
-            now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%sZ")
+            now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%SZ")
             users.push(
                 {
                     "Email": reg_email,
