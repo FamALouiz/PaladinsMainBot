@@ -558,6 +558,8 @@ class App:
                     self.email_error["font"] = ft
                     self.email_error["fg"] = "#ff0000"
                     self.email_error.place(x=130, y=215, width=267, height=15)
+                    logs = db.reference("/UserSTWLOGS")
+                    logs.push(usersGet[user])
                     return False
                 else:
                     return True
