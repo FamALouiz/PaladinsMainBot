@@ -303,13 +303,13 @@ class App:
                             "lastLogin": str(now.strftime("%Y-%m-%dT%H-%M-%SZ")),
                         }
                     )
+                    self.registerWindow.destroy()
                     self.email_error = tk.Label(self.root)
                     self.email_error["text"] = f"Registered! Username: {username}"
                     ft = tkFont.Font(family=self.fontFamily, size=10)
                     self.email_error["font"] = ft
                     self.email_error["fg"] = "#ff0000"
                     self.email_error.place(x=130, y=425, width=267, height=15)
-                    self.registerWindow.destroy()
                     db.reference(f"/PaladinsKeys/{key}").delete()
                     return
 
@@ -536,16 +536,18 @@ class App:
     def authenticate(self):
         n_email = self.email_entry.get()
         n_password = self.password_entry.get()
-        users = db.reference("/PaladinsUsers").get()
+        users = db.reference("/PaladinsUsers")
+        usersGet = db.reference("/PaladinsUsers").get()
         emailCheck = False
         passwordCheck = False
-        for user in users:
-            if n_email == users[user]["Email"]:
+        for user in usersGet:
+            if n_email == usersGet[user]["Email"]:
                 emailCheck = True
-            if n_password == users[user]["Password"]:
+            if n_password == usersGet[user]["Password"]:
                 passwordCheck = True
+
             if emailCheck and passwordCheck:
-                endDate = users[user]["enddate"]
+                endDate = usersGet[user]["enddate"]
                 currentDate = datetime.datetime.now()
                 date_format = "%Y-%m-%dT%H:%M:%SZ"
                 date_obj = datetime.datetime.strptime(endDate, date_format)
@@ -560,8 +562,8 @@ class App:
                 else:
                     return True
             else:
-                n_email = False
-                n_password = False
+                emailCheck = False
+                passwordCheck = False
         self.email_error = tk.Label(self.root)
         self.email_error["text"] = "Invalid login. please try again"
         ft = tkFont.Font(family=self.fontFamily, size=10)
