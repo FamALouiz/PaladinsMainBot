@@ -142,7 +142,7 @@ class App:
         self.registerWindow.iconbitmap("bot_icon.ico")
         # setting window size
         width = 500
-        height = 300
+        height = 600
         screenwidth = self.registerWindow.winfo_screenwidth()
         screenheight = self.registerWindow.winfo_screenheight()
         alignstr = "%dx%d+%d+%d" % (
@@ -172,7 +172,7 @@ class App:
         self.register_username_label["fg"] = "#333333"
         self.register_username_label["justify"] = "center"
         self.register_username_label["text"] = "Username"
-        self.register_username_label.place(x=50, y=40, width=90, height=25)
+        self.register_username_label.place(x=50, y=110, width=90, height=25)
 
         self.register_username_entry = tk.Entry(self.registerWindow)
         self.register_username_entry["borderwidth"] = "1px"
@@ -181,7 +181,7 @@ class App:
         self.register_username_entry["fg"] = "#333333"
         self.register_username_entry["justify"] = "left"
         self.register_username_entry["text"] = ""
-        self.register_username_entry.place(x=130, y=40, width=267, height=42)
+        self.register_username_entry.place(x=140, y=100, width=267, height=42)
 
         self.register_key_label = tk.Label(self.registerWindow)
         ft = tkFont.Font(family=self.fontFamily, size=14)
@@ -189,7 +189,7 @@ class App:
         self.register_key_label["fg"] = "#333333"
         self.register_key_label["justify"] = "center"
         self.register_key_label["text"] = "Key"
-        self.register_key_label.place(x=50, y=70, width=70, height=25)
+        self.register_key_label.place(x=50, y=160, width=70, height=25)
 
         self.register_key_entry = tk.Entry(self.registerWindow)
         self.register_key_entry["borderwidth"] = "1px"
@@ -198,7 +198,7 @@ class App:
         self.register_key_entry["fg"] = "#333333"
         self.register_key_entry["justify"] = "left"
         self.register_key_entry["text"] = ""
-        self.register_key_entry.place(x=130, y=80, width=267, height=42)
+        self.register_key_entry.place(x=140, y=150, width=267, height=42)
 
         self.register_email_label = tk.Label(self.registerWindow)
         ft = tkFont.Font(family=self.fontFamily, size=14)
@@ -206,7 +206,7 @@ class App:
         self.register_email_label["fg"] = "#333333"
         self.register_email_label["justify"] = "center"
         self.register_email_label["text"] = "Email"
-        self.register_email_label.place(x=50, y=100, width=70, height=25)
+        self.register_email_label.place(x=50, y=210, width=70, height=25)
 
         self.register_email_entry = tk.Entry(self.registerWindow)
         self.register_email_entry["borderwidth"] = "1px"
@@ -215,7 +215,7 @@ class App:
         self.register_email_entry["fg"] = "#333333"
         self.register_email_entry["justify"] = "left"
         self.register_email_entry["text"] = ""
-        self.register_email_entry.place(x=130, y=90, width=267, height=42)
+        self.register_email_entry.place(x=140, y=200, width=267, height=42)
 
         self.register_password_label = tk.Label(self.registerWindow)
         ft = tkFont.Font(family=self.fontFamily, size=14)
@@ -223,7 +223,7 @@ class App:
         self.register_password_label["fg"] = "#333333"
         self.register_password_label["justify"] = "center"
         self.register_password_label["text"] = "Password"
-        self.register_password_label.place(x=50, y=160, width=80, height=25)
+        self.register_password_label.place(x=50, y=260, width=80, height=25)
 
         self.register_password_entry = tk.Entry(self.registerWindow)
         self.register_password_entry["borderwidth"] = "1px"
@@ -232,7 +232,7 @@ class App:
         self.register_password_entry["fg"] = "#333333"
         self.register_password_entry["justify"] = "left"
         self.register_password_entry["text"] = ""
-        self.register_password_entry.place(x=130, y=150, width=267, height=42)
+        self.register_password_entry.place(x=140, y=250, width=267, height=42)
 
         self.done_btn = tk.Button(self.registerWindow)
         self.done_btn["bg"] = "#6b42f4"
@@ -241,7 +241,7 @@ class App:
         self.done_btn["fg"] = "#ffffff"
         self.done_btn["justify"] = "center"
         self.done_btn["text"] = "Register"
-        self.done_btn.place(x=180, y=220, width=161, height=41)
+        self.done_btn.place(x=180, y=500, width=161, height=41)
         self.done_btn["command"] = self.Register
 
     def Register(self):
