@@ -552,14 +552,10 @@ class App:
                 date_format1 = "%Y-%m-%dT%H:%M:%SZ"
                 date_format12 = "%Y-%m-%dT%H-%M-%SZ"
                 try:
-                    end = datetime.datetime.strptime(
-                        usersGet[user]["date"], date_format1
-                    )
+                    end = datetime.datetime.strptime(endDate, date_format1)
                 except:
-                    end = datetime.datetime.strptime(
-                        usersGet[user]["date"], date_format12
-                    )
-                if end > currentDate:
+                    end = datetime.datetime.strptime(endDate, date_format12)
+                if end < currentDate:
                     self.email_error = tk.Label(self.root)
                     self.email_error["text"] = "Ops! Key has ran out"
                     ft = tkFont.Font(family=self.fontFamily, size=10)
