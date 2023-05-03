@@ -256,6 +256,7 @@ class App:
             self.email_error["font"] = ft
             self.email_error["fg"] = "#ff0000"
             self.email_error.place(x=130, y=425, width=267, height=15)
+            return
         else:
             users = db.reference("/MainPaladinsUsers")
             usersGet = db.reference("/MainPaladinsUsers").get()
@@ -309,7 +310,7 @@ class App:
                     ft = tkFont.Font(family=self.fontFamily, size=10)
                     self.email_error["font"] = ft
                     self.email_error["fg"] = "#ff0000"
-                    self.email_error.place(x=130, y=425, width=267, height=15)
+                    self.email_error.place(x=130, y=220, width=267, height=15)
                     db.reference(f"/PaladinsKeys/{key}").delete()
                     return
 
