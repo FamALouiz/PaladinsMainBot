@@ -257,8 +257,8 @@ class App:
             self.email_error["fg"] = "#ff0000"
             self.email_error.place(x=130, y=425, width=267, height=15)
         else:
-            users = db.reference("/PaladinsUsers")
-            usersGet = db.reference("/PaladinsUsers").get()
+            users = db.reference("/MainPaladinsUsers")
+            usersGet = db.reference("/MainPaladinsUsers").get()
             for user in usersGet:
                 if usersGet[user]["Username"] == username:
                     self.email_error = tk.Label(self.registerWindow)
@@ -536,8 +536,8 @@ class App:
     def authenticate(self):
         n_email = self.email_entry.get()
         n_password = self.password_entry.get()
-        users = db.reference("/PaladinsUsers")
-        usersGet = db.reference("/PaladinsUsers").get()
+        users = db.reference("/MainPaladinsUsers")
+        usersGet = db.reference("/MainPaladinsUsers").get()
         emailCheck = False
         passwordCheck = False
         for user in usersGet:
