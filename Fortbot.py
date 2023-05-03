@@ -293,14 +293,14 @@ class App:
                             "Password": reg_password,
                             "RemLogin": False,
                             "Username": username,
-                            "date": str(now.strftime("%Y-%m-%dT%H-%M-%SZ")),
+                            "date": str(now.strftime("%Y-%m-%dT%H:%M:%SZ")),
                             "days": keysGet[key]["days"],
                             "enddate": str(
                                 (
                                     now + datetime.timedelta(days=keysGet[key]["days"])
-                                ).strftime("%Y-%m-%dT%H-%M-%SZ")
+                                ).strftime("%Y-%m-%dT%H:%M:%SZ")
                             ),
-                            "lastLogin": str(now.strftime("%Y-%m-%dT%H-%M-%SZ")),
+                            "lastLogin": str(now.strftime("%Y-%m-%dT%H:%M:%SZ")),
                         }
                     )
                     self.registerWindow.destroy()
@@ -549,9 +549,17 @@ class App:
             if emailCheck and passwordCheck:
                 endDate = usersGet[user]["enddate"]
                 currentDate = datetime.datetime.now()
-                date_format = "%Y-%m-%dT%H:%M:%SZ"
-                date_obj = datetime.datetime.strptime(endDate, date_format)
-                if date_obj > currentDate:
+                date_format1 = "%Y-%m-%dT%H:%M:%SZ"
+                date_format12 = "%Y-%m-%dT%H-%M-%SZ"
+                try:
+                    end = datetime.datetime.strptime(
+                        usersGet[user]["date"], date_format1
+                    )
+                except:
+                    end = datetime.datetime.strptime(
+                        usersGet[user]["date"], date_format12
+                    )
+                if end > currentDate:
                     self.email_error = tk.Label(self.root)
                     self.email_error["text"] = "Ops! Key has ran out"
                     ft = tkFont.Font(family=self.fontFamily, size=10)
