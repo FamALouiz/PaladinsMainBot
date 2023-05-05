@@ -12,6 +12,8 @@ championSelected = False
 championPath = eval(f"r'PaladinMainbot_pngs\{championType}\{champion}'")
 championIcon = eval(f"r'PaladinMainbot_pngs\{championType}\{champion}\\0ChampIcon.png'")
 
+iconNames = ["Lobby Play", "Join Queue", "Error", "Champion lockin"]
+
 iconlist = [
     os.path.join(championPath, f)
     for f in os.listdir(championPath)
@@ -19,7 +21,7 @@ iconlist = [
 ][1:]
 
 
-icons = [championPath + "/" + f for f in os.listdir(championPath)][1:]
+icons = ["Talent", "Loadout", "Equip"][1:]
 
 iconsStart = [
     r"PaladinMainbot_pngs\1LobbyPlay.png",
@@ -189,16 +191,12 @@ class mainLoop:
             if f.endswith(".png")
         ][1:]
 
-        self.icons = [
-            self.championPath + "/" + f for f in os.listdir(self.championPath)
-        ][1:]
-
     def pickChampion(self):
         time.sleep(2)
         if not self.isrunning:
             return
         iterator = PositionableSequenceIterator(
-            [[a, b] for a, b in zip(self.iconlist, self.icons)]
+            [[a, b] for a, b in zip(self.iconlist, iconNames)]
         )
         flag = True
         if not self.isrunning:
@@ -207,39 +205,42 @@ class mainLoop:
             if not self.isrunning:
                 return
             icon = i[0]
+            name = i[1]
             try:
                 pyautogui.click(
                     pyautogui.center(pyautogui.locateOnScreen(icon, confidence=0.75))
                 )
-                self.print_to_GUI(f"Clicked on {icon}")
+                self.print_to_GUI(f"{name} chosen" if name != "Equip" else "Equiped")
             except:
                 if flag:
-                    self.print_to_GUI(f"Didn't find {icon}... waiting for it")
+                    self.print_to_GUI(f"Didn't find {name} button ... waiting for it")
                     flag = False
                 iterator.pos = iterator.pos if iterator.pos > 0 else 0
             time.sleep(0.3)
 
         time.sleep(5)
-        self.print_to_GUI(f"Done {champion}")
 
     def startGame(self):
         current = None
         if not self.isrunning:
             return
-        iterator = PositionableSequenceIterator([a for a in iconsStart])
+        iterator = PositionableSequenceIterator(
+            [[a, b] for a, b in zip(iconsStart, iconNames)]
+        )
         if not self.isrunning:
             return
         for i in iterator:
             if not self.isrunning:
                 return
-            icon = i
+            icon = i[0]
+            name = i[1]
             if i == r"PaladinMainbot_pngs\3Error.png":
                 current = i
                 try:
                     pyautogui.click(
                         pyautogui.center(pyautogui.locateOnScreen(icon, confidence=0.9))
                     )
-                    self.print_to_GUI(f"Found {icon}")
+                    self.print_to_GUI(f"Found {name}")
                 except:
                     continue
 
@@ -257,7 +258,7 @@ class mainLoop:
                         except:
                             if printing:
                                 self.print_to_GUI(
-                                    f"Waiting to click champion and checking for errors"
+                                    f"Waiting to choose selected champion"
                                 )
                             try:
                                 pyautogui.click(
@@ -267,7 +268,7 @@ class mainLoop:
                                         )
                                     )
                                 )
-                                self.print_to_GUI(f"Found {current}")
+                                self.print_to_GUI(f"Found error button")
                             except:
                                 if printing:
                                     self.print_to_GUI(f"No Error till now")
@@ -285,9 +286,9 @@ class mainLoop:
                                 pyautogui.locateOnScreen(icon, confidence=0.70)
                             )
                         )
-                        self.print_to_GUI(f"Found {icon}")
+                        self.print_to_GUI(f"Found {name}")
                     except:
-                        self.print_to_GUI(f"Waiting for {icon}")
+                        self.print_to_GUI(f"Waiting for {name}")
                     else:
                         flag = False
             else:
@@ -297,9 +298,9 @@ class mainLoop:
                             pyautogui.locateOnScreen(icon, confidence=0.70)
                         )
                     )
-                    self.print_to_GUI(f"Found {icon}")
+                    self.print_to_GUI(f"Found {name}")
                 except:
-                    self.print_to_GUI(f"Waiting for {icon}")
+                    self.print_to_GUI(f"Waiting for {name}")
                     iterator.pos = iterator.pos if iterator.pos > 0 else 0
                     time.sleep(0.5)
             time.sleep(0.5)
@@ -314,7 +315,7 @@ class mainLoop:
                     pyautogui.locateOnScreen(self.championIcon, confidence=0.9)
                 )
             )
-            self.print_to_GUI(f"Found {self.championIcon}")
+            self.print_to_GUI(f"Found {champion[0] + champion[1:].lower()}")
         except:
             raise Exception("Champion not found")
 
@@ -399,9 +400,9 @@ class mainLoop:
                         pyautogui.locateOnScreen(iconRequeue, confidence=0.9)
                     )
                 )
-                self.print_to_GUI(f"Found {iconRequeue}")
+                self.print_to_GUI(f"Found re-queue button")
             except:
-                self.print_to_GUI(f"Waiting for {iconRequeue}... Anti-AFK invoke")
+                self.print_to_GUI(f"Anti-AFK started, waiting for next match")
                 if not self.isrunning:
                     return
                 self.antiAFKGrover()
