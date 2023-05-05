@@ -241,7 +241,6 @@ class mainLoop:
                     )
                     self.print_to_GUI(f"Found {icon}")
                 except:
-                    self.print_to_GUI(f"No Error")
                     continue
 
             elif i == r"PaladinMainbot_pngs\5Champlockin.png":
@@ -271,7 +270,7 @@ class mainLoop:
                                 self.print_to_GUI(f"Found {current}")
                             except:
                                 if printing:
-                                    self.print_to_GUI(f"No Error")
+                                    self.print_to_GUI(f"No Error till now")
                                     printing = False
                                 continue
                             time.sleep(0.5)
