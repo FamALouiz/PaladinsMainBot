@@ -192,7 +192,6 @@ class mainLoop:
         self.icons = [
             self.championPath + "/" + f for f in os.listdir(self.championPath)
         ][1:]
-        print(self.icons, self.iconlist)
 
     def pickChampion(self):
         time.sleep(2)

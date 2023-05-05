@@ -15,6 +15,27 @@ def resource_path(rel_path):
     return os.path.join(os.path.abspath("."), rel_path)
 
 
+class Champion:
+    def __init__(self, app, t: str, name: str):
+        self.name = name
+        self.type = t
+        self.app = app
+
+    def select(self):
+        mainbotloop.championType = self.type
+        mainbotloop.championSelected = True
+        mainbotloop.champion = self.name.upper()
+        self.app.print_to_GUI(f"Picking {self.name}")
+
+
+class ChampionsList:
+    def __init__(self, app, type: str):
+        self.list = [
+            Champion(app=app, t=type, name=f[0] + f[1:].lower())
+            for f in os.listdir(eval(f'r"PaladinMainbot_pngs\{type}"'))
+        ]
+
+
 class App:
     def __init__(self):
         self.root = tk.Tk()
@@ -39,6 +60,11 @@ class App:
                 "databaseURL": "https://anubisproducts-53639.firebaseio.com/",
             },
         )
+
+        self.Frontlines = ChampionsList(type="Frontline", app=self)
+        self.Supports = ChampionsList(type="Support", app=self)
+        self.Flanks = ChampionsList(type="Flank", app=self)
+
         self.root.title(str("AnubisPaladinsBot"))
         self.root.iconbitmap("bot_icon.ico")
         # setting window size
@@ -322,14 +348,26 @@ class App:
             self.email_error.place(x=130, y=425, width=267, height=15)
             return
 
-    def showAttackScroll(self):
+    def showFrontlineScroll(self):
         text = tk.Text(self.root)
-        text.grid(row=2, column=1)
+        text.place(x=1200, y=20, width=200, height=500)
         self.sbFlank = tk.Scrollbar(self.root, command=text.yview)
         self.sbFlank.grid(row=2, column=1)
         text.configure(yscrollcommand=self.sbFlank.set)
-        for i in range(10):
-            button = tk.Button(text)
+        for champion in self.Frontlines.list:
+            button = tk.Button(text=champion.name, command=champion.select)
+            text.window_create("end", window=button)
+            text.insert("end", "\n")
+        text.configure(state="disabled")
+
+    def showAttackScroll(self):
+        text = tk.Text(self.root)
+        text.place(x=1200, y=20, width=200, height=500)
+        self.sbFlank = tk.Scrollbar(self.root, command=text.yview)
+        self.sbFlank.grid(row=2, column=1)
+        text.configure(yscrollcommand=self.sbFlank.set)
+        for champion in self.Flanks.list:
+            button = tk.Button(text=champion.name, command=champion.select)
             text.window_create("end", window=button)
             text.insert("end", "\n")
         text.configure(state="disabled")
@@ -337,125 +375,14 @@ class App:
     def showSupportScroll(self):
         text = tk.Text(self.root)
         text.place(x=1200, y=20, width=200, height=500)
-        button = tk.Button(text="Groove", command=self.setSupportChampionGrover)
-        text.window_create("end", window=button)
-        text.insert("end", "\n")
-        button = tk.Button(text="Corvus", command=self.setSupportChampionCorvus)
-        text.window_create("end", window=button)
-        text.insert("end", "\n")
-        button = tk.Button(text="Furia", command=self.setSupportChampionFuria)
-        text.window_create("end", window=button)
-        text.insert("end", "\n")
-        button = tk.Button(text="Grohk", command=self.setSupportChampionGrohk)
-        text.window_create("end", window=button)
-        text.insert("end", "\n")
-        button = tk.Button(text="Io", command=self.setSupportChampionIo)
-        text.window_create("end", window=button)
-        text.insert("end", "\n")
-        button = tk.Button(text="Jenos", command=self.setSupportChampionJenos)
-        text.window_create("end", window=button)
-        text.insert("end", "\n")
-        button = tk.Button(text="Lillith", command=self.setSupportChampionLillith)
-        text.window_create("end", window=button)
-        text.insert("end", "\n")
-        button = tk.Button(text="Maldamba", command=self.setSupportChampionMaldamba)
-        text.window_create("end", window=button)
-        text.insert("end", "\n")
-        button = tk.Button(text="Pip", command=self.setSupportChampionPip)
-        text.window_create("end", window=button)
-        text.insert("end", "\n")
-        button = tk.Button(text="Rei", command=self.setSupportChampionRei)
-        text.window_create("end", window=button)
-        text.insert("end", "\n")
-        button = tk.Button(text="Seris", command=self.setSupportChampionSeris)
-        text.window_create("end", window=button)
-        text.insert("end", "\n")
-        button = tk.Button(text="Ying", command=self.setSupportChampionYing)
-        text.window_create("end", window=button)
-        text.insert("end", "\n")
+        self.sbFlank = tk.Scrollbar(self.root, command=text.yview)
+        self.sbFlank.grid(row=2, column=1)
+        text.configure(yscrollcommand=self.sbFlank.set)
+        for champion in self.Supports.list:
+            button = tk.Button(text=champion.name, command=champion.select)
+            text.window_create("end", window=button)
+            text.insert("end", "\n")
         text.configure(state="disabled")
-
-    def setSupportChampionGrover(self):
-        mainbotloop.championType = "Support"
-        mainbotloop.championSelected = True
-        mainbotloop.champion = "GROVER"
-        self.print_to_GUI("Picking Grover")
-
-    def setSupportChampionCorvus(self):
-        mainbotloop.championType = "Support"
-        mainbotloop.championSelected = True
-        mainbotloop.champion = "CORVUS"
-        self.print_to_GUI("Picking Corvus")
-
-    def setSupportChampionFuria(self):
-        mainbotloop.championType = "Support"
-        mainbotloop.championSelected = True
-        mainbotloop.champion = "FURIA"
-        self.print_to_GUI("Picking Furia")
-
-    def setSupportChampionGrohk(self):
-        mainbotloop.championType = "Support"
-        mainbotloop.championSelected = True
-        mainbotloop.champion = "GROHK"
-        self.print_to_GUI("Picking Grohk")
-
-    def setSupportChampionGrover(self):
-        print("GROVER")
-        mainbotloop.championType = "Support"
-        mainbotloop.championSelected = True
-        mainbotloop.champion = "GROVER"
-        self.print_to_GUI("Picking Grover")
-
-    def setSupportChampionIo(self):
-        mainbotloop.championType = "Support"
-        mainbotloop.championSelected = True
-        mainbotloop.champion = "IO"
-        self.print_to_GUI("Picking Io")
-
-    def setSupportChampionJenos(self):
-        mainbotloop.championType = "Support"
-        mainbotloop.championSelected = True
-        mainbotloop.champion = "JENOS"
-        self.print_to_GUI("Picking Jenos")
-
-    def setSupportChampionLillith(self):
-        mainbotloop.championType = "Support"
-        mainbotloop.championSelected = True
-        mainbotloop.champion = "LILLITH"
-        self.print_to_GUI("Picking Lillith")
-
-    def setSupportChampionMaldamba(self):
-        mainbotloop.championType = "Support"
-        mainbotloop.championSelected = True
-        mainbotloop.champion = "MAL'DAMBA"
-        self.print_to_GUI("Picking Mal'Damba")
-
-    def setSupportChampionPip(self):
-        mainbotloop.championType = "Support"
-        mainbotloop.championSelected = True
-        mainbotloop.champion = "PIP"
-        self.print_to_GUI("Picking Pip")
-
-    def setSupportChampionRei(self):
-        mainbotloop.championType = "Support"
-        mainbotloop.championSelected = True
-        mainbotloop.champion = "REI"
-        self.print_to_GUI("Picking Rei")
-
-    def setSupportChampionSeris(self):
-        mainbotloop.championType = "Support"
-        mainbotloop.championSelected = True
-        mainbotloop.champion = "SERIS"
-        self.print_to_GUI("Picking Seris")
-
-    def setSupportChampionYing(self):
-        mainbotloop.championType = "Support"
-        mainbotloop.championSelected = True
-        mainbotloop.champion = "YING"
-        self.print_to_GUI("Picking Ying")
-
-    def clickFlankChampion(self):
-        print("TEST2")
 
     def clear(self):
         widget_list = self.root.place_slaves()
@@ -582,6 +509,7 @@ class App:
     def login_btn_command(self):
         # self.login=self.authenticate()
         # self.login=True
+        # self.authenticate() ==
         if self.authenticate() == True:
             self.clear()
             width = 1600
@@ -648,7 +576,7 @@ class App:
             logoutButton["fg"] = "#000000"
             logoutButton["justify"] = "center"
             logoutButton["text"] = "logout"
-            logoutButton.place(x=55, y=270, width=70, height=25)
+            logoutButton.place(x=55, y=300, width=70, height=25)
             logoutButton["command"] = self.logout
 
             settingsFrame = tk.LabelFrame(self.root)
@@ -712,15 +640,20 @@ class App:
             self.pushCheck["onvalue"] = 1
             self.pushCheck["variable"] = self.pushCheckVal
 
-            """self.btnShowFlank = tk.Button(self.root)
-            self.btnShowFlank["text"] = "Pick Flanker"
+            self.btnShowFlank = tk.Button(self.root)
+            self.btnShowFlank["text"] = "Pick Flank"
             self.btnShowFlank["command"] = self.showAttackScroll
-            self.btnShowFlank.place(x=90, y=180, width=161, height=41)"""
+            self.btnShowFlank.place(x=50, y=180, width=100, height=30)
+
+            self.btnShowFrontline = tk.Button(self.root)
+            self.btnShowFrontline["text"] = "Pick Frontline"
+            self.btnShowFrontline["command"] = self.showFrontlineScroll
+            self.btnShowFrontline.place(x=50, y=220, width=100, height=30)
 
             self.btnShowSupport = tk.Button(self.root)
             self.btnShowSupport["text"] = "Pick Support"
             self.btnShowSupport["command"] = self.showSupportScroll
-            self.btnShowSupport.place(x=50, y=180, width=90, height=30)
+            self.btnShowSupport.place(x=50, y=260, width=100, height=30)
 
             self.token = tk.Entry(self.root)
             self.token["borderwidth"] = "1px"
