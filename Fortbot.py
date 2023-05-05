@@ -39,7 +39,7 @@ class App:
                 "databaseURL": "https://anubisproducts-53639.firebaseio.com/",
             },
         )
-        self.root.title(str("AnubisCrystalBot"))
+        self.root.title(str("AnubisPaladinsBot"))
         self.root.iconbitmap("bot_icon.ico")
         # setting window size
         width = 500
@@ -64,7 +64,7 @@ class App:
         self.title_label["font"] = ft
         self.title_label["fg"] = "#333333"
         self.title_label["justify"] = "center"
-        self.title_label["text"] = "AnubisCrystalBot - Log in"
+        self.title_label["text"] = "AnubisPaladinsBot - Log in"
         self.title_label.place(x=10, y=10, width=500, height=69)
 
         self.email_label = tk.Label(self.root)
@@ -163,7 +163,7 @@ class App:
         self.register_title_label["font"] = ft
         self.register_title_label["fg"] = "#333333"
         self.register_title_label["justify"] = "center"
-        self.register_title_label["text"] = "AnubisCrystalBot - Register"
+        self.register_title_label["text"] = "AnubisPaladinsBot - Register"
         self.register_title_label.place(x=10, y=10, width=500, height=69)
 
         self.register_username_label = tk.Label(self.registerWindow)
@@ -808,8 +808,12 @@ class App:
 
     def showLoginFrame(self):
         self.clear()
+        self.root = tk.Tk()
+        self.root.title(str("AnubisPaladinsBot"))
+        self.root.iconbitmap("bot_icon.ico")
+        # setting window size
         width = 500
-        height = 250
+        height = 400
         screenwidth = self.root.winfo_screenwidth()
         screenheight = self.root.winfo_screenheight()
         alignstr = "%dx%d+%d+%d" % (
@@ -820,11 +824,87 @@ class App:
         )
         self.root.geometry(alignstr)
         self.root.resizable(width=False, height=False)
-        self.title_label.place(x=140, y=10, width=219, height=69)
+        self.fontFamily = "Calibri"
+        self.mainbot = None
+        self.tier = 3
+        self.login = False
+
+        self.title_label = tk.Label(self.root)
+        ft = tkFont.Font(family=self.fontFamily, size=24)
+        self.title_label["font"] = ft
+        self.title_label["fg"] = "#333333"
+        self.title_label["justify"] = "center"
+        self.title_label["text"] = "AnubisPaladinsBot - Log in"
+        self.title_label.place(x=10, y=10, width=500, height=69)
+
+        self.email_label = tk.Label(self.root)
+        ft = tkFont.Font(family=self.fontFamily, size=14)
+        self.email_label["font"] = ft
+        self.email_label["fg"] = "#333333"
+        self.email_label["justify"] = "center"
+        self.email_label["text"] = "Email"
         self.email_label.place(x=50, y=100, width=70, height=25)
+
+        self.email_entry = tk.Entry(self.root)
+        self.email_entry["borderwidth"] = "1px"
+        ft = tkFont.Font(family=self.fontFamily, size=14)
+        self.email_entry["font"] = ft
+        self.email_entry["fg"] = "#333333"
+        self.email_entry["justify"] = "left"
+        self.email_entry["text"] = ""
         self.email_entry.place(x=130, y=90, width=267, height=42)
-        self.rembr_chkbx.place(x=180, y=140, width=167, height=30)
-        self.login_btn.place(x=180, y=180, width=161, height=41)
+
+        self.password_label = tk.Label(self.root)
+        ft = tkFont.Font(family=self.fontFamily, size=14)
+        self.password_label["font"] = ft
+        self.password_label["fg"] = "#333333"
+        self.password_label["justify"] = "center"
+        self.password_label["text"] = "Password"
+        self.password_label.place(x=50, y=160, width=80, height=25)
+
+        self.password_entry = tk.Entry(self.root)
+        self.password_entry["borderwidth"] = "1px"
+        ft = tkFont.Font(family=self.fontFamily, size=14)
+        self.password_entry["font"] = ft
+        self.password_entry["fg"] = "#333333"
+        self.password_entry["justify"] = "left"
+        self.password_entry["text"] = ""
+        self.password_entry.place(x=130, y=150, width=267, height=42)
+
+        self.rembr_chkbx = tk.Checkbutton(self.root)
+        ft = tkFont.Font(family=self.fontFamily, size=12)
+        self.rembr_chkbx["font"] = ft
+        self.rembr_chkbx["fg"] = "#333333"
+        self.rembr_chkbx["justify"] = "center"
+        self.rembr_chkbx["text"] = "Remember me"
+        self.rembr_chkbx.place(x=180, y=235, width=167, height=30)
+        self.rembr_chkbx_value = tk.BooleanVar()
+        self.rembr_chkbx["variable"] = self.rembr_chkbx_value
+        # self.rembr_chkbx["variable"].set(False)
+        self.rembr_chkbx["offvalue"] = 0
+        self.rembr_chkbx["onvalue"] = 1
+        self.rembr_chkbx["command"] = self.rembr_chkbx_command
+
+        self.login_btn = tk.Button(self.root)
+        self.login_btn["bg"] = "#6b42f4"
+        ft = tkFont.Font(family="Franklin Gothic Medium", size=14, weight="bold")
+        self.login_btn["font"] = ft
+        self.login_btn["fg"] = "#ffffff"
+        self.login_btn["justify"] = "center"
+        self.login_btn["text"] = "Login"
+        self.login_btn.place(x=180, y=330, width=161, height=41)
+        self.login_btn["command"] = self.login_btn_command
+
+        self.register_btn = tk.Button(self.root)
+        self.register_btn["bg"] = "#6b42f4"
+        ft = tkFont.Font(family="Franklin Gothic Medium", size=14, weight="bold")
+        self.register_btn["font"] = ft
+        self.register_btn["fg"] = "#ffffff"
+        self.register_btn["justify"] = "center"
+        self.register_btn["text"] = "Register"
+        self.register_btn.place(x=180, y=270, width=161, height=41)
+        self.register_btn["command"] = self.register_btn_command
+        self.root.mainloop()
 
     def logout(self):
         self.showLoginFrame()
