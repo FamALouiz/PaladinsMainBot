@@ -421,7 +421,9 @@ class mainLoop:
                 time.sleep(2)
                 self.startGame()
                 time.sleep(2)
-                flag = False
+            if not flag:
+                self.pickChampionIcon()
+            flag = False
             self.pickChampion()
             self.inGameAndRequeue()
             if self.isrunning:
