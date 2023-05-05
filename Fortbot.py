@@ -61,6 +61,8 @@ class App:
             },
         )
 
+        self.version = db.reference("/Update").get()
+
         self.Frontlines = ChampionsList(type="Frontline", app=self)
         self.Supports = ChampionsList(type="Support", app=self)
         self.Flanks = ChampionsList(type="Flank", app=self)
@@ -96,7 +98,7 @@ class App:
         self.title_label.place(x=10, y=10, width=500, height=69)
 
         self.email_label = tk.Label(self.root)
-        ft = tkFont.Font(family=self.fontFamily, size=14)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
         self.email_label["font"] = ft
         self.email_label["fg"] = "#eff0f1"
         self.email_label["bg"] = "#31363b"
@@ -106,7 +108,7 @@ class App:
 
         self.email_entry = tk.Entry(self.root)
         self.email_entry["borderwidth"] = "1px"
-        ft = tkFont.Font(family=self.fontFamily, size=14)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
         self.email_entry["font"] = ft
         self.email_entry["fg"] = "#eff0f1"
         self.email_entry["bg"] = "#31363b"
@@ -115,7 +117,7 @@ class App:
         self.email_entry.place(x=130, y=90, width=267, height=42)
 
         self.password_label = tk.Label(self.root)
-        ft = tkFont.Font(family=self.fontFamily, size=14)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
         self.password_label["font"] = ft
         self.password_label["fg"] = "#eff0f1"
         self.password_label["bg"] = "#31363b"
@@ -125,7 +127,7 @@ class App:
 
         self.password_entry = tk.Entry(self.root)
         self.password_entry["borderwidth"] = "1px"
-        ft = tkFont.Font(family=self.fontFamily, size=14)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
         self.password_entry["font"] = ft
         self.password_entry["fg"] = "#eff0f1"
         self.password_entry["bg"] = "#31363b"
@@ -150,7 +152,7 @@ class App:
 
         self.login_btn = tk.Button(self.root)
         self.login_btn["bg"] = "#6b42f4"
-        ft = tkFont.Font(family="Franklin Gothic Medium", size=14, weight="bold")
+        ft = tkFont.Font(family="Franklin Gothic Medium", size=10, weight="bold")
         self.login_btn["font"] = ft
         self.login_btn["fg"] = "#eff0f1"
         self.login_btn["bg"] = "#31363b"
@@ -160,7 +162,7 @@ class App:
         self.login_btn["command"] = self.login_btn_command
 
         self.register_btn = tk.Button(self.root)
-        ft = tkFont.Font(family="Franklin Gothic Medium", size=14, weight="bold")
+        ft = tkFont.Font(family="Franklin Gothic Medium", size=10, weight="bold")
         self.register_btn["font"] = ft
         self.register_btn["fg"] = "#eff0f1"
         self.register_btn["bg"] = "#31363b"
@@ -203,7 +205,7 @@ class App:
         self.register_title_label.place(x=10, y=10, width=500, height=69)
 
         self.register_username_label = tk.Label(self.registerWindow)
-        ft = tkFont.Font(family=self.fontFamily, size=14)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
         self.register_username_label["font"] = ft
         self.register_username_label["fg"] = "#eff0f1"
         self.register_username_label["bg"] = "#31363b"
@@ -213,7 +215,7 @@ class App:
 
         self.register_username_entry = tk.Entry(self.registerWindow)
         self.register_username_entry["borderwidth"] = "1px"
-        ft = tkFont.Font(family=self.fontFamily, size=14)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
         self.register_username_entry["font"] = ft
         self.register_username_entry["fg"] = "#eff0f1"
         self.register_username_entry["bg"] = "#31363b"
@@ -222,7 +224,7 @@ class App:
         self.register_username_entry.place(x=140, y=100, width=267, height=42)
 
         self.register_key_label = tk.Label(self.registerWindow)
-        ft = tkFont.Font(family=self.fontFamily, size=14)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
         self.register_key_label["font"] = ft
         self.register_key_label["fg"] = "#eff0f1"
         self.register_key_label["bg"] = "#31363b"
@@ -232,7 +234,7 @@ class App:
 
         self.register_key_entry = tk.Entry(self.registerWindow)
         self.register_key_entry["borderwidth"] = "1px"
-        ft = tkFont.Font(family=self.fontFamily, size=14)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
         self.register_key_entry["font"] = ft
         self.register_key_entry["fg"] = "#eff0f1"
         self.register_key_entry["bg"] = "#31363b"
@@ -241,7 +243,7 @@ class App:
         self.register_key_entry.place(x=140, y=150, width=267, height=42)
 
         self.register_email_label = tk.Label(self.registerWindow)
-        ft = tkFont.Font(family=self.fontFamily, size=14)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
         self.register_email_label["font"] = ft
         self.register_email_label["fg"] = "#eff0f1"
         self.register_email_label["bg"] = "#31363b"
@@ -251,7 +253,7 @@ class App:
 
         self.register_email_entry = tk.Entry(self.registerWindow)
         self.register_email_entry["borderwidth"] = "1px"
-        ft = tkFont.Font(family=self.fontFamily, size=14)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
         self.register_email_entry["font"] = ft
         self.register_email_entry["fg"] = "#eff0f1"
         self.register_email_entry["bg"] = "#31363b"
@@ -260,7 +262,7 @@ class App:
         self.register_email_entry.place(x=140, y=200, width=267, height=42)
 
         self.register_password_label = tk.Label(self.registerWindow)
-        ft = tkFont.Font(family=self.fontFamily, size=14)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
         self.register_password_label["font"] = ft
         self.register_password_label["fg"] = "#eff0f1"
         self.register_password_label["bg"] = "#31363b"
@@ -270,7 +272,7 @@ class App:
 
         self.register_password_entry = tk.Entry(self.registerWindow)
         self.register_password_entry["borderwidth"] = "1px"
-        ft = tkFont.Font(family=self.fontFamily, size=14)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
         self.register_password_entry["font"] = ft
         self.register_password_entry["fg"] = "#eff0f1"
         self.register_password_entry["bg"] = "#31363b"
@@ -280,7 +282,7 @@ class App:
 
         self.done_btn = tk.Button(self.registerWindow)
         self.done_btn["bg"] = "#6b42f4"
-        ft = tkFont.Font(family="Franklin Gothic Medium", size=14, weight="bold")
+        ft = tkFont.Font(family="Franklin Gothic Medium", size=10, weight="bold")
         self.done_btn["font"] = ft
         self.done_btn["fg"] = "#eff0f1"
         self.done_btn["bg"] = "#31363b"
@@ -338,9 +340,9 @@ class App:
                         {
                             "Email": reg_email,
                             "KeyUsed": reg_key,
-                            "PaladinsVersin": "1.0.0.1",
+                            "PaladinsVersin": self.version["PaladinsVersion"],
                             "Password": reg_password,
-                            "RemLogin": False,
+                            "RemLogin": self.rembr_chkbx_value,
                             "Username": username,
                             "date": str(now.strftime("%Y-%m-%dT%H:%M:%SZ")),
                             "days": keysGet[key]["days"],
@@ -493,7 +495,7 @@ class App:
         logoutButton["font"] = ft
         logoutButton["fg"] = "#000000"
         logoutButton["justify"] = "center"
-        logoutButton["text"] = "logout"
+        logoutButton["text"] = "Logout"
         logoutButton.place(x=55, y=270, width=70, height=25)
         logoutButton["command"] = self.logout
 
@@ -529,6 +531,7 @@ class App:
                     logs.push(usersGet[user])
                     return False
                 else:
+                    self.rem = end - currentDate
                     return True
             else:
                 emailCheck = False
@@ -548,7 +551,7 @@ class App:
         # self.login=self.authenticate()
         # self.login=True
         # self.authenticate() ==
-        if True:
+        if self.authenticate() == True:
             self.clear()
             width = 1600
             height = 700
@@ -614,7 +617,7 @@ class App:
             logoutButton["fg"] = "#eff0f1"
             logoutButton["bg"] = "#31363b"
             logoutButton["justify"] = "center"
-            logoutButton["text"] = "logout"
+            logoutButton["text"] = "Logout"
             logoutButton.place(x=55, y=300, width=70, height=25)
             logoutButton["command"] = self.logout
 
@@ -744,6 +747,24 @@ class App:
             resetButton["text"] = "Reset saved settings "
             resetButton.place(x=940, y=310, width=118, height=30)
 
+            self.VersionText = tk.Label(self.root)
+            ft = tkFont.Font(family=self.fontFamily, size=10)
+            self.VersionText["font"] = ft
+            self.VersionText["fg"] = "#eff0f1"
+            self.VersionText["bg"] = "#31363b"
+            self.VersionText["justify"] = "center"
+            self.VersionText["text"] = "Version: " + self.version["PaladinsVersion"]
+            self.VersionText.place(x=200, y=400, width=118, height=30)
+
+            self.daysRem = tk.Label(self.root)
+            ft = tkFont.Font(family=self.fontFamily, size=10)
+            self.daysRem["font"] = ft
+            self.daysRem["fg"] = "#eff0f1"
+            self.daysRem["bg"] = "#31363b"
+            self.daysRem["justify"] = "center"
+            self.daysRem["text"] = "Days Remaining: " + str(self.rem.days)
+            self.daysRem.place(x=200, y=450, width=118, height=30)
+
     def startBot(self):
         if self.tier == 0:
             self.mainbot = mainbotloop.mainLoop(
@@ -794,7 +815,6 @@ class App:
 
     def showLoginFrame(self):
         self.clear()
-        self.root = tk.Tk()
         self.root.title(str("AnubisPaladinsBot"))
         self.root.iconbitmap("bot_icon.ico")
         # setting window size
@@ -808,12 +828,14 @@ class App:
             (screenwidth - width) / 2,
             (screenheight - height) / 2,
         )
+
         self.root.geometry(alignstr)
         self.root.resizable(width=False, height=False)
         self.fontFamily = "Calibri"
         self.mainbot = None
         self.tier = 3
         self.login = False
+        self.root["bg"] = "#31363b"
 
         self.title_label = tk.Label(self.root)
         ft = tkFont.Font(family=self.fontFamily, size=24)
@@ -825,7 +847,7 @@ class App:
         self.title_label.place(x=10, y=10, width=500, height=69)
 
         self.email_label = tk.Label(self.root)
-        ft = tkFont.Font(family=self.fontFamily, size=14)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
         self.email_label["font"] = ft
         self.email_label["fg"] = "#eff0f1"
         self.email_label["bg"] = "#31363b"
@@ -835,7 +857,7 @@ class App:
 
         self.email_entry = tk.Entry(self.root)
         self.email_entry["borderwidth"] = "1px"
-        ft = tkFont.Font(family=self.fontFamily, size=14)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
         self.email_entry["font"] = ft
         self.email_entry["fg"] = "#eff0f1"
         self.email_entry["bg"] = "#31363b"
@@ -844,7 +866,7 @@ class App:
         self.email_entry.place(x=130, y=90, width=267, height=42)
 
         self.password_label = tk.Label(self.root)
-        ft = tkFont.Font(family=self.fontFamily, size=14)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
         self.password_label["font"] = ft
         self.password_label["fg"] = "#eff0f1"
         self.password_label["bg"] = "#31363b"
@@ -854,7 +876,7 @@ class App:
 
         self.password_entry = tk.Entry(self.root)
         self.password_entry["borderwidth"] = "1px"
-        ft = tkFont.Font(family=self.fontFamily, size=14)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
         self.password_entry["font"] = ft
         self.password_entry["fg"] = "#eff0f1"
         self.password_entry["bg"] = "#31363b"
@@ -863,7 +885,7 @@ class App:
         self.password_entry.place(x=130, y=150, width=267, height=42)
 
         self.rembr_chkbx = tk.Checkbutton(self.root)
-        ft = tkFont.Font(family=self.fontFamily, size=12)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
         self.rembr_chkbx["font"] = ft
         self.rembr_chkbx["fg"] = "#eff0f1"
         self.rembr_chkbx["bg"] = "#31363b"
@@ -878,7 +900,7 @@ class App:
         self.rembr_chkbx["command"] = self.rembr_chkbx_command
 
         self.login_btn = tk.Button(self.root)
-        ft = tkFont.Font(family="Franklin Gothic Medium", size=14, weight="bold")
+        ft = tkFont.Font(family="Franklin Gothic Medium", size=10, weight="bold")
         self.login_btn["font"] = ft
         self.login_btn["fg"] = "#eff0f1"
         self.login_btn["bg"] = "#31363b"
@@ -888,7 +910,7 @@ class App:
         self.login_btn["command"] = self.login_btn_command
 
         self.register_btn = tk.Button(self.root)
-        ft = tkFont.Font(family="Franklin Gothic Medium", size=14, weight="bold")
+        ft = tkFont.Font(family="Franklin Gothic Medium", size=10, weight="bold")
         self.register_btn["font"] = ft
         self.register_btn["fg"] = "#eff0f1"
         self.register_btn["bg"] = "#31363b"

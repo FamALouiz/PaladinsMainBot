@@ -414,7 +414,6 @@ class mainLoop:
         flag = True
         while True:
             self.updateData()
-            self.pbBool = True
             if flag:
                 self.get_fortnite_window()
                 time.sleep(2)
@@ -430,13 +429,16 @@ class mainLoop:
                 self.count += 1
             elif not self.isrunning:
                 return
-            if self.takeScreenshot and not self.isrunning:
-                self.print_to_GUI("Returning to lobby")
-                if self.pbBool and self.takeScreenshot:
-                    stats = f"./screenshots/screenshot_{self.count}.png"
-                    pyautogui.screenshot(stats)
-                    self.takeScreenshot = False
-                    self.send_image_pushbullet(self.pbAccTkn, stats)
+
+            if self.pbBool and self.takeScreenshot and not self.isrunning:
+                stats = f"./screenshots/screenshot_{self.numberGames}.png"
+                pyautogui.screenshot(stats)
+                self.send_image_pushbullet(self.pbAccTkn, stats)
+
+            elif self.takeScreenshot and not self.isrunning:
+                stats = f"./screenshots/screenshot_{self.count}.png"
+                pyautogui.screenshot(stats)
+
         """flag = True
         while True:
             if not self.isrunning:
