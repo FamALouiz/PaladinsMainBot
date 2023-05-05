@@ -464,7 +464,6 @@ class App:
     def authenticate(self):
         n_email = self.email_entry.get()
         n_password = self.password_entry.get()
-        users = db.reference("/MainPaladinsUsers")
         usersGet = db.reference("/MainPaladinsUsers").get()
         emailCheck = False
         passwordCheck = False
