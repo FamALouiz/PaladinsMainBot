@@ -13,6 +13,7 @@ championPath = eval(f"r'PaladinMainbot_pngs\{championType}\{champion}'")
 championIcon = eval(f"r'PaladinMainbot_pngs\{championType}\{champion}\\0ChampIcon.png'")
 
 iconNames = ["Lobby Play", "Join Queue", "Error", "Champion lockin"]
+championIconNames = ["Talent", "Loadout", "Equip"]
 
 iconlist = [
     os.path.join(championPath, f)
@@ -196,7 +197,7 @@ class mainLoop:
         if not self.isrunning:
             return
         iterator = PositionableSequenceIterator(
-            [[a, b] for a, b in zip(self.iconlist, iconNames)]
+            [[a, b] for a, b in zip(self.iconlist, championIconNames)]
         )
         flag = True
         if not self.isrunning:
@@ -234,7 +235,7 @@ class mainLoop:
                 return
             icon = i[0]
             name = i[1]
-            if i == r"PaladinMainbot_pngs\3Error.png":
+            if icon == r"PaladinMainbot_pngs\3Error.png":
                 current = i
                 try:
                     pyautogui.click(
@@ -243,8 +244,7 @@ class mainLoop:
                     self.print_to_GUI(f"Found {name}")
                 except:
                     continue
-
-            elif i == r"PaladinMainbot_pngs\5Champlockin.png":
+            elif icon == r"PaladinMainbot_pngs\5Champlockin.png":
                 if not self.isrunning:
                     return
                 flag = True
@@ -252,32 +252,27 @@ class mainLoop:
                 while flag:
                     if not self.isrunning:
                         return
-                    else:
+                    try:
+                        self.pickChampionIcon()
+                    except:
+                        if printing:
+                            self.print_to_GUI(f"Waiting to choose selected champion")
                         try:
-                            self.pickChampionIcon()
+                            pyautogui.click(
+                                pyautogui.center(
+                                    pyautogui.locateOnScreen(current, confidence=0.9)
+                                )
+                            )
+                            self.print_to_GUI(f"Found error button")
                         except:
                             if printing:
-                                self.print_to_GUI(
-                                    f"Waiting to choose selected champion"
-                                )
-                            try:
-                                pyautogui.click(
-                                    pyautogui.center(
-                                        pyautogui.locateOnScreen(
-                                            current, confidence=0.9
-                                        )
-                                    )
-                                )
-                                self.print_to_GUI(f"Found error button")
-                            except:
-                                if printing:
-                                    self.print_to_GUI(f"No Error till now")
-                                    printing = False
-                                continue
-                            time.sleep(0.5)
-                        else:
-                            flag = False
-                            time.sleep(0.5)
+                                self.print_to_GUI(f"No Error till now")
+                                printing = False
+                            continue
+                        time.sleep(0.5)
+                    else:
+                        flag = False
+                        time.sleep(0.5)
                 flag = True
                 while flag:
                     try:
@@ -382,8 +377,8 @@ class mainLoop:
                     else:
                         window.minimize()
 
-        self.print_to_GUI("Paladins not open... Stop bot and open paladins", "error")
-        raise Exception("Paladins not found")
+        # self.print_to_GUI("Paladins not open... Stop bot and open paladins", "error")
+        # raise Exception("Paladins not found")
 
     def runningchck(self):
         return self.isrunning
