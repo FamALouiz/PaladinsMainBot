@@ -169,6 +169,9 @@ class App:
         self.register_btn["text"] = "Register"
         self.register_btn.place(x=180, y=270, width=161, height=41)
         self.register_btn["command"] = self.register_btn_command
+
+        self.displayChamps = tk.Text()
+
         self.root.mainloop()
 
     def register_btn_command(self):
@@ -374,52 +377,68 @@ class App:
             return
 
     def showFrontlineScroll(self):
+        self.displayChamps.destroy()
         text = tk.Text(self.root)
         text["fg"] = "#eff0f1"
         text["bg"] = "#31363b"
-        text.place(x=1200, y=20, width=200, height=500)
+        text.place(x=625, y=375, width=200, height=100)
         self.sbFlank = tk.Scrollbar(self.root, command=text.yview)
-        self.sbFlank.grid(row=2, column=1)
+        self.sbFlank.place(x=715, y=375, width=12, height=100)
+        first = False
         text.configure(yscrollcommand=self.sbFlank.set, border=0)
         for champion in self.Frontlines.list:
+            if first:
+                text.insert("end", "\n")
             button = tk.Button(text=champion.name, command=champion.select)
             button["fg"] = "#eff0f1"
             button["bg"] = "#31363b"
             text.window_create("end", window=button)
-            text.insert("end", "\n")
+            first = True
         text.configure(state="disabled")
+        self.displayChamps = text
 
     def showAttackScroll(self):
+        self.displayChamps.destroy()
         text = tk.Text(self.root)
-        text.place(x=1200, y=20, width=200, height=500)
+        text.place(x=625, y=375, width=200, height=100)
         text["fg"] = "#eff0f1"
         text["bg"] = "#31363b"
         self.sbFlank = tk.Scrollbar(self.root, command=text.yview)
-        self.sbFlank.grid(row=2, column=1)
+        self.sbFlank.place(x=715, y=375, width=12, height=100)
         text.configure(yscrollcommand=self.sbFlank.set, border=0)
+        first = False
         for champion in self.Flanks.list:
+            if first:
+                text.insert("end", "\n")
             button = tk.Button(text=champion.name, command=champion.select)
             button["fg"] = "#eff0f1"
             button["bg"] = "#31363b"
             text.window_create("end", window=button)
-            text.insert("end", "\n")
+            first = True
+
         text.configure(state="disabled")
+        self.displayChamps = text
 
     def showSupportScroll(self):
+        self.displayChamps.destroy()
         text = tk.Text(self.root)
-        text.place(x=1200, y=20, width=200, height=500)
+        text.place(x=625, y=375, width=200, height=100)
         text["fg"] = "#eff0f1"
         text["bg"] = "#31363b"
         self.sbFlank = tk.Scrollbar(self.root, command=text.yview)
-        self.sbFlank.grid(row=2, column=1)
+        self.sbFlank.place(x=715, y=375, width=12, height=100)
         text.configure(yscrollcommand=self.sbFlank.set, border=0)
+        first = False
         for champion in self.Supports.list:
+            if first:
+                text.insert("end", "\n")
             button = tk.Button(text=champion.name, command=champion.select)
             text.window_create("end", window=button)
             button["fg"] = "#eff0f1"
             button["bg"] = "#31363b"
-            text.insert("end", "\n")
+            first = True
         text.configure(state="disabled")
+        self.displayChamps = text
 
     def clear(self):
         widget_list = self.root.place_slaves()
