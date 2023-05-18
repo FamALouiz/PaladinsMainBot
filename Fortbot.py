@@ -344,7 +344,7 @@ class App:
                             "KeyUsed": reg_key,
                             "PaladinsVersin": self.version["PaladinsVersion"],
                             "Password": reg_password,
-                            "RemLogin": eval(self.rembr_chkbx_value),
+                            "RemLogin": self.rembr_chkbx_value.get(),
                             "Username": username,
                             "date": str(now.strftime("%Y-%m-%dT%H:%M:%SZ")),
                             "days": keysGet[key]["days"],
