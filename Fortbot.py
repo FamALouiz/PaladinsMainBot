@@ -5,6 +5,7 @@ from tkinter.constants import E, END, TRUE
 import tkinter.font as tkFont
 import requests, datetime, time, mainbotloop, uuid, sys, re
 import pyautogui
+import webbrowser
 from firebase_admin import db
 import firebase_admin
 
@@ -332,7 +333,6 @@ class App:
                     self.email_error.place(x=130, y=425, width=267, height=15)
                     return
 
-            keys = db.reference("/PaladinsKeys")
             keysGet = db.reference("/PaladinsKeys").get()
             for key in keysGet:
                 if keysGet[key]["key"] == reg_key:
@@ -344,7 +344,7 @@ class App:
                             "KeyUsed": reg_key,
                             "PaladinsVersin": self.version["PaladinsVersion"],
                             "Password": reg_password,
-                            "RemLogin": self.rembr_chkbx_value,
+                            "RemLogin": eval(self.rembr_chkbx_value),
                             "Username": username,
                             "date": str(now.strftime("%Y-%m-%dT%H:%M:%SZ")),
                             "days": keysGet[key]["days"],
@@ -365,6 +365,7 @@ class App:
                     self.email_error["bg"] = "#31363b"
                     self.email_error.place(x=130, y=220, width=267, height=15)
                     db.reference(f"/PaladinsKeys/{key}").delete()
+                    webbrowser.open("https://discord.gg/TxtSrZQr5W")
                     return
 
             self.email_error = tk.Label(self.registerWindow)
@@ -782,6 +783,8 @@ class App:
             self.daysRem["justify"] = "center"
             self.daysRem["text"] = "Days Remaining: " + str(self.rem.days)
             self.daysRem.place(x=200, y=425, width=118, height=30)
+
+            webbrowser.open("https://discord.gg/TxtSrZQr5W")
 
     def startBot(self):
         if self.tier == 0:
