@@ -138,14 +138,13 @@ class App:
         self.rembr_chkbx = tk.Checkbutton(self.root)
         ft = tkFont.Font(family=self.fontFamily, size=12)
         self.rembr_chkbx["font"] = ft
-        self.rembr_chkbx["fg"] = "#eff0f1"
+        self.rembr_chkbx["fg"] = "#FF4545"
         self.rembr_chkbx["bg"] = "#31363b"
         self.rembr_chkbx["justify"] = "center"
         self.rembr_chkbx["text"] = "Remember me"
         self.rembr_chkbx.place(x=180, y=235, width=167, height=30)
         self.rembr_chkbx_value = tk.BooleanVar()
         self.rembr_chkbx["variable"] = self.rembr_chkbx_value
-        # self.rembr_chkbx["variable"].set(False)
         self.rembr_chkbx["offvalue"] = 0
         self.rembr_chkbx["onvalue"] = 1
         self.rembr_chkbx["command"] = self.rembr_chkbx_command
@@ -553,8 +552,8 @@ class App:
         # self.authenticate() ==
         if self.authenticate() == True:
             self.clear()
-            width = 1600
-            height = 700
+            width = 1150
+            height = 500
             screenwidth = self.root.winfo_screenwidth()
             screenheight = self.root.winfo_screenheight()
             alignstr = "%dx%d+%d+%d" % (
@@ -654,7 +653,7 @@ class App:
             self.screenshotCheck = tk.Checkbutton(self.root)
             ft = tkFont.Font(family=self.fontFamily, size=10)
             self.screenshotCheck["font"] = ft
-            self.screenshotCheck["fg"] = "#eff0f1"
+            self.screenshotCheck["fg"] = "#FF4545"
             self.screenshotCheck["bg"] = "#31363b"
             self.screenshotCheck["justify"] = "left"
             self.screenshotCheck[
@@ -678,7 +677,7 @@ class App:
             self.pushCheck = tk.Checkbutton(self.root)
             ft = tkFont.Font(family=self.fontFamily, size=10)
             self.pushCheck["font"] = ft
-            self.pushCheck["fg"] = "#eff0f1"
+            self.pushCheck["fg"] = "#FF4545"
             self.pushCheck["bg"] = "#31363b"
             self.pushCheck["justify"] = "center"
             self.pushCheck["text"] = "Push screenshots of Match Stats with Pushbullet"
@@ -763,7 +762,7 @@ class App:
             self.daysRem["bg"] = "#31363b"
             self.daysRem["justify"] = "center"
             self.daysRem["text"] = "Days Remaining: " + str(self.rem.days)
-            self.daysRem.place(x=200, y=450, width=118, height=30)
+            self.daysRem.place(x=200, y=425, width=118, height=30)
 
     def startBot(self):
         if self.tier == 0:
@@ -887,7 +886,7 @@ class App:
         self.rembr_chkbx = tk.Checkbutton(self.root)
         ft = tkFont.Font(family=self.fontFamily, size=10)
         self.rembr_chkbx["font"] = ft
-        self.rembr_chkbx["fg"] = "#eff0f1"
+        self.rembr_chkbx["fg"] = "#FF4545"
         self.rembr_chkbx["bg"] = "#31363b"
         self.rembr_chkbx["justify"] = "center"
         self.rembr_chkbx["text"] = "Remember me"
