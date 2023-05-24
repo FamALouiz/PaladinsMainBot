@@ -173,6 +173,17 @@ class App:
 
         self.displayChamps = tk.Text()
 
+        try:
+            with open("Details.txt", "r") as file:
+                email = file.readline()[6:]
+                email = email[:-1]
+                password = file.readline()[9:]
+                password = password[:-1]
+                if self.pre_authenticate(email, password):
+                    self.startWindow()
+        except:
+            pass
+
         self.root.mainloop()
 
     def register_btn_command(self):
@@ -551,6 +562,10 @@ class App:
                     return False
                 else:
                     self.rem = end - currentDate
+                    if self.rembr_chkbx_value.get():
+                        with open("Details.txt", "w") as file:
+                            file.write(f"email:{n_email}\n")
+                            file.write(f"password:{n_password}\n")
                     return True
             else:
                 emailCheck = False
@@ -566,225 +581,270 @@ class App:
         self.email_error.place(x=130, y=215, width=267, height=15)
         return False
 
+    def pre_authenticate(self, email, password):
+        usersGet = db.reference("/MainPaladinsUsers").get()
+        emailCheck = False
+        passwordCheck = False
+        for user in usersGet:
+            if email == usersGet[user]["Email"]:
+                emailCheck = True
+            if password == usersGet[user]["Password"]:
+                passwordCheck = True
+
+            if emailCheck and passwordCheck:
+                endDate = usersGet[user]["enddate"]
+                currentDate = datetime.datetime.now()
+                date_format1 = "%Y-%m-%dT%H:%M:%SZ"
+                date_format12 = "%Y-%m-%dT%H-%M-%SZ"
+                try:
+                    end = datetime.datetime.strptime(endDate, date_format1)
+                except:
+                    end = datetime.datetime.strptime(endDate, date_format12)
+                if end < currentDate:
+                    self.email_error = tk.Label(self.root)
+                    self.email_error["text"] = "Ops! Key has ran out"
+                    ft = tkFont.Font(family=self.fontFamily, size=10)
+                    self.email_error["font"] = ft
+                    self.email_error["fg"] = "#ff0000"
+                    self.email_error.place(x=130, y=215, width=267, height=15)
+                    logs = db.reference("/PaladinsLOGS")
+                    logs.push(usersGet[user])
+                    return False
+                else:
+                    self.rem = end - currentDate
+                    return True
+            else:
+                emailCheck = False
+                passwordCheck = False
+        self.email_error = tk.Label(self.root)
+        self.email_error["text"] = "Couldn't check last saved email. please try again"
+        self.email_error["fg"] = "#eff0f1"
+        self.email_error["bg"] = "#31363b"
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        self.email_error["font"] = ft
+        self.email_error["fg"] = "#ff0000"
+
+        self.email_error.place(x=130, y=215, width=267, height=15)
+        return False
+
+    def startWindow(self):
+        self.clear()
+        width = 1150
+        height = 500
+        screenwidth = self.root.winfo_screenwidth()
+        screenheight = self.root.winfo_screenheight()
+        alignstr = "%dx%d+%d+%d" % (
+            width,
+            height,
+            (screenwidth - width) / 2,
+            (screenheight - height) / 2,
+        )
+        self.root.geometry(alignstr)
+        self.root.resizable(width=False, height=False)
+
+        self.lastMessage = None
+        self.fontFamily = "Calibri"
+
+        self.startButton = tk.Button(self.root)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        self.startButton["font"] = ft
+        self.startButton["fg"] = "#eff0f1"
+        self.startButton["bg"] = "#31363b"
+        self.startButton["justify"] = "center"
+        self.startButton["text"] = "Start"
+        self.startButton["state"] = "normal"
+        self.startButton.place(x=40, y=50, width=100, height=40)
+        self.startButton["command"] = self.startBot
+
+        self.stopButton = tk.Button(self.root)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        self.stopButton["font"] = ft
+        self.stopButton["fg"] = "#eff0f1"
+        self.stopButton["bg"] = "#31363b"
+        self.stopButton["justify"] = "center"
+        self.stopButton["text"] = "Stop"
+        self.stopButton["state"] = "disabled"
+        self.stopButton.place(x=40, y=120, width=100, height=40)
+        self.stopButton["command"] = self.stopBot
+
+        self.textBox = tk.Text(self.root)
+        self.textBox["borderwidth"] = "1px"
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        self.textBox["font"] = ft
+        self.textBox["fg"] = "#31363b"
+        self.textBox["bg"] = "#bdc3c7"
+        self.textBox.place(x=180, y=50, width=520, height=260)
+        self.textBox.tag_config(
+            "warning", background="#fffa65", selectbackground="black"
+        )
+        self.textBox.tag_config("error", background="#e74c3c", selectbackground="black")
+        self.textBox.tag_config(
+            "control", background="#2ecc71", selectbackground="black"
+        )
+        self.textBox.tag_config("basic", background="white", selectbackground="black")
+
+        logoutButton = tk.Button(self.root)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        logoutButton["font"] = ft
+        logoutButton["fg"] = "#eff0f1"
+        logoutButton["bg"] = "#31363b"
+        logoutButton["justify"] = "center"
+        logoutButton["text"] = "Logout"
+        logoutButton.place(x=55, y=300, width=70, height=25)
+        logoutButton["command"] = self.logout
+
+        settingsFrame = tk.LabelFrame(self.root)
+        settingsFrame["borderwidth"] = "1px"
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        settingsFrame["font"] = ft
+        settingsFrame["fg"] = "#eff0f1"
+        settingsFrame["bg"] = "#31363b"
+        settingsFrame["text"] = "Settings"
+        settingsFrame.place(x=720, y=40, width=350, height=305)
+
+        saveButton = tk.Button(self.root)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        saveButton["font"] = ft
+        saveButton["fg"] = "#eff0f1"
+        saveButton["bg"] = "#31363b"
+        saveButton["justify"] = "center"
+        saveButton["text"] = "Save Log"
+        saveButton.place(x=630, y=330, width=70, height=25)
+        saveButton["command"] = self.saveText
+
+        clearButton = tk.Button(self.root)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        clearButton["font"] = ft
+        clearButton["fg"] = "#eff0f1"
+        clearButton["bg"] = "#31363b"
+        clearButton["justify"] = "center"
+        clearButton["text"] = "Clear Log"
+        clearButton.place(x=540, y=330, width=70, height=25)
+        clearButton["command"] = self.clearText
+
+        self.screenshotCheckVal = tk.IntVar()
+        self.screenshotCheck = tk.Checkbutton(self.root)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        self.screenshotCheck["font"] = ft
+        self.screenshotCheck["fg"] = "#FF4545"
+        self.screenshotCheck["bg"] = "#31363b"
+        self.screenshotCheck["justify"] = "left"
+        self.screenshotCheck[
+            "text"
+        ] = "Save screenshots of Match Stats to your computer"
+        self.screenshotCheck.place(x=745, y=150, width=300, height=25)
+        self.screenshotCheck["offvalue"] = "0"
+        self.screenshotCheck["onvalue"] = "1"
+        self.screenshotCheck["variable"] = self.screenshotCheckVal
+
+        pushbulletFrame = tk.LabelFrame(self.root)
+        pushbulletFrame["borderwidth"] = "1px"
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        pushbulletFrame["font"] = ft
+        pushbulletFrame["fg"] = "#eff0f1"
+        pushbulletFrame["bg"] = "#31363b"
+        pushbulletFrame["text"] = "Pushbullet"
+        pushbulletFrame.place(x=730, y=190, width=335, height=120)
+
+        self.pushCheckVal = tk.IntVar()
+        self.pushCheck = tk.Checkbutton(self.root)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        self.pushCheck["font"] = ft
+        self.pushCheck["fg"] = "#FF4545"
+        self.pushCheck["bg"] = "#31363b"
+        self.pushCheck["justify"] = "center"
+        self.pushCheck["text"] = "Push screenshots of Match Stats with Pushbullet"
+        self.pushCheck.place(x=745, y=205, width=284, height=30)
+        self.pushCheck["offvalue"] = 0
+        self.pushCheck["onvalue"] = 1
+        self.pushCheck["variable"] = self.pushCheckVal
+
+        self.btnShowFlank = tk.Button(self.root)
+        self.btnShowFlank["text"] = "Pick Flank"
+        self.btnShowFlank["command"] = self.showAttackScroll
+        self.btnShowFlank["fg"] = "#eff0f1"
+        self.btnShowFlank["bg"] = "#31363b"
+        self.btnShowFlank.place(x=50, y=180, width=100, height=30)
+
+        self.btnShowFrontline = tk.Button(self.root)
+        self.btnShowFrontline["text"] = "Pick Frontline"
+        self.btnShowFrontline["fg"] = "#eff0f1"
+        self.btnShowFrontline["bg"] = "#31363b"
+        self.btnShowFrontline["command"] = self.showFrontlineScroll
+        self.btnShowFrontline.place(x=50, y=220, width=100, height=30)
+
+        self.btnShowSupport = tk.Button(self.root)
+        self.btnShowSupport["text"] = "Pick Support"
+        self.btnShowSupport["fg"] = "#eff0f1"
+        self.btnShowSupport["bg"] = "#31363b"
+        self.btnShowSupport["command"] = self.showSupportScroll
+        self.btnShowSupport.place(x=50, y=260, width=100, height=30)
+
+        self.token = tk.Entry(self.root)
+        self.token["borderwidth"] = "1px"
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        self.token["font"] = ft
+        self.token["fg"] = "#eff0f1"
+        self.token["bg"] = "#31363b"
+        self.token["justify"] = "center"
+        self.token["text"] = ""
+        self.token.place(x=735, y=255, width=290, height=30)
+
+        testButton = tk.Button(self.root)
+        testButton["bg"] = "#efefef"
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        testButton["font"] = ft
+        testButton["fg"] = "#eff0f1"
+        testButton["bg"] = "#31363b"
+        testButton["justify"] = "center"
+        testButton["text"] = "test"
+        testButton.place(x=1030, y=255, width=30, height=32)
+        testButton["command"] = self.pbSendTestMessage
+
+        tokenLabel = tk.Label(self.root)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        tokenLabel["font"] = ft
+        tokenLabel["fg"] = "#eff0f1"
+        tokenLabel["bg"] = "#31363b"
+        tokenLabel["justify"] = "left"
+        tokenLabel["text"] = "Insert your Access Token below:"
+        tokenLabel.place(x=738, y=225, width=326, height=30)
+
+        resetButton = tk.Button(self.root)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        resetButton["font"] = ft
+        resetButton["fg"] = "#eff0f1"
+        resetButton["bg"] = "#31363b"
+        resetButton["justify"] = "center"
+        resetButton["text"] = "Reset saved settings "
+        resetButton.place(x=940, y=310, width=118, height=30)
+
+        self.VersionText = tk.Label(self.root)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        self.VersionText["font"] = ft
+        self.VersionText["fg"] = "#eff0f1"
+        self.VersionText["bg"] = "#31363b"
+        self.VersionText["justify"] = "center"
+        self.VersionText["text"] = "Version: " + self.version["PaladinsVersion"]
+        self.VersionText.place(x=200, y=400, width=118, height=30)
+
+        self.daysRem = tk.Label(self.root)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        self.daysRem["font"] = ft
+        self.daysRem["fg"] = "#eff0f1"
+        self.daysRem["bg"] = "#31363b"
+        self.daysRem["justify"] = "center"
+        self.daysRem["text"] = "Days Remaining: " + str(self.rem.days)
+        self.daysRem.place(x=200, y=425, width=118, height=30)
+
+        webbrowser.open("https://discord.gg/TxtSrZQr5W")
+
     def login_btn_command(self):
         # self.login=self.authenticate()
         # self.login=True
         # self.authenticate() ==
-        if self.authenticate() == True:
-            self.clear()
-            width = 1150
-            height = 500
-            screenwidth = self.root.winfo_screenwidth()
-            screenheight = self.root.winfo_screenheight()
-            alignstr = "%dx%d+%d+%d" % (
-                width,
-                height,
-                (screenwidth - width) / 2,
-                (screenheight - height) / 2,
-            )
-            self.root.geometry(alignstr)
-            self.root.resizable(width=False, height=False)
-
-            self.lastMessage = None
-            self.fontFamily = "Calibri"
-
-            self.startButton = tk.Button(self.root)
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            self.startButton["font"] = ft
-            self.startButton["fg"] = "#eff0f1"
-            self.startButton["bg"] = "#31363b"
-            self.startButton["justify"] = "center"
-            self.startButton["text"] = "Start"
-            self.startButton["state"] = "normal"
-            self.startButton.place(x=40, y=50, width=100, height=40)
-            self.startButton["command"] = self.startBot
-
-            self.stopButton = tk.Button(self.root)
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            self.stopButton["font"] = ft
-            self.stopButton["fg"] = "#eff0f1"
-            self.stopButton["bg"] = "#31363b"
-            self.stopButton["justify"] = "center"
-            self.stopButton["text"] = "Stop"
-            self.stopButton["state"] = "disabled"
-            self.stopButton.place(x=40, y=120, width=100, height=40)
-            self.stopButton["command"] = self.stopBot
-
-            self.textBox = tk.Text(self.root)
-            self.textBox["borderwidth"] = "1px"
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            self.textBox["font"] = ft
-            self.textBox["fg"] = "#31363b"
-            self.textBox["bg"] = "#bdc3c7"
-            self.textBox.place(x=180, y=50, width=520, height=260)
-            self.textBox.tag_config(
-                "warning", background="#fffa65", selectbackground="black"
-            )
-            self.textBox.tag_config(
-                "error", background="#e74c3c", selectbackground="black"
-            )
-            self.textBox.tag_config(
-                "control", background="#2ecc71", selectbackground="black"
-            )
-            self.textBox.tag_config(
-                "basic", background="white", selectbackground="black"
-            )
-
-            logoutButton = tk.Button(self.root)
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            logoutButton["font"] = ft
-            logoutButton["fg"] = "#eff0f1"
-            logoutButton["bg"] = "#31363b"
-            logoutButton["justify"] = "center"
-            logoutButton["text"] = "Logout"
-            logoutButton.place(x=55, y=300, width=70, height=25)
-            logoutButton["command"] = self.logout
-
-            settingsFrame = tk.LabelFrame(self.root)
-            settingsFrame["borderwidth"] = "1px"
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            settingsFrame["font"] = ft
-            settingsFrame["fg"] = "#eff0f1"
-            settingsFrame["bg"] = "#31363b"
-            settingsFrame["text"] = "Settings"
-            settingsFrame.place(x=720, y=40, width=350, height=305)
-
-            saveButton = tk.Button(self.root)
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            saveButton["font"] = ft
-            saveButton["fg"] = "#eff0f1"
-            saveButton["bg"] = "#31363b"
-            saveButton["justify"] = "center"
-            saveButton["text"] = "Save Log"
-            saveButton.place(x=630, y=330, width=70, height=25)
-            saveButton["command"] = self.saveText
-
-            clearButton = tk.Button(self.root)
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            clearButton["font"] = ft
-            clearButton["fg"] = "#eff0f1"
-            clearButton["bg"] = "#31363b"
-            clearButton["justify"] = "center"
-            clearButton["text"] = "Clear Log"
-            clearButton.place(x=540, y=330, width=70, height=25)
-            clearButton["command"] = self.clearText
-
-            self.screenshotCheckVal = tk.IntVar()
-            self.screenshotCheck = tk.Checkbutton(self.root)
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            self.screenshotCheck["font"] = ft
-            self.screenshotCheck["fg"] = "#FF4545"
-            self.screenshotCheck["bg"] = "#31363b"
-            self.screenshotCheck["justify"] = "left"
-            self.screenshotCheck[
-                "text"
-            ] = "Save screenshots of Match Stats to your computer"
-            self.screenshotCheck.place(x=745, y=150, width=300, height=25)
-            self.screenshotCheck["offvalue"] = "0"
-            self.screenshotCheck["onvalue"] = "1"
-            self.screenshotCheck["variable"] = self.screenshotCheckVal
-
-            pushbulletFrame = tk.LabelFrame(self.root)
-            pushbulletFrame["borderwidth"] = "1px"
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            pushbulletFrame["font"] = ft
-            pushbulletFrame["fg"] = "#eff0f1"
-            pushbulletFrame["bg"] = "#31363b"
-            pushbulletFrame["text"] = "Pushbullet"
-            pushbulletFrame.place(x=730, y=190, width=335, height=120)
-
-            self.pushCheckVal = tk.IntVar()
-            self.pushCheck = tk.Checkbutton(self.root)
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            self.pushCheck["font"] = ft
-            self.pushCheck["fg"] = "#FF4545"
-            self.pushCheck["bg"] = "#31363b"
-            self.pushCheck["justify"] = "center"
-            self.pushCheck["text"] = "Push screenshots of Match Stats with Pushbullet"
-            self.pushCheck.place(x=745, y=205, width=284, height=30)
-            self.pushCheck["offvalue"] = 0
-            self.pushCheck["onvalue"] = 1
-            self.pushCheck["variable"] = self.pushCheckVal
-
-            self.btnShowFlank = tk.Button(self.root)
-            self.btnShowFlank["text"] = "Pick Flank"
-            self.btnShowFlank["command"] = self.showAttackScroll
-            self.btnShowFlank["fg"] = "#eff0f1"
-            self.btnShowFlank["bg"] = "#31363b"
-            self.btnShowFlank.place(x=50, y=180, width=100, height=30)
-
-            self.btnShowFrontline = tk.Button(self.root)
-            self.btnShowFrontline["text"] = "Pick Frontline"
-            self.btnShowFrontline["fg"] = "#eff0f1"
-            self.btnShowFrontline["bg"] = "#31363b"
-            self.btnShowFrontline["command"] = self.showFrontlineScroll
-            self.btnShowFrontline.place(x=50, y=220, width=100, height=30)
-
-            self.btnShowSupport = tk.Button(self.root)
-            self.btnShowSupport["text"] = "Pick Support"
-            self.btnShowSupport["fg"] = "#eff0f1"
-            self.btnShowSupport["bg"] = "#31363b"
-            self.btnShowSupport["command"] = self.showSupportScroll
-            self.btnShowSupport.place(x=50, y=260, width=100, height=30)
-
-            self.token = tk.Entry(self.root)
-            self.token["borderwidth"] = "1px"
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            self.token["font"] = ft
-            self.token["fg"] = "#eff0f1"
-            self.token["bg"] = "#31363b"
-            self.token["justify"] = "center"
-            self.token["text"] = ""
-            self.token.place(x=735, y=255, width=290, height=30)
-
-            testButton = tk.Button(self.root)
-            testButton["bg"] = "#efefef"
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            testButton["font"] = ft
-            testButton["fg"] = "#eff0f1"
-            testButton["bg"] = "#31363b"
-            testButton["justify"] = "center"
-            testButton["text"] = "test"
-            testButton.place(x=1030, y=255, width=30, height=32)
-            testButton["command"] = self.pbSendTestMessage
-
-            tokenLabel = tk.Label(self.root)
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            tokenLabel["font"] = ft
-            tokenLabel["fg"] = "#eff0f1"
-            tokenLabel["bg"] = "#31363b"
-            tokenLabel["justify"] = "left"
-            tokenLabel["text"] = "Insert your Access Token below:"
-            tokenLabel.place(x=738, y=225, width=326, height=30)
-
-            resetButton = tk.Button(self.root)
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            resetButton["font"] = ft
-            resetButton["fg"] = "#eff0f1"
-            resetButton["bg"] = "#31363b"
-            resetButton["justify"] = "center"
-            resetButton["text"] = "Reset saved settings "
-            resetButton.place(x=940, y=310, width=118, height=30)
-
-            self.VersionText = tk.Label(self.root)
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            self.VersionText["font"] = ft
-            self.VersionText["fg"] = "#eff0f1"
-            self.VersionText["bg"] = "#31363b"
-            self.VersionText["justify"] = "center"
-            self.VersionText["text"] = "Version: " + self.version["PaladinsVersion"]
-            self.VersionText.place(x=200, y=400, width=118, height=30)
-
-            self.daysRem = tk.Label(self.root)
-            ft = tkFont.Font(family=self.fontFamily, size=10)
-            self.daysRem["font"] = ft
-            self.daysRem["fg"] = "#eff0f1"
-            self.daysRem["bg"] = "#31363b"
-            self.daysRem["justify"] = "center"
-            self.daysRem["text"] = "Days Remaining: " + str(self.rem.days)
-            self.daysRem.place(x=200, y=425, width=118, height=30)
-
-            webbrowser.open("https://discord.gg/TxtSrZQr5W")
+        if self.authenticate():
+            self.startWindow()
 
     def startBot(self):
         if self.tier == 0:

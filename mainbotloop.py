@@ -377,8 +377,8 @@ class mainLoop:
                     else:
                         window.minimize()
 
-        # self.print_to_GUI("Paladins not open... Stop bot and open paladins", "error")
-        # raise Exception("Paladins not found")
+        self.print_to_GUI("Paladins not open... Stop bot and open paladins", "error")
+        raise Exception("Paladins not found")
 
     def runningchck(self):
         return self.isrunning
@@ -407,16 +407,16 @@ class mainLoop:
         time.sleep(2)
 
     def actual_loop(self):
-        flag = True
+        self.updateData()
+        self.get_fortnite_window()
+        time.sleep(2)
+        self.startGame()
+        time.sleep(2)
         while True:
+            if not self.isrunning:
+                return
             self.updateData()
-            if flag:
-                self.get_fortnite_window()
-                time.sleep(2)
-                self.startGame()
-                time.sleep(2)
-            if not flag:
-                self.pickChampionIcon()
+            self.pickChampionIcon()
             flag = False
             self.pickChampion()
             self.inGameAndRequeue()
