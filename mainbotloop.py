@@ -362,6 +362,23 @@ class mainLoop:
             return True
         return False
 
+    def startLoopTrial(self) -> bool:
+        """
+        Main loop of the bot which goes through the stages and does its necessary action
+        """
+        if champion == None:
+            self.print_to_GUI("Please select a champion to continue", "warning")
+            self.stopLoop()
+            return False
+        if not self.isrunning:
+            self.stop_event.clear()
+            self.isrunning = True
+            self.loopThread = threading.Thread(target=self.actual_loop_trial)
+            self.loopThread.start()
+            self.print_to_GUI("Bot started")
+            return True
+        return False
+
     def get_fortnite_window(self):
         got_windows = gw.getWindowsWithTitle("Paladins")
         for window in got_windows:
@@ -405,6 +422,26 @@ class mainLoop:
             else:
                 flag = False
         time.sleep(2)
+
+    def actual_loop_trial(self):
+        self.get_fortnite_window()
+        time.sleep(2)
+        self.startGame()
+        time.sleep(2)
+        if not self.isrunning:
+            return
+        self.updateData()
+        self.pickChampionIcon()
+        flag = False
+        self.pickChampion()
+        self.inGameAndRequeue()
+        if self.isrunning:
+            self.print_to_GUI(f"Game #{self.count}", "control")
+            self.count += 1
+        elif not self.isrunning:
+            return
+        self.print_to_GUI(f"Trial loop ended... stopping bot", "warning")
+        self.stopLoop()
 
     def actual_loop(self):
         self.updateData()

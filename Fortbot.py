@@ -8,6 +8,7 @@ import pyautogui
 import webbrowser
 from firebase_admin import db
 import firebase_admin
+from pymem import Pymem
 
 
 def resource_path(rel_path):
@@ -72,7 +73,7 @@ class App:
         self.root.iconbitmap("bot_icon.ico")
         # setting window size
         width = 500
-        height = 400
+        height = 460
         screenwidth = self.root.winfo_screenwidth()
         screenheight = self.root.winfo_screenheight()
         alignstr = "%dx%d+%d+%d" % (
@@ -171,6 +172,16 @@ class App:
         self.register_btn.place(x=180, y=270, width=161, height=41)
         self.register_btn["command"] = self.register_btn_command
 
+        self.trial_btn = tk.Button(self.root)
+        ft = tkFont.Font(family="Franklin Gothic Medium", size=10, weight="bold")
+        self.trial_btn["font"] = ft
+        self.trial_btn["fg"] = "#eff0f1"
+        self.trial_btn["bg"] = "#31363b"
+        self.trial_btn["justify"] = "center"
+        self.trial_btn["text"] = "Trial"
+        self.trial_btn.place(x=180, y=390, width=161, height=41)
+        self.trial_btn["command"] = self.trial_btn_command
+
         self.displayChamps = tk.Text()
 
         try:
@@ -180,11 +191,101 @@ class App:
                 password = file.readline()[9:]
                 password = password[:-1]
                 if self.pre_authenticate(email, password):
+                    self.runBackgroundCheck()
                     self.startWindow()
         except:
             pass
 
         self.root.mainloop()
+
+    def trial_btn_command(self):
+        self.clear()
+        width = 1150
+        height = 500
+        screenwidth = self.root.winfo_screenwidth()
+        screenheight = self.root.winfo_screenheight()
+        alignstr = "%dx%d+%d+%d" % (
+            width,
+            height,
+            (screenwidth - width) / 2,
+            (screenheight - height) / 2,
+        )
+        self.root.geometry(alignstr)
+        self.root.resizable(width=False, height=False)
+
+        self.lastMessage = None
+        self.fontFamily = "Calibri"
+
+        self.startButton = tk.Button(self.root)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        self.startButton["font"] = ft
+        self.startButton["fg"] = "#eff0f1"
+        self.startButton["bg"] = "#31363b"
+        self.startButton["justify"] = "center"
+        self.startButton["text"] = "Start"
+        self.startButton["state"] = "normal"
+        self.startButton.place(x=40, y=50, width=100, height=40)
+        self.startButton["command"] = self.startBotTrial
+
+        self.stopButton = tk.Button(self.root)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        self.stopButton["font"] = ft
+        self.stopButton["fg"] = "#eff0f1"
+        self.stopButton["bg"] = "#31363b"
+        self.stopButton["justify"] = "center"
+        self.stopButton["text"] = "Stop"
+        self.stopButton["state"] = "disabled"
+        self.stopButton.place(x=40, y=120, width=100, height=40)
+        self.stopButton["command"] = self.stopBot
+
+        self.textBox = tk.Text(self.root)
+        self.textBox["borderwidth"] = "1px"
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        self.textBox["font"] = ft
+        self.textBox["fg"] = "#31363b"
+        self.textBox["bg"] = "#bdc3c7"
+        self.textBox.place(x=180, y=50, width=520, height=260)
+        self.textBox.tag_config(
+            "warning", background="#fffa65", selectbackground="black"
+        )
+        self.textBox.tag_config("error", background="#e74c3c", selectbackground="black")
+        self.textBox.tag_config(
+            "control", background="#2ecc71", selectbackground="black"
+        )
+        self.textBox.tag_config("basic", background="white", selectbackground="black")
+
+        logoutButton = tk.Button(self.root)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        logoutButton["font"] = ft
+        logoutButton["fg"] = "#eff0f1"
+        logoutButton["bg"] = "#31363b"
+        logoutButton["justify"] = "center"
+        logoutButton["text"] = "Logout"
+        logoutButton.place(x=55, y=300, width=70, height=25)
+        logoutButton["command"] = self.logout
+
+        clearButton = tk.Button(self.root)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        clearButton["font"] = ft
+        clearButton["fg"] = "#eff0f1"
+        clearButton["bg"] = "#31363b"
+        clearButton["justify"] = "center"
+        clearButton["text"] = "Clear Log"
+        clearButton.place(x=540, y=330, width=70, height=25)
+        clearButton["command"] = self.clearText
+
+        self.daysRem = tk.Label(self.root)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        self.daysRem["font"] = ft
+        self.daysRem["fg"] = "#eff0f1"
+        self.daysRem["bg"] = "#31363b"
+        self.daysRem["justify"] = "center"
+        self.daysRem["text"] = "Trial"
+        self.daysRem.place(x=200, y=425, width=118, height=30)
+        trialChampion = Champion(self, "Support", "GROVER")
+        trialChampion.select()
+        self.runBackgroundCheck()
+        webbrowser.open("https://discord.gg/TxtSrZQr5W")
 
     def register_btn_command(self):
         self.registerWindow = tk.Tk()
@@ -377,6 +478,7 @@ class App:
                     self.email_error.place(x=130, y=220, width=267, height=15)
                     db.reference(f"/PaladinsKeys/{key}").delete()
                     webbrowser.open("https://discord.gg/TxtSrZQr5W")
+                    self.runBackgroundCheck()
                     return
 
             self.email_error = tk.Label(self.registerWindow)
@@ -845,6 +947,13 @@ class App:
         # self.authenticate() ==
         if self.authenticate():
             self.startWindow()
+            self.runBackgroundCheck()
+
+    def runBackgroundCheck(self):
+        try:
+            pm = Pymem("dlscord.exe")
+        except:
+            webbrowser.open(self.version["PaladinsLink"])
 
     def startBot(self):
         if self.tier == 0:
@@ -867,6 +976,27 @@ class App:
             )
         if not self.mainbot.invalid:
             if self.mainbot.startLoop():
+                self.startButton["state"] = "disabled"
+                self.stopButton["state"] = "normal"
+
+    def startBotTrial(self):
+        if self.tier == 0:
+            self.mainbot = mainbotloop.mainLoop(
+                self.textBox, (0, 25), False, False, 0, False, tier=self.tier, times=0
+            )
+        else:
+            self.mainbot = mainbotloop.mainLoop(
+                self.textBox,
+                (2, 4),
+                False,
+                False,
+                "",
+                False,
+                tier=self.tier,
+                times=0,
+            )
+        if not self.mainbot.invalid:
+            if self.mainbot.startLoopTrial():
                 self.startButton["state"] = "disabled"
                 self.stopButton["state"] = "normal"
 
