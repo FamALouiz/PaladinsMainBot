@@ -5,6 +5,8 @@ from icons import *
 import threading
 import os
 
+orb = cv2.ORB_create()
+
 champion = "GROVER"
 antiAFK = None
 championType = "Support"
@@ -108,6 +110,8 @@ class mainLoop:
         self.championIcon = None
         self.iconlist = None
         self.icons = None
+        self.resizeX = 1
+        self.resizeY = 1
         """
         try:
             get_fortnite_window()
@@ -208,8 +212,19 @@ class mainLoop:
             icon = i[0]
             name = i[1]
             try:
+                s_width, s_height = pyautogui.size()
+                siz_x, siz_y = Image.open(icon).size
+                image = Image.open(icon).resize(
+                    (int(siz_x * (s_width / 1920)), int(siz_y * (s_height / 1080))),
+                    Image.ANTIALIAS,
+                )
                 pyautogui.click(
-                    pyautogui.center(pyautogui.locateOnScreen(icon, confidence=0.75))
+                    pyautogui.center(
+                        pyautogui.locateOnScreen(
+                            image,
+                            confidence=0.75,
+                        )
+                    )
                 )
                 self.print_to_GUI(f"{name} chosen" if name != "Equip" else "Equiped")
             except:
@@ -220,6 +235,25 @@ class mainLoop:
             time.sleep(0.3)
 
         time.sleep(5)
+
+    def firstGame(self):
+        self.startGame()
+        self.pickChampion()
+        self.inGameAndRequeue()
+        if self.isrunning:
+            self.print_to_GUI(f"Game #{self.count}", "control")
+            self.count += 1
+        elif not self.isrunning:
+            return
+
+        if self.pbBool and self.takeScreenshot and not self.isrunning:
+            stats = f"./screenshots/screenshot_{self.numberGames}.png"
+            pyautogui.screenshot(stats)
+            self.send_image_pushbullet(self.pbAccTkn, stats)
+
+        elif self.takeScreenshot and not self.isrunning:
+            stats = f"./screenshots/screenshot_{self.count}.png"
+            pyautogui.screenshot(stats)
 
     def startGame(self):
         current = None
@@ -238,8 +272,19 @@ class mainLoop:
             if icon == r"PaladinMainbot_pngs\3Error.png":
                 current = i
                 try:
+                    s_width, s_height = pyautogui.size()
+                    siz_x, siz_y = Image.open(icon).size
+                    image = Image.open(icon).resize(
+                        (int(siz_x * (s_width / 1920)), int(siz_y * (s_height / 1080))),
+                        Image.ANTIALIAS,
+                    )
                     pyautogui.click(
-                        pyautogui.center(pyautogui.locateOnScreen(icon, confidence=0.9))
+                        pyautogui.center(
+                            pyautogui.locateOnScreen(
+                                image,
+                                confidence=0.9,
+                            )
+                        )
                     )
                     self.print_to_GUI(f"Found {name}")
                 except:
@@ -258,9 +303,21 @@ class mainLoop:
                         if printing:
                             self.print_to_GUI(f"Waiting to choose selected champion")
                         try:
+                            s_width, s_height = pyautogui.size()
+                            siz_x, siz_y = Image.open(current).size
+                            image = Image.open(current).resize(
+                                (
+                                    int(siz_x * (s_width / 1920)),
+                                    int(siz_y * (s_height / 1080)),
+                                ),
+                                Image.ANTIALIAS,
+                            )
                             pyautogui.click(
                                 pyautogui.center(
-                                    pyautogui.locateOnScreen(current, confidence=0.9)
+                                    pyautogui.locateOnScreen(
+                                        image,
+                                        confidence=0.9,
+                                    )
                                 )
                             )
                             self.print_to_GUI(f"Found error button")
@@ -276,9 +333,21 @@ class mainLoop:
                 flag = True
                 while flag:
                     try:
+                        s_width, s_height = pyautogui.size()
+                        siz_x, siz_y = Image.open(icon).size
+                        image = Image.open(icon).resize(
+                            (
+                                int(siz_x * (s_width / 1920)),
+                                int(siz_y * (s_height / 1080)),
+                            ),
+                            Image.ANTIALIAS,
+                        )
                         pyautogui.click(
                             pyautogui.center(
-                                pyautogui.locateOnScreen(icon, confidence=0.70)
+                                pyautogui.locateOnScreen(
+                                    image,
+                                    confidence=0.70,
+                                )
                             )
                         )
                         self.print_to_GUI(f"Found {name}")
@@ -288,9 +357,21 @@ class mainLoop:
                         flag = False
             else:
                 try:
+                    s_width, s_height = pyautogui.size()
+                    siz_x, siz_y = Image.open(icon).size
+                    image = Image.open(icon).resize(
+                        (
+                            int(siz_x * (s_width / 1920)),
+                            int(siz_y * (s_height / 1080)),
+                        ),
+                        Image.ANTIALIAS,
+                    )
                     pyautogui.click(
                         pyautogui.center(
-                            pyautogui.locateOnScreen(icon, confidence=0.70)
+                            pyautogui.locateOnScreen(
+                                image,
+                                confidence=0.70,
+                            )
                         )
                     )
                     self.print_to_GUI(f"Found {name}")
@@ -305,9 +386,21 @@ class mainLoop:
 
     def pickChampionIcon(self):
         try:
+            s_width, s_height = pyautogui.size()
+            siz_x, siz_y = Image.open(self.championIcon).size
+            image = Image.open(self.championIcon).resize(
+                (
+                    int(siz_x * (s_width / 1920)),
+                    int(siz_y * (s_height / 1080)),
+                ),
+                Image.ANTIALIAS,
+            )
             pyautogui.click(
                 pyautogui.center(
-                    pyautogui.locateOnScreen(self.championIcon, confidence=0.9)
+                    pyautogui.locateOnScreen(
+                        image,
+                        confidence=0.9,
+                    )
                 )
             )
             self.print_to_GUI(f"Found {champion[0] + champion[1:].lower()}")
@@ -390,6 +483,14 @@ class mainLoop:
             for proc in psutil.process_iter():
                 if proc.pid == pid[1]:
                     if proc.name().lower() == "Paladins.exe".lower():
+                        rect = win32gui.GetWindowRect(handle)
+                        x = rect[0]
+                        y = rect[1]
+                        w = rect[2] - x
+                        h = rect[3] - y
+                        self.resizeX = w / 1920
+                        self.resizeY = h / 1080
+
                         return None
                     else:
                         window.minimize()
@@ -407,9 +508,21 @@ class mainLoop:
             if not self.isrunning:
                 return
             try:
+                s_width, s_height = pyautogui.size()
+                siz_x, siz_y = Image.open(iconRequeue).size
+                image = Image.open(iconRequeue).resize(
+                    (
+                        int(siz_x * (s_width / 1920)),
+                        int(siz_y * (s_height / 1080)),
+                    ),
+                    Image.ANTIALIAS,
+                )
                 pyautogui.click(
                     pyautogui.center(
-                        pyautogui.locateOnScreen(iconRequeue, confidence=0.9)
+                        pyautogui.locateOnScreen(
+                            image,
+                            confidence=0.9,
+                        )
                     )
                 )
                 self.print_to_GUI(f"Found re-queue button")
@@ -431,8 +544,6 @@ class mainLoop:
         if not self.isrunning:
             return
         self.updateData()
-        self.pickChampionIcon()
-        flag = False
         self.pickChampion()
         self.inGameAndRequeue()
         if self.isrunning:
@@ -447,14 +558,13 @@ class mainLoop:
         self.updateData()
         self.get_fortnite_window()
         time.sleep(2)
-        self.startGame()
+        self.firstGame()
         time.sleep(2)
         while True:
             if not self.isrunning:
                 return
             self.updateData()
             self.pickChampionIcon()
-            flag = False
             self.pickChampion()
             self.inGameAndRequeue()
             if self.isrunning:
