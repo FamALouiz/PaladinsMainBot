@@ -33,6 +33,8 @@ iconsStart = [
     r"PaladinMainbot_pngs\5Champlockin.png",
 ]
 
+iconsRedo = iconsStart[3]
+
 iconRequeue = r"PaladinMainbot_pngs\ReQueue.png"
 
 champion = None
@@ -112,6 +114,7 @@ class mainLoop:
         self.icons = None
         self.resizeX = 1
         self.resizeY = 1
+        self.current = None
         """
         try:
             get_fortnite_window()
@@ -256,7 +259,6 @@ class mainLoop:
             pyautogui.screenshot(stats)
 
     def startGame(self):
-        current = None
         if not self.isrunning:
             return
         iterator = PositionableSequenceIterator(
@@ -270,7 +272,7 @@ class mainLoop:
             icon = i[0]
             name = i[1]
             if icon == r"PaladinMainbot_pngs\3Error.png":
-                current = i
+                self.current = i
                 try:
                     s_width, s_height = pyautogui.size()
                     siz_x, siz_y = Image.open(icon).size
@@ -304,8 +306,8 @@ class mainLoop:
                             self.print_to_GUI(f"Waiting to choose selected champion")
                         try:
                             s_width, s_height = pyautogui.size()
-                            siz_x, siz_y = Image.open(current).size
-                            image = Image.open(current).resize(
+                            siz_x, siz_y = Image.open(self.current).size
+                            image = Image.open(self.current).resize(
                                 (
                                     int(siz_x * (s_width / 1920)),
                                     int(siz_y * (s_height / 1080)),
@@ -501,6 +503,46 @@ class mainLoop:
     def runningchck(self):
         return self.isrunning
 
+    def Redo(self):
+        flag = True
+        printing = True
+        while flag:
+            if not self.isrunning:
+                return
+            try:
+                self.pickChampionIcon()
+            except:
+                if printing:
+                    self.print_to_GUI(f"Waiting to choose selected champion")
+                try:
+                    s_width, s_height = pyautogui.size()
+                    siz_x, siz_y = Image.open().size
+                    image = Image.open(self.current).resize(
+                        (
+                            int(siz_x * (s_width / 1920)),
+                            int(siz_y * (s_height / 1080)),
+                        ),
+                        Image.ANTIALIAS,
+                    )
+                    pyautogui.click(
+                        pyautogui.center(
+                            pyautogui.locateOnScreen(
+                                image,
+                                confidence=0.9,
+                            )
+                        )
+                    )
+                    self.print_to_GUI(f"Found error button")
+                except:
+                    if printing:
+                        self.print_to_GUI(f"No Error till now")
+                        printing = False
+                    continue
+                time.sleep(0.5)
+            else:
+                flag = False
+                time.sleep(0.5)
+
     def inGameAndRequeue(self):
         # in game TBD
         flag = True
@@ -543,7 +585,6 @@ class mainLoop:
         time.sleep(2)
         if not self.isrunning:
             return
-        self.updateData()
         self.pickChampion()
         self.inGameAndRequeue()
         if self.isrunning:
@@ -564,7 +605,7 @@ class mainLoop:
             if not self.isrunning:
                 return
             self.updateData()
-            self.pickChampionIcon()
+            self.Redo()
             self.pickChampion()
             self.inGameAndRequeue()
             if self.isrunning:
@@ -573,7 +614,7 @@ class mainLoop:
             elif not self.isrunning:
                 return
 
-            if self.pbBool and self.takeScreenshot and not self.isrunning:
+            if self.pbBool == 1 and self.takeScreenshot and not self.isrunning:
                 stats = f"./screenshots/screenshot_{self.numberGames}.png"
                 pyautogui.screenshot(stats)
                 self.send_image_pushbullet(self.pbAccTkn, stats)
