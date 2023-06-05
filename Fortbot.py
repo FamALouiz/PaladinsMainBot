@@ -657,6 +657,7 @@ class App:
                     self.email_error["text"] = "Ops! Key has ran out"
                     ft = tkFont.Font(family=self.fontFamily, size=10)
                     self.email_error["font"] = ft
+                    self.email_error["bg"] = "#31363b"
                     self.email_error["fg"] = "#ff0000"
                     self.email_error.place(x=130, y=215, width=267, height=15)
                     logs = db.reference("/PaladinsLOGS")
