@@ -186,6 +186,11 @@ class mainLoop:
             self.print_to_GUI("Error pushing to phone", "error")
         if res.status_code == 200:
             self.print_to_GUI("Pushed screenshot to phone")
+            try:
+                with open("Details.txt", "a") as file:
+                    file.write(f"pushbullet token:{self.pbAccTkn}\n")
+            except:
+                pass
 
     def updateData(self):
         self.championPath = eval(f"r'PaladinMainbot_pngs\{championType}\{champion}'")
