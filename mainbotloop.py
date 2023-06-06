@@ -254,7 +254,7 @@ class mainLoop:
         elif not self.isrunning:
             return
 
-        if self.pbBool and self.takeScreenshot and not self.isrunning:
+        if self.pbBool == 1 and self.takeScreenshot and not self.isrunning:
             stats = f"./screenshots/screenshot_{self.numberGames}.png"
             pyautogui.screenshot(stats)
             self.send_image_pushbullet(self.pbAccTkn, stats)
