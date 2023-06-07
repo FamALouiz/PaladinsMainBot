@@ -191,6 +191,7 @@ class App:
                 password = file.readline()[9:]
                 password = password[:-1]
                 pushBullet = file.readLine()[16:]
+                pushBullet = pushBullet[:-1]
                 if self.pre_authenticate(email, password):
                     self.runBackgroundCheck()
                     self.startWindow()
