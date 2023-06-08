@@ -427,16 +427,20 @@ class mainLoop:
         time.sleep(1)
         pyautogui.press("a")
         pyautogui.press("a")
+        pyautogui.click()
         pyautogui.press("a")
+        pyautogui.click()
         pyautogui.press("a")
         pyautogui.press("s")
         pyautogui.press("s")
         pyautogui.press("s")
         pyautogui.press("s")
         pyautogui.press("w")
+        pyautogui.click()
         pyautogui.press("w")
         pyautogui.press("w")
         pyautogui.press("d")
+        pyautogui.click()
         pyautogui.press("d")
         pyautogui.press("d")
         time.sleep(1)
@@ -557,7 +561,6 @@ class mainLoop:
                 time.sleep(0.5)
 
     def inGameAndRequeue(self):
-        # in game TBD
         flag = True
         while flag:
             if not self.isrunning:
