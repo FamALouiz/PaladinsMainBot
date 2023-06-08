@@ -426,31 +426,18 @@ class mainLoop:
         pyautogui.click()
         time.sleep(1)
         pyautogui.press("a")
-        pyautogui.click()
-        time.sleep(1)
         pyautogui.press("a")
-        pyautogui.click()
-        time.sleep(1)
         pyautogui.press("a")
-        pyautogui.click()
-        time.sleep(1)
         pyautogui.press("a")
-        pyautogui.click()
-        time.sleep(1)
         pyautogui.press("s")
-        pyautogui.click()
-        time.sleep(1)
+        pyautogui.press("s")
+        pyautogui.press("s")
+        pyautogui.press("s")
         pyautogui.press("w")
-        pyautogui.click()
-        time.sleep(1)
         pyautogui.press("w")
-        pyautogui.click()
-        time.sleep(1)
         pyautogui.press("w")
-        pyautogui.click()
-        time.sleep(1)
         pyautogui.press("d")
-        time.sleep(1)
+        pyautogui.press("d")
         pyautogui.press("d")
         time.sleep(1)
         pyautogui.press("s")
@@ -640,14 +627,18 @@ class mainLoop:
             elif not self.isrunning:
                 return
 
-            if self.pbBool == 1 and self.takeScreenshot and not self.isrunning:
+            if self.pbBool == 1 and self.takeScreenshot and self.isrunning:
                 stats = f"./screenshots/screenshot_{self.numberGames}.png"
                 pyautogui.screenshot(stats)
                 self.send_image_pushbullet(self.pbAccTkn, stats)
 
-            elif self.takeScreenshot and not self.isrunning:
+            elif self.takeScreenshot and self.isrunning:
                 stats = f"./screenshots/screenshot_{self.count}.png"
                 pyautogui.screenshot(stats)
+
+            elif self.pbBool == 1:
+                stats = f"./screenshots/screenshot_{self.numberGames}.png"
+                self.send_image_pushbullet(self.pbAccTkn, stats)
 
         """flag = True
         while True:
