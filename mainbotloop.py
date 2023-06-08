@@ -636,8 +636,9 @@ class mainLoop:
                 stats = f"./screenshots/screenshot_{self.count}.png"
                 pyautogui.screenshot(stats)
 
-            elif self.pbBool == 1:
-                stats = f"./screenshots/screenshot_{self.numberGames}.png"
+            elif self.pbBool == 1 and self.isrunning:
+                stats = f"./pushbullet/screenshot_{self.numberGames}.png"
+                pyautogui.screenshot(stats)
                 self.send_image_pushbullet(self.pbAccTkn, stats)
 
         """flag = True
