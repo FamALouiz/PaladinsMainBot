@@ -130,7 +130,7 @@ class mainLoop:
         # self.player_mover = plrmovement.Player("./icons/player_cursor.png")
         self.crouched = False
         self.numberGames = 0
-        self.takeScreenshot = True
+        self.takeScreenshot = False
         # self.buttons = btnlist
         self.isrunning = False
         self.stop_event = threading.Event()
@@ -250,18 +250,22 @@ class mainLoop:
         self.inGameAndRequeue()
         if self.isrunning:
             self.print_to_GUI(f"Game #{self.count}", "control")
-            self.count += 1
         elif not self.isrunning:
             return
-
-        if self.pbBool == 1 and self.takeScreenshot and not self.isrunning:
-            stats = f"./screenshots/screenshot_{self.numberGames}.png"
+        if self.pbBool and self.statsSSBool and self.isrunning:
+            stats = f"./screenshots/screenshot_{self.count}.png"
             pyautogui.screenshot(stats)
             self.send_image_pushbullet(self.pbAccTkn, stats)
 
-        elif self.takeScreenshot and not self.isrunning:
+        elif self.statsSSBool and self.isrunning:
             stats = f"./screenshots/screenshot_{self.count}.png"
             pyautogui.screenshot(stats)
+
+        elif self.pbBool and self.isrunning:
+            stats = f"./pushbullet/screenshot_{self.count}.png"
+            pyautogui.screenshot(stats)
+            self.send_image_pushbullet(self.pbAccTkn, stats)
+        self.count += 1
 
     def startGame(self):
         if not self.isrunning:
@@ -630,17 +634,17 @@ class mainLoop:
             elif not self.isrunning:
                 return
 
-            if self.pbBool == 1 and self.takeScreenshot and self.isrunning:
-                stats = f"./screenshots/screenshot_{self.numberGames}.png"
+            if self.pbBool and self.statsSSBool and self.isrunning:
+                stats = f"./screenshots/screenshot_{self.count}.png"
                 pyautogui.screenshot(stats)
                 self.send_image_pushbullet(self.pbAccTkn, stats)
 
-            elif self.takeScreenshot and self.isrunning:
+            elif self.statsSSBool and self.isrunning:
                 stats = f"./screenshots/screenshot_{self.count}.png"
                 pyautogui.screenshot(stats)
 
-            elif self.pbBool == 1 and self.isrunning:
-                stats = f"./pushbullet/screenshot_{self.numberGames}.png"
+            elif self.pbBool and self.isrunning:
+                stats = f"./pushbullet/screenshot_{self.count}.png"
                 pyautogui.screenshot(stats)
                 self.send_image_pushbullet(self.pbAccTkn, stats)
 
