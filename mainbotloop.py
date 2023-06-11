@@ -176,7 +176,7 @@ class mainLoop:
         headers = {"Access-Token": access_token, "Content-Type": "application/json"}
         data = {
             "type": "file",
-            "body": f"FortBot screenshot from game {self.numberGames}",
+            "body": f"Paladinsbot screenshot from game {self.count}",
             "file_name": file_name,
             "file_type": file_type,
             "file_url": file_url,
@@ -186,11 +186,6 @@ class mainLoop:
             self.print_to_GUI("Error pushing to phone", "error")
         if res.status_code == 200:
             self.print_to_GUI("Pushed screenshot to phone")
-            try:
-                with open("Details.txt", "a") as file:
-                    file.write(f"pushbullet token:{self.pbAccTkn}\n")
-            except:
-                pass
 
     def updateData(self):
         self.championPath = eval(f"r'PaladinMainbot_pngs\{championType}\{champion}'")
@@ -592,7 +587,7 @@ class mainLoop:
                 self.print_to_GUI(f"Anti-AFK started, waiting for next match")
                 if not self.isrunning:
                     return
-                self.antiAFKGrover()
+                # self.antiAFKGrover()
                 time.sleep(2)
             else:
                 flag = False
@@ -617,7 +612,7 @@ class mainLoop:
 
     def actual_loop(self):
         self.updateData()
-        self.get_fortnite_window()
+        # self.get_fortnite_window()
         time.sleep(2)
         self.firstGame()
         time.sleep(2)
