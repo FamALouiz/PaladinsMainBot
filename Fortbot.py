@@ -192,7 +192,7 @@ class App:
                 password = password[:-1]
                 pushBullet = ""
                 try:
-                    pushBullet = file.readLine()[16:]
+                    pushBullet = file.readline()[8:]
                     pushBullet = pushBullet[:-1]
                 except:
                     pass
@@ -1140,6 +1140,19 @@ class App:
         self.root.mainloop()
 
     def logout(self):
+        emailLine = ""
+        passwordLine = ""
+        if self.token.get() != "":
+            try:
+                with open("Details.txt", "r") as file:
+                    emailLine = file.readline()
+                    passwordLine = file.readline()
+                with open("Details.txt", "w") as file:
+                    file.write(emailLine)
+                    file.write(passwordLine)
+                    file.write(f"tbtoken:{self.token.get()}\n")
+            except:
+                pass
         self.showLoginFrame()
         if self.mainbot is not None:
             self.stopBot()
