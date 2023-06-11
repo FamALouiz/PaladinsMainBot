@@ -587,7 +587,7 @@ class mainLoop:
                 self.print_to_GUI(f"Anti-AFK started, waiting for next match")
                 if not self.isrunning:
                     return
-                # self.antiAFKGrover()
+                self.antiAFKGrover()
                 time.sleep(2)
             else:
                 flag = False
@@ -612,7 +612,7 @@ class mainLoop:
 
     def actual_loop(self):
         self.updateData()
-        # self.get_fortnite_window()
+        self.get_fortnite_window()
         time.sleep(2)
         self.firstGame()
         time.sleep(2)
