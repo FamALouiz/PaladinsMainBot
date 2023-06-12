@@ -199,9 +199,13 @@ class App:
                 if self.pre_authenticate(email, password):
                     self.runBackgroundCheck()
                     self.startWindow()
-                    self.token.insert(0, pushBullet)
+                    self.pbAccTkn = pushBullet
         except:
             pass
+
+        self.statsBool = False
+        self.pbAccTkn = ""
+        self.pbBool = False
 
         self.root.mainloop()
 
@@ -739,8 +743,8 @@ class App:
 
     def startWindow(self):
         self.clear()
-        width = 1150
-        height = 500
+        width = 760
+        height = 450
         screenwidth = self.root.winfo_screenwidth()
         screenheight = self.root.winfo_screenheight()
         alignstr = "%dx%d+%d+%d" % (
@@ -803,15 +807,6 @@ class App:
         logoutButton.place(x=55, y=300, width=70, height=25)
         logoutButton["command"] = self.logout
 
-        settingsFrame = tk.LabelFrame(self.root)
-        settingsFrame["borderwidth"] = "1px"
-        ft = tkFont.Font(family=self.fontFamily, size=10)
-        settingsFrame["font"] = ft
-        settingsFrame["fg"] = "#eff0f1"
-        settingsFrame["bg"] = "#31363b"
-        settingsFrame["text"] = "Settings"
-        settingsFrame.place(x=720, y=40, width=350, height=305)
-
         saveButton = tk.Button(self.root)
         ft = tkFont.Font(family=self.fontFamily, size=10)
         saveButton["font"] = ft
@@ -831,43 +826,6 @@ class App:
         clearButton["text"] = "Clear Log"
         clearButton.place(x=540, y=330, width=70, height=25)
         clearButton["command"] = self.clearText
-
-        self.screenshotCheckVal = tk.IntVar()
-        self.screenshotCheck = tk.Checkbutton(self.root)
-        ft = tkFont.Font(family=self.fontFamily, size=10)
-        self.screenshotCheck["font"] = ft
-        self.screenshotCheck["fg"] = "#FF4545"
-        self.screenshotCheck["bg"] = "#31363b"
-        self.screenshotCheck["justify"] = "left"
-        self.screenshotCheck[
-            "text"
-        ] = "Save screenshots of Match Stats to your computer"
-        self.screenshotCheck.place(x=745, y=150, width=300, height=25)
-        self.screenshotCheck["offvalue"] = "0"
-        self.screenshotCheck["onvalue"] = "1"
-        self.screenshotCheck["variable"] = self.screenshotCheckVal
-
-        pushbulletFrame = tk.LabelFrame(self.root)
-        pushbulletFrame["borderwidth"] = "1px"
-        ft = tkFont.Font(family=self.fontFamily, size=10)
-        pushbulletFrame["font"] = ft
-        pushbulletFrame["fg"] = "#eff0f1"
-        pushbulletFrame["bg"] = "#31363b"
-        pushbulletFrame["text"] = "Pushbullet"
-        pushbulletFrame.place(x=730, y=190, width=335, height=120)
-
-        self.pushCheckVal = tk.IntVar()
-        self.pushCheck = tk.Checkbutton(self.root)
-        ft = tkFont.Font(family=self.fontFamily, size=10)
-        self.pushCheck["font"] = ft
-        self.pushCheck["fg"] = "#FF4545"
-        self.pushCheck["bg"] = "#31363b"
-        self.pushCheck["justify"] = "center"
-        self.pushCheck["text"] = "Push screenshots of Match Stats with Pushbullet"
-        self.pushCheck.place(x=745, y=205, width=284, height=30)
-        self.pushCheck["offvalue"] = 0
-        self.pushCheck["onvalue"] = 1
-        self.pushCheck["variable"] = self.pushCheckVal
 
         self.btnShowFlank = tk.Button(self.root)
         self.btnShowFlank["text"] = "Pick Flank"
@@ -890,45 +848,8 @@ class App:
         self.btnShowSupport["command"] = self.showSupportScroll
         self.btnShowSupport.place(x=50, y=260, width=100, height=30)
 
-        self.token = tk.Entry(self.root)
-        self.token["borderwidth"] = "1px"
-        ft = tkFont.Font(family=self.fontFamily, size=10)
-        self.token["font"] = ft
-        self.token["fg"] = "#eff0f1"
-        self.token["bg"] = "#31363b"
-        self.token["justify"] = "center"
-        self.token["text"] = ""
-        self.token.place(x=735, y=255, width=290, height=30)
-
-        testButton = tk.Button(self.root)
-        testButton["bg"] = "#efefef"
-        ft = tkFont.Font(family=self.fontFamily, size=10)
-        testButton["font"] = ft
-        testButton["fg"] = "#eff0f1"
-        testButton["bg"] = "#31363b"
-        testButton["justify"] = "center"
-        testButton["text"] = "test"
-        testButton.place(x=1030, y=255, width=30, height=32)
-        testButton["command"] = self.pbSendTestMessage
-
-        tokenLabel = tk.Label(self.root)
-        ft = tkFont.Font(family=self.fontFamily, size=10)
-        tokenLabel["font"] = ft
-        tokenLabel["fg"] = "#eff0f1"
-        tokenLabel["bg"] = "#31363b"
-        tokenLabel["justify"] = "left"
-        tokenLabel["text"] = "Insert your Access Token below:"
-        tokenLabel.place(x=738, y=225, width=326, height=30)
-
-        resetButton = tk.Button(self.root)
-        ft = tkFont.Font(family=self.fontFamily, size=10)
-        resetButton["font"] = ft
-        resetButton["fg"] = "#eff0f1"
-        resetButton["bg"] = "#31363b"
-        resetButton["justify"] = "center"
-        resetButton["text"] = "Reset saved settings "
-        resetButton.place(x=940, y=310, width=118, height=30)
-
+        # Version and days remaining
+        """
         self.VersionText = tk.Label(self.root)
         ft = tkFont.Font(family=self.fontFamily, size=10)
         self.VersionText["font"] = ft
@@ -946,8 +867,154 @@ class App:
         self.daysRem["justify"] = "center"
         self.daysRem["text"] = "Days Remaining: " + str(self.rem.days)
         self.daysRem.place(x=200, y=425, width=118, height=30)
+        """
+        self.menu = tk.Menu(self.root)
 
+        self.mainMenu = tk.Menu(self.menu)
+        self.mainMenu.add_command(label="Main Bot Page", command=self.startWindow)
+        self.menu.add_cascade(label="Main", menu=self.mainMenu)
+
+        self.settingsMenu = tk.Menu(self.menu)
+        self.settingsMenu.add_command(label="Open settings", command=self.settingsOpen)
+        self.menu.add_cascade(label="Settings", menu=self.settingsMenu)
+
+        self.Socials = tk.Menu(self.menu)
+        self.Socials.add_command(label="Discord", command=self.openDiscord)
+        self.menu.add_cascade(label="Socials", menu=self.Socials)
+
+        self.root.config(menu=self.menu)
+
+    def openDiscord(self):
         webbrowser.open("https://discord.gg/TxtSrZQr5W")
+
+    def settingsOpen(self):
+        self.settingsRoot = tk.Tk()
+        self.settingsRoot.title(str("Settings"))
+        self.settingsRoot.iconbitmap("bot_icon.ico")
+        # setting window size
+        width = 400
+        height = 400
+        screenwidth = self.settingsRoot.winfo_screenwidth()
+        screenheight = self.settingsRoot.winfo_screenheight()
+        alignstr = "%dx%d+%d+%d" % (
+            width,
+            height,
+            (screenwidth - width) / 2,
+            (screenheight - height) / 2,
+        )
+
+        self.settingsRoot.geometry(alignstr)
+        self.settingsRoot.resizable(width=False, height=False)
+        self.fontFamily = "Calibri"
+        self.settingsRoot["bg"] = "#31363b"
+
+        self.screenshotCheckVal = tk.IntVar()
+        self.screenshotCheck = tk.Checkbutton(self.settingsRoot)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        self.screenshotCheck["font"] = ft
+        self.screenshotCheck["fg"] = "#FF4545"
+        self.screenshotCheck["bg"] = "#31363b"
+        self.screenshotCheck["justify"] = "left"
+        self.screenshotCheck[
+            "text"
+        ] = "Save screenshots of Match Stats to your computer"
+        self.screenshotCheck.place(x=30, y=30, width=300, height=25)
+        self.screenshotCheck["offvalue"] = "0"
+        self.screenshotCheck["onvalue"] = "1"
+        self.screenshotCheck["variable"] = self.screenshotCheckVal
+        if self.statsBool:
+            self.screenshotCheck.invoke()
+
+        pushbulletFrame = tk.LabelFrame(self.settingsRoot)
+        pushbulletFrame["borderwidth"] = "1px"
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        pushbulletFrame["font"] = ft
+        pushbulletFrame["fg"] = "#eff0f1"
+        pushbulletFrame["bg"] = "#31363b"
+        pushbulletFrame["text"] = "Pushbullet"
+        pushbulletFrame.place(x=30, y=100, width=335, height=200)
+
+        self.pushCheckVal = tk.IntVar()
+        self.pushCheck = tk.Checkbutton(self.settingsRoot)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        self.pushCheck["font"] = ft
+        self.pushCheck["fg"] = "#FF4545"
+        self.pushCheck["bg"] = "#31363b"
+        self.pushCheck["justify"] = "center"
+        self.pushCheck["text"] = "Push screenshots of Match Stats with Pushbullet"
+        self.pushCheck.place(x=50, y=120, width=284, height=30)
+        self.pushCheck["offvalue"] = 0
+        self.pushCheck["onvalue"] = 1
+        self.pushCheck["variable"] = self.pushCheckVal
+        if self.pbBool:
+            self.pushCheck.invoke()
+
+        self.token = tk.Entry(self.settingsRoot)
+        self.token["borderwidth"] = "1px"
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        self.token["font"] = ft
+        self.token["fg"] = "#eff0f1"
+        self.token["bg"] = "#31363b"
+        self.token["justify"] = "center"
+        self.token["text"] = ""
+        self.token.place(x=50, y=220, width=290, height=30)
+        if self.pbAccTkn != "":
+            self.token.insert(0, self.pbAccTkn)
+
+        testButton = tk.Button(self.settingsRoot)
+        testButton["bg"] = "#efefef"
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        testButton["font"] = ft
+        testButton["fg"] = "#eff0f1"
+        testButton["bg"] = "#31363b"
+        testButton["justify"] = "center"
+        testButton["text"] = "Test Key"
+        testButton.place(x=30, y=310, width=55, height=32)
+        testButton["command"] = self.pbSendTestMessage
+
+        tokenLabel = tk.Label(self.settingsRoot)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        tokenLabel["font"] = ft
+        tokenLabel["fg"] = "#eff0f1"
+        tokenLabel["bg"] = "#31363b"
+        tokenLabel["justify"] = "left"
+        tokenLabel["text"] = "Insert your Access Token below:"
+        tokenLabel.place(x=35, y=180, width=326, height=30)
+
+        saveSettingsButton = tk.Button(self.settingsRoot)
+        saveSettingsButton["bg"] = "#efefef"
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        saveSettingsButton["font"] = ft
+        saveSettingsButton["fg"] = "#eff0f1"
+        saveSettingsButton["bg"] = "#31363b"
+        saveSettingsButton["justify"] = "center"
+        saveSettingsButton["text"] = "Save"
+        saveSettingsButton.place(x=315, y=310, width=50, height=32)
+        saveSettingsButton["command"] = self.saveSettings
+
+    def saveSettings(self):
+        try:
+            self.statsBool = self.screenshotCheckVal.get()
+            self.pbBool = self.pushCheckVal.get()
+            self.pbAccTkn = self.token.get()
+        except:
+            message = tk.Label(self.settingsRoot)
+            ft = tkFont.Font(family=self.fontFamily, size=10)
+            message["font"] = ft
+            message["fg"] = "#eff0f1"
+            message["bg"] = "#31363b"
+            message["justify"] = "center"
+            message["text"] = "Error! Please try again"
+            message.place(x=100, y=350, width=200, height=30)
+        else:
+            message = tk.Label(self.settingsRoot)
+            ft = tkFont.Font(family=self.fontFamily, size=10)
+            message["font"] = ft
+            message["fg"] = "#eff0f1"
+            message["bg"] = "#31363b"
+            message["justify"] = "center"
+            message["text"] = "Settings saved successfully!"
+            message.place(x=95, y=350, width=200, height=30)
 
     def login_btn_command(self):
         # self.login=self.authenticate()
@@ -969,15 +1036,13 @@ class App:
                 self.textBox, (0, 25), False, False, 0, False, tier=self.tier, times=0
             )
         else:
-            statsBool = self.screenshotCheckVal.get()
-            pbBool = self.pushCheckVal.get()
-            pbAccTkn = self.token.get()
+
             self.mainbot = mainbotloop.mainLoop(
                 self.textBox,
                 (2, 4),
-                statsBool,
-                pbBool,
-                pbAccTkn,
+                self.statsBool,
+                self.pbBool,
+                self.pbAccTkn,
                 False,
                 tier=self.tier,
                 times=0,
