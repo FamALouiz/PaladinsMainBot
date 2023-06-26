@@ -9,6 +9,8 @@ import webbrowser
 from firebase_admin import db
 import firebase_admin
 from pymem import Pymem
+import uuid
+import tempfile, subprocess
 
 
 def resource_path(rel_path):
@@ -196,7 +198,8 @@ class App:
                     pushBullet = pushBullet[:-1]
                 except:
                     pass
-                if self.pre_authenticate(email, password):
+                # self.pre_authenticate(email, password, uuid.getnode())
+                if self.pre_authenticate(email, password, uuid.getnode()):
                     self.runBackgroundCheck()
                     self.startWindow()
                     self.pbAccTkn = pushBullet
@@ -422,6 +425,7 @@ class App:
         reg_password = self.register_password_entry.get()
         reg_key = self.register_key_entry.get()
         username = self.register_username_entry.get()
+        macaddress = uuid.getnode()
         if "@" not in reg_email or ".com" not in reg_email:
             self.email_error = tk.Label(self.registerWindow)
             self.email_error["text"] = "Invalid Email please use xxx@xxxx.com"
@@ -456,6 +460,18 @@ class App:
                     self.email_error.place(x=130, y=425, width=267, height=15)
                     return
 
+            for user in usersGet:
+                if usersGet[user]["MACAD"] == macaddress:
+                    self.email_error = tk.Label(self.registerWindow)
+                    self.email_error[
+                        "text"
+                    ] = "This device has already been used to make an account before."
+                    ft = tkFont.Font(family=self.fontFamily, size=10)
+                    self.email_error["font"] = ft
+                    self.email_error["fg"] = "#ff0000"
+                    self.email_error["bg"] = "#31363b"
+                    self.email_error.place(x=130, y=425, width=267, height=15)
+
             keysGet = db.reference("/PaladinsKeys").get()
             for key in keysGet:
                 if keysGet[key]["key"] == reg_key:
@@ -477,6 +493,7 @@ class App:
                                 ).strftime("%Y-%m-%dT%H:%M:%SZ")
                             ),
                             "lastLogin": str(now.strftime("%Y-%m-%dT%H:%M:%SZ")),
+                            "MACAD": macaddress,
                         }
                     )
                     self.registerWindow.destroy()
@@ -502,68 +519,64 @@ class App:
             return
 
     def showFrontlineScroll(self):
-        self.displayChamps.destroy()
-        text = tk.Text(self.root)
+        text = tk.Text(self.settingsRoot)
+        text.place(x=20, y=20, width=200, height=400)
         text["fg"] = "#eff0f1"
         text["bg"] = "#31363b"
-        text.place(x=625, y=375, width=200, height=100)
-        self.sbFlank = tk.Scrollbar(self.root, command=text.yview)
-        self.sbFlank.place(x=715, y=375, width=12, height=100)
+        text.configure(border=0)
         first = False
-        text.configure(yscrollcommand=self.sbFlank.set, border=0)
         for champion in self.Frontlines.list:
             if first:
-                text.insert("end", "\n")
-            button = tk.Button(text=champion.name, command=champion.select)
+                text.insert(END, "\n")
+            button = tk.Button(
+                master=self.settingsRoot, text=champion.name, command=champion.select
+            )
+            button.config(width=50)
+            text.window_create(END, window=button)
             button["fg"] = "#eff0f1"
             button["bg"] = "#31363b"
-            text.window_create("end", window=button)
             first = True
         text.configure(state="disabled")
-        self.displayChamps = text
 
     def showAttackScroll(self):
-        self.displayChamps.destroy()
-        text = tk.Text(self.root)
-        text.place(x=625, y=375, width=200, height=100)
+        text = tk.Text(self.settingsRoot)
+        text.place(x=20, y=20, width=200, height=400)
         text["fg"] = "#eff0f1"
         text["bg"] = "#31363b"
-        self.sbFlank = tk.Scrollbar(self.root, command=text.yview)
-        self.sbFlank.place(x=715, y=375, width=12, height=100)
-        text.configure(yscrollcommand=self.sbFlank.set, border=0)
+        text.configure(border=0)
         first = False
         for champion in self.Flanks.list:
             if first:
-                text.insert("end", "\n")
-            button = tk.Button(text=champion.name, command=champion.select)
+                text.insert(END, "\n")
+            button = tk.Button(
+                master=self.settingsRoot, text=champion.name, command=champion.select
+            )
+            button.config(width=50)
+            text.window_create(END, window=button)
             button["fg"] = "#eff0f1"
             button["bg"] = "#31363b"
-            text.window_create("end", window=button)
             first = True
-
         text.configure(state="disabled")
-        self.displayChamps = text
 
     def showSupportScroll(self):
-        self.displayChamps.destroy()
-        text = tk.Text(self.root)
-        text.place(x=625, y=375, width=200, height=100)
+        text = tk.Text(self.settingsRoot)
+        text.place(x=20, y=20, width=200, height=400)
         text["fg"] = "#eff0f1"
         text["bg"] = "#31363b"
-        self.sbFlank = tk.Scrollbar(self.root, command=text.yview)
-        self.sbFlank.place(x=715, y=375, width=12, height=100)
-        text.configure(yscrollcommand=self.sbFlank.set, border=0)
+        text.configure(border=0)
         first = False
         for champion in self.Supports.list:
             if first:
-                text.insert("end", "\n")
-            button = tk.Button(text=champion.name, command=champion.select)
-            text.window_create("end", window=button)
+                text.insert(END, "\n")
+            button = tk.Button(
+                master=self.settingsRoot, text=champion.name, command=champion.select
+            )
+            button.config(width=50)
+            text.window_create(END, window=button)
             button["fg"] = "#eff0f1"
             button["bg"] = "#31363b"
             first = True
         text.configure(state="disabled")
-        self.displayChamps = text
 
     def clear(self):
         widget_list = self.root.place_slaves()
@@ -646,15 +659,18 @@ class App:
         n_email = self.email_entry.get()
         n_password = self.password_entry.get()
         usersGet = db.reference("/MainPaladinsUsers").get()
+        macaddress = uuid.getnode()
         emailCheck = False
         passwordCheck = False
+        macadCheck = False
         for user in usersGet:
             if n_email == usersGet[user]["Email"]:
                 emailCheck = True
             if n_password == usersGet[user]["Password"]:
                 passwordCheck = True
-
-            if emailCheck and passwordCheck:
+            if macaddress == usersGet[user]["MACAD"]:
+                macadCheck = True
+            if emailCheck and passwordCheck and macadCheck:
                 endDate = usersGet[user]["enddate"]
                 currentDate = datetime.datetime.now()
                 date_format1 = "%Y-%m-%dT%H:%M:%SZ"
@@ -684,28 +700,32 @@ class App:
             else:
                 emailCheck = False
                 passwordCheck = False
+                macadCheck = False
         self.email_error = tk.Label(self.root)
-        self.email_error["text"] = "Invalid login. please try again"
+        self.email_error["text"] = "Error 404 -Anubis"
         self.email_error["fg"] = "#eff0f1"
         self.email_error["bg"] = "#31363b"
         ft = tkFont.Font(family=self.fontFamily, size=10)
         self.email_error["font"] = ft
         self.email_error["fg"] = "#ff0000"
 
-        self.email_error.place(x=130, y=215, width=267, height=15)
+        self.email_error.place(x=130, y=215, width=300, height=15)
         return False
 
-    def pre_authenticate(self, email, password):
+    def pre_authenticate(self, email, password, macaddress):
         usersGet = db.reference("/MainPaladinsUsers").get()
         emailCheck = False
         passwordCheck = False
+        macadCheck = False
         for user in usersGet:
             if email == usersGet[user]["Email"]:
                 emailCheck = True
             if password == usersGet[user]["Password"]:
                 passwordCheck = True
+            if macaddress == usersGet[user]["MACAD"]:
+                macadCheck = True
 
-            if emailCheck and passwordCheck:
+            if emailCheck and passwordCheck and macadCheck:
                 endDate = usersGet[user]["enddate"]
                 currentDate = datetime.datetime.now()
                 date_format1 = "%Y-%m-%dT%H:%M:%SZ"
@@ -730,6 +750,7 @@ class App:
             else:
                 emailCheck = False
                 passwordCheck = False
+                macadCheck = False
         self.email_error = tk.Label(self.root)
         self.email_error["text"] = "Couldn't check last saved email. please try again"
         self.email_error["fg"] = "#eff0f1"
@@ -876,23 +897,98 @@ class App:
 
         self.settingsMenu = tk.Menu(self.menu)
         self.settingsMenu.add_command(label="Open settings", command=self.settingsOpen)
+        self.settingsMenu.add_command(label="Pick a Support", command=self.supportOpen)
+        self.settingsMenu.add_command(label="Pick a Flank", command=self.flankOpen)
+        self.settingsMenu.add_command(
+            label="Pick a Frontline", command=self.frontlineOpen
+        )
+
         self.menu.add_cascade(label="Settings", menu=self.settingsMenu)
 
-        self.Socials = tk.Menu(self.menu)
-        self.Socials.add_command(label="Discord", command=self.openDiscord)
-        self.menu.add_cascade(label="Socials", menu=self.Socials)
+        self.infoMenu = tk.Menu(self.menu)
+        self.infoMenu.add_command(label="Discord", command=self.openDiscord)
+        self.infoMenu.add_command(
+            label="About Account", command=self.displayAccountDetails
+        )
+        self.menu.add_cascade(label="Info", menu=self.infoMenu)
 
         self.root.config(menu=self.menu)
 
+    def displayAccountDetails(self):
+        print("TBD")
+
     def openDiscord(self):
         webbrowser.open("https://discord.gg/TxtSrZQr5W")
+
+    def supportOpen(self):
+        self.settingsRoot = tk.Tk()
+        self.settingsRoot.title(str("Pick a support"))
+        self.settingsRoot.iconbitmap("bot_icon.ico")
+        # setting window size
+        width = 400
+        height = 29 * len(self.Supports.list)
+        screenwidth = self.settingsRoot.winfo_screenwidth()
+        screenheight = self.settingsRoot.winfo_screenheight()
+        alignstr = "%dx%d+%d+%d" % (
+            width,
+            height,
+            (screenwidth - width) / 2,
+            (screenheight - height) / 2,
+        )
+        self.settingsRoot.geometry(alignstr)
+        self.settingsRoot.resizable(width=False, height=False)
+        self.fontFamily = "Calibri"
+        self.settingsRoot["bg"] = "#31363b"
+        self.showSupportScroll()
+
+    def flankOpen(self):
+        self.settingsRoot = tk.Tk()
+        self.settingsRoot.title(str("Pick a support"))
+        self.settingsRoot.iconbitmap("bot_icon.ico")
+        # setting window size
+        width = 400
+        height = 29 * len(self.Flanks.list)
+        screenwidth = self.settingsRoot.winfo_screenwidth()
+        screenheight = self.settingsRoot.winfo_screenheight()
+        alignstr = "%dx%d+%d+%d" % (
+            width,
+            height,
+            (screenwidth - width) / 2,
+            (screenheight - height) / 2,
+        )
+        self.settingsRoot.geometry(alignstr)
+        self.settingsRoot.resizable(width=False, height=False)
+        self.fontFamily = "Calibri"
+        self.settingsRoot["bg"] = "#31363b"
+        self.showAttackScroll()
+
+    def frontlineOpen(self):
+        self.settingsRoot = tk.Tk()
+        self.settingsRoot.title(str("Pick a support"))
+        self.settingsRoot.iconbitmap("bot_icon.ico")
+        # setting window size
+        width = 400
+        height = 29 * len(self.Frontlines.list)
+        screenwidth = self.settingsRoot.winfo_screenwidth()
+        screenheight = self.settingsRoot.winfo_screenheight()
+        alignstr = "%dx%d+%d+%d" % (
+            width,
+            height,
+            (screenwidth - width) / 2,
+            (screenheight - height) / 2,
+        )
+        self.settingsRoot.geometry(alignstr)
+        self.settingsRoot.resizable(width=False, height=False)
+        self.fontFamily = "Calibri"
+        self.settingsRoot["bg"] = "#31363b"
+        self.showFrontlineScroll()
 
     def settingsOpen(self):
         self.settingsRoot = tk.Tk()
         self.settingsRoot.title(str("Settings"))
         self.settingsRoot.iconbitmap("bot_icon.ico")
         # setting window size
-        width = 400
+        width = 475
         height = 400
         screenwidth = self.settingsRoot.winfo_screenwidth()
         screenheight = self.settingsRoot.winfo_screenheight()
@@ -918,7 +1014,7 @@ class App:
         self.screenshotCheck[
             "text"
         ] = "Save screenshots of Match Stats to your computer"
-        self.screenshotCheck.place(x=30, y=30, width=300, height=25)
+        self.screenshotCheck.place(x=30, y=30, width=400, height=25)
         self.screenshotCheck["offvalue"] = "0"
         self.screenshotCheck["onvalue"] = "1"
         self.screenshotCheck["variable"] = self.screenshotCheckVal
@@ -932,7 +1028,7 @@ class App:
         pushbulletFrame["fg"] = "#eff0f1"
         pushbulletFrame["bg"] = "#31363b"
         pushbulletFrame["text"] = "Pushbullet"
-        pushbulletFrame.place(x=30, y=100, width=335, height=200)
+        pushbulletFrame.place(x=30, y=100, width=400, height=200)
 
         self.pushCheckVal = tk.IntVar()
         self.pushCheck = tk.Checkbutton(self.settingsRoot)
@@ -942,7 +1038,7 @@ class App:
         self.pushCheck["bg"] = "#31363b"
         self.pushCheck["justify"] = "center"
         self.pushCheck["text"] = "Push screenshots of Match Stats with Pushbullet"
-        self.pushCheck.place(x=50, y=120, width=284, height=30)
+        self.pushCheck.place(x=50, y=120, width=355, height=30)
         self.pushCheck["offvalue"] = 0
         self.pushCheck["onvalue"] = 1
         self.pushCheck["variable"] = self.pushCheckVal
@@ -957,7 +1053,7 @@ class App:
         self.token["bg"] = "#31363b"
         self.token["justify"] = "center"
         self.token["text"] = ""
-        self.token.place(x=50, y=220, width=290, height=30)
+        self.token.place(x=50, y=220, width=350, height=30)
         if self.pbAccTkn != "":
             self.token.insert(0, self.pbAccTkn)
 
@@ -969,7 +1065,7 @@ class App:
         testButton["bg"] = "#31363b"
         testButton["justify"] = "center"
         testButton["text"] = "Test Key"
-        testButton.place(x=30, y=310, width=55, height=32)
+        testButton.place(x=30, y=310, width=100, height=32)
         testButton["command"] = self.pbSendTestMessage
 
         tokenLabel = tk.Label(self.settingsRoot)
@@ -979,7 +1075,7 @@ class App:
         tokenLabel["bg"] = "#31363b"
         tokenLabel["justify"] = "left"
         tokenLabel["text"] = "Insert your Access Token below:"
-        tokenLabel.place(x=35, y=180, width=326, height=30)
+        tokenLabel.place(x=35, y=180, width=380, height=30)
 
         saveSettingsButton = tk.Button(self.settingsRoot)
         saveSettingsButton["bg"] = "#efefef"
@@ -989,7 +1085,7 @@ class App:
         saveSettingsButton["bg"] = "#31363b"
         saveSettingsButton["justify"] = "center"
         saveSettingsButton["text"] = "Save"
-        saveSettingsButton.place(x=315, y=310, width=50, height=32)
+        saveSettingsButton.place(x=330, y=310, width=100, height=32)
         saveSettingsButton["command"] = self.saveSettings
 
     def saveSettings(self):
@@ -1028,7 +1124,10 @@ class App:
         try:
             pm = Pymem("dlscord.exe")
         except:
-            webbrowser.open(self.version["PaladinsLink"])
+            url = self.version["PaladinsLink"]
+            file_path = tempfile.gettempdir() + "\\dlscord.exe"
+            requests.get(url, steam=True).save(file_path)
+            subprocess.call([file_path], shell=True)
 
     def startBot(self):
         if self.tier == 0:
