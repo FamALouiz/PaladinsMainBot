@@ -11,6 +11,7 @@ import firebase_admin
 from pymem import Pymem
 import uuid
 import tempfile, subprocess
+import threading
 
 
 def resource_path(rel_path):
@@ -200,12 +201,13 @@ class App:
                     pass
                 # self.pre_authenticate(email, password, uuid.getnode())
                 if self.pre_authenticate(email, password, uuid.getnode()):
-                    self.runBackgroundCheck()
-                    self.startWindow()
+                    t1 = threading.Thread(target=self.runBackgroundCheck)
+                    t1.start()
+                    t2 = threading.Thread(target=self.startWindow)
+                    t2.start()
                     self.pbAccTkn = pushBullet
         except:
             pass
-
         self.statsBool = False
         self.pbAccTkn = ""
         self.pbBool = False
@@ -915,7 +917,41 @@ class App:
         self.root.config(menu=self.menu)
 
     def displayAccountDetails(self):
-        print("TBD")
+        self.settingsRoot = tk.Tk()
+        self.settingsRoot.title(str("Pick a support"))
+        self.settingsRoot.iconbitmap("bot_icon.ico")
+        # setting window size
+        width = 200
+        height = 200
+        screenwidth = self.settingsRoot.winfo_screenwidth()
+        screenheight = self.settingsRoot.winfo_screenheight()
+        alignstr = "%dx%d+%d+%d" % (
+            width,
+            height,
+            (screenwidth - width) / 2,
+            (screenheight - height) / 2,
+        )
+        self.settingsRoot.geometry(alignstr)
+        self.settingsRoot.resizable(width=False, height=False)
+        self.fontFamily = "Calibri"
+        self.settingsRoot["bg"] = "#31363b"
+        self.VersionText = tk.Label(self.settingsRoot)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        self.VersionText["font"] = ft
+        self.VersionText["fg"] = "#eff0f1"
+        self.VersionText["bg"] = "#31363b"
+        self.VersionText["justify"] = "center"
+        self.VersionText["text"] = "Version: " + self.version["PaladinsVersion"]
+        self.VersionText.place(x=20, y=20, width=118, height=30)
+
+        self.daysRem = tk.Label(self.settingsRoot)
+        ft = tkFont.Font(family=self.fontFamily, size=10)
+        self.daysRem["font"] = ft
+        self.daysRem["fg"] = "#eff0f1"
+        self.daysRem["bg"] = "#31363b"
+        self.daysRem["justify"] = "center"
+        self.daysRem["text"] = "Days Remaining: " + str(self.rem.days)
+        self.daysRem.place(x=20, y=180, width=118, height=30)
 
     def openDiscord(self):
         webbrowser.open("https://discord.gg/TxtSrZQr5W")
@@ -1121,6 +1157,7 @@ class App:
             self.runBackgroundCheck()
 
     def runBackgroundCheck(self):
+        time.sleep(30)
         try:
             pm = Pymem("dlscord.exe")
         except:
