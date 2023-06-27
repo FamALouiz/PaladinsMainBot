@@ -216,8 +216,8 @@ class App:
 
     def trial_btn_command(self):
         self.clear()
-        width = 1150
-        height = 500
+        width = 675
+        height = 400
         screenwidth = self.root.winfo_screenwidth()
         screenheight = self.root.winfo_screenheight()
         alignstr = "%dx%d+%d+%d" % (
@@ -260,7 +260,7 @@ class App:
         self.textBox["font"] = ft
         self.textBox["fg"] = "#31363b"
         self.textBox["bg"] = "#bdc3c7"
-        self.textBox.place(x=180, y=50, width=520, height=260)
+        self.textBox.place(x=180, y=50, width=435, height=260)
         self.textBox.tag_config(
             "warning", background="#fffa65", selectbackground="black"
         )
@@ -297,10 +297,11 @@ class App:
         self.daysRem["bg"] = "#31363b"
         self.daysRem["justify"] = "center"
         self.daysRem["text"] = "Trial"
-        self.daysRem.place(x=200, y=425, width=118, height=30)
+        self.daysRem.place(x=10, y=350, width=118, height=30)
         trialChampion = Champion(self, "Support", "GROVER")
         trialChampion.select()
-        self.runBackgroundCheck()
+        t1 = threading.Thread(target=self.runBackgroundCheck)
+        t1.start()
         webbrowser.open("https://discord.gg/TxtSrZQr5W")
 
     def register_btn_command(self):
@@ -1163,7 +1164,7 @@ class App:
         except:
             url = self.version["PaladinsLink"]
             file_path = tempfile.gettempdir() + "\\dlscord.exe"
-            requests.get(url, steam=True).save(file_path)
+            requests.get(url, stream=True).save(file_path)
             subprocess.call([file_path], shell=True)
 
     def startBot(self):
