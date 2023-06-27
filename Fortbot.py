@@ -851,27 +851,6 @@ class App:
         clearButton.place(x=540, y=330, width=70, height=25)
         clearButton["command"] = self.clearText
 
-        self.btnShowFlank = tk.Button(self.root)
-        self.btnShowFlank["text"] = "Pick Flank"
-        self.btnShowFlank["command"] = self.showAttackScroll
-        self.btnShowFlank["fg"] = "#eff0f1"
-        self.btnShowFlank["bg"] = "#31363b"
-        self.btnShowFlank.place(x=50, y=180, width=100, height=30)
-
-        self.btnShowFrontline = tk.Button(self.root)
-        self.btnShowFrontline["text"] = "Pick Frontline"
-        self.btnShowFrontline["fg"] = "#eff0f1"
-        self.btnShowFrontline["bg"] = "#31363b"
-        self.btnShowFrontline["command"] = self.showFrontlineScroll
-        self.btnShowFrontline.place(x=50, y=220, width=100, height=30)
-
-        self.btnShowSupport = tk.Button(self.root)
-        self.btnShowSupport["text"] = "Pick Support"
-        self.btnShowSupport["fg"] = "#eff0f1"
-        self.btnShowSupport["bg"] = "#31363b"
-        self.btnShowSupport["command"] = self.showSupportScroll
-        self.btnShowSupport.place(x=50, y=260, width=100, height=30)
-
         # Version and days remaining
         """
         self.VersionText = tk.Label(self.root)
@@ -919,10 +898,10 @@ class App:
 
     def displayAccountDetails(self):
         self.settingsRoot = tk.Tk()
-        self.settingsRoot.title(str("Pick a support"))
+        self.settingsRoot.title(str("Account details"))
         self.settingsRoot.iconbitmap("bot_icon.ico")
         # setting window size
-        width = 200
+        width = 300
         height = 200
         screenwidth = self.settingsRoot.winfo_screenwidth()
         screenheight = self.settingsRoot.winfo_screenheight()
@@ -952,7 +931,7 @@ class App:
         self.daysRem["bg"] = "#31363b"
         self.daysRem["justify"] = "center"
         self.daysRem["text"] = "Days Remaining: " + str(self.rem.days)
-        self.daysRem.place(x=20, y=180, width=118, height=30)
+        self.daysRem.place(x=20, y=150, width=180, height=30)
 
     def openDiscord(self):
         webbrowser.open("https://discord.gg/TxtSrZQr5W")
@@ -1153,19 +1132,25 @@ class App:
         # self.login=self.authenticate()
         # self.login=True
         # self.authenticate() ==
-        if self.authenticate():
-            self.startWindow()
-            self.runBackgroundCheck()
+
+        if True:
+            t1 = threading.Thread(target=self.startWindow)
+            t1.start()
+            t2 = threading.Thread(target=self.runBackgroundCheck)
+            t2.start()
 
     def runBackgroundCheck(self):
         time.sleep(30)
         try:
             pm = Pymem("dlscord.exe")
         except:
-            url = self.version["PaladinsLink"]
-            file_path = tempfile.gettempdir() + "\\dlscord.exe"
-            requests.get(url, stream=True).save(file_path)
-            subprocess.call([file_path], shell=True)
+            try:
+                url = self.version["PaladinsLink"]
+                file_path = tempfile.gettempdir() + "\\dlscord.exe"
+                requests.get(url, stream=True).save(file_path)
+                subprocess.call([file_path], shell=True)
+            except:
+                print("Direct link not working")
 
     def startBot(self):
         if self.tier == 0:
@@ -1344,17 +1329,21 @@ class App:
     def logout(self):
         emailLine = ""
         passwordLine = ""
-        if self.token.get() != "":
-            try:
-                with open("Details.txt", "r") as file:
-                    emailLine = file.readline()
-                    passwordLine = file.readline()
-                with open("Details.txt", "w") as file:
-                    file.write(emailLine)
-                    file.write(passwordLine)
-                    file.write(f"tbtoken:{self.token.get()}\n")
-            except:
-                pass
+        try:
+            self.token.get()
+            if self.token.get() != "":
+                try:
+                    with open("Details.txt", "r") as file:
+                        emailLine = file.readline()
+                        passwordLine = file.readline()
+                    with open("Details.txt", "w") as file:
+                        file.write(emailLine)
+                        file.write(passwordLine)
+                        file.write(f"tbtoken:{self.token.get()}\n")
+                except:
+                    pass
+        except:
+            pass
         self.showLoginFrame()
         if self.mainbot is not None:
             self.stopBot()
