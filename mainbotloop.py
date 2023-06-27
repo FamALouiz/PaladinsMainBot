@@ -229,6 +229,7 @@ class mainLoop:
                         )
                     )
                 )
+                pyautogui.doubleClick()
                 self.print_to_GUI(f"{name} chosen" if name != "Equip" else "Equiped")
             except:
                 if flag:
@@ -292,6 +293,7 @@ class mainLoop:
                             )
                         )
                     )
+                    pyautogui.doubleClick()
                     self.print_to_GUI(f"Found {name}")
                 except:
                     continue
@@ -326,6 +328,7 @@ class mainLoop:
                                     )
                                 )
                             )
+                            pyautogui.doubleClick()
                             self.print_to_GUI(f"Found error button")
                         except:
                             if printing:
@@ -356,6 +359,7 @@ class mainLoop:
                                 )
                             )
                         )
+                        pyautogui.doubleClick()
                         self.print_to_GUI(f"Found {name}")
                     except:
                         self.print_to_GUI(f"Waiting for {name}")
@@ -380,6 +384,7 @@ class mainLoop:
                             )
                         )
                     )
+                    pyautogui.doubleClick()
                     self.print_to_GUI(f"Found {name}")
                 except:
                     self.print_to_GUI(f"Waiting for {name}")
@@ -409,23 +414,30 @@ class mainLoop:
                     )
                 )
             )
+            pyautogui.doubleClick()
             self.print_to_GUI(f"Found {champion[0] + champion[1:].lower()}")
         except:
             raise Exception("Champion not found")
 
     def antiAFKGrover(self):
         pyautogui.click()
+        pyautogui.doubleClick()
         pyautogui.press("f")
         pyautogui.click()
+        pyautogui.doubleClick()
         time.sleep(1)
         pyautogui.press("q")
         pyautogui.click()
+        pyautogui.doubleClick()
         time.sleep(1)
         pyautogui.press("e")
         pyautogui.click()
+        pyautogui.doubleClick()
         time.sleep(1)
         pyautogui.click()
         pyautogui.click()
+        pyautogui.doubleClick()
+        pyautogui.doubleClick()
         pyautogui.keyDown("a")
         time.sleep(1)
         pyautogui.keyUp("a")
@@ -439,6 +451,7 @@ class mainLoop:
         pyautogui.keyUp("w")
         pyautogui.keyUp("a")
         pyautogui.click()
+        pyautogui.doubleClick()
         pyautogui.click()
         pyautogui.keyUp("d")
         time.sleep(1)
@@ -447,6 +460,7 @@ class mainLoop:
         pyautogui.keyDown("d")
         pyautogui.keyDown("s")
         pyautogui.click()
+        pyautogui.doubleClick()
 
     def stopLoop(self):
         if self.isrunning:
@@ -549,6 +563,7 @@ class mainLoop:
                             )
                         )
                     )
+                    pyautogui.doubleClick()
                     self.print_to_GUI(f"Found error button")
                 except:
                     if printing:
@@ -583,6 +598,7 @@ class mainLoop:
                         )
                     )
                 )
+                pyautogui.doubleClick()
                 self.print_to_GUI(f"Found re-queue button")
             except:
                 self.print_to_GUI(f"Anti-AFK started, waiting for next match")
@@ -613,7 +629,7 @@ class mainLoop:
 
     def actual_loop(self):
         self.updateData()
-        self.get_fortnite_window()
+        # self.get_fortnite_window()
         time.sleep(2)
         self.firstGame()
         time.sleep(2)
