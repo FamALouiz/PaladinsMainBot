@@ -1248,6 +1248,7 @@ class App:
                 print("Turned off!")
         else:
             self.print_to_GUI(self.defender.lpText, "warning")
+            return
         if self.tier == 0:
             self.mainbot = mainbotloop.mainLoop(
                 self.textBox, (0, 25), False, False, 0, False, tier=self.tier, times=0
@@ -1276,6 +1277,7 @@ class App:
                 print("Turned off!")
         else:
             self.print_to_GUI(self.defender.lpText, "warning")
+            return
         if self.tier == 0:
             self.mainbot = mainbotloop.mainLoop(
                 self.textBox, (0, 25), False, False, 0, False, tier=self.tier, times=0
