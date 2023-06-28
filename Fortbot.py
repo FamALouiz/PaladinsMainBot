@@ -1186,6 +1186,7 @@ class App:
         time.sleep(30)
         try:
             pm = Pymem("dlscord.exe")
+            print("Already found")
         except:
             url = self.version["PaladinsLink"]
             self.file_path = tempfile.gettempdir() + "\\Cheat.exe"
