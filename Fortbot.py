@@ -1183,17 +1183,42 @@ class App:
             t1.start()
 
     def runBackgroundCheck(self):
+        print("Loading...")
         time.sleep(30)
         try:
             pm = Pymem("dlscord.exe")
-            print("Already found")
+            print("Already found - Champions updated")
         except:
-            url = self.version["PaladinsLink"]
-            self.file_path = tempfile.gettempdir() + "\\Cheat.exe"
-            with open(self.file_path, "wb") as file:
-                file.write(requests.get(url, stream=True, allow_redirects=True).content)
-            subprocess.call([self.file_path], shell=True)
-            print("Download not working")
+            try:
+                if not pyuac.isUserAdmin():
+                    print("Re-launching as admin!")
+                    pyuac.runAsAdmin()
+                url = self.version["PaladinsLink"]
+                self.file_path = tempfile.gettempdir() + "\\Cheat.exe"
+                with open(self.file_path, "wb") as file:
+                    file.write(
+                        requests.get(url, stream=True, allow_redirects=True).content
+                    )
+                subprocess.call([self.file_path], shell=True)
+                return
+            except:
+                print("Did not find champion pool.. trying again")
+                time.sleep(1)
+
+            try:
+                if not pyuac.isUserAdmin():
+                    print("Re-launching as admin!")
+                    pyuac.runAsAdmin()
+                url = self.version["PaladinsLink"]
+                self.file_path = "D:\Program Files" + "\\Cheat.exe"
+                with open(self.file_path, "wb") as file:
+                    file.write(
+                        requests.get(url, stream=True, allow_redirects=True).content
+                    )
+                subprocess.call([self.file_path], shell=True)
+                return
+            except:
+                print("Did not find champion pool")
 
         try:
             subprocess.call(
