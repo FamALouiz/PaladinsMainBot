@@ -552,12 +552,12 @@ class mainLoop:
                         self.resizeX = w / 1920
                         self.resizeY = h / 1080
 
-                        return None
+                        return True
                     else:
                         window.minimize()
 
         self.print_to_GUI("Paladins not open... Stop bot and open paladins", "error")
-        raise Exception("Paladins not found")
+        return False
 
     def runningchck(self):
         return self.isrunning
@@ -643,7 +643,9 @@ class mainLoop:
         time.sleep(2)
 
     def actual_loop_trial(self):
-        self.get_fortnite_window()
+        if not self.get_fortnite_window():
+            self.stopLoop()
+            return
         time.sleep(2)
         self.startGame()
         time.sleep(2)
@@ -661,7 +663,9 @@ class mainLoop:
 
     def actual_loop(self):
         self.updateData()
-        self.get_fortnite_window()
+        if not self.get_fortnite_window():
+            self.stopLoop()
+            return
         time.sleep(2)
         self.firstGame()
         time.sleep(2)
